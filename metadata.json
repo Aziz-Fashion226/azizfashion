@@ -1,0 +1,6 @@
+{
+  "name": "AZIZ FASHION",
+  "description": "Boutique en ligne premium de chemises locales modernes pour homme. Savoir-faire africain, élégance et finitions d'exception.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

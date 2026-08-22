@@ -1,0 +1,124 @@
+export type ShirtSize = 'S' | 'M' | 'L' | 'XL' | 'XXL';
+
+export interface SizeStock {
+  S: number;
+  M: number;
+  L: number;
+  XL: number;
+  XXL: number;
+}
+
+export interface ColorVariant {
+  name: string;
+  hex: string;
+  image?: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  reference: string;
+  tagline: string;
+  description: string;
+  features: string[];
+  fabric: string;
+  origin: string;
+  fit: 'Ajustée (Slim)' | 'Droite (Regular)' | 'Moderne Relax';
+  collar: 'Col Officier' | 'Col Mao' | 'Col Français Contemporain' | 'Col V Épuré';
+  price: number; // in FCFA
+  originalPrice?: number; // for promo
+  stock: SizeStock;
+  category: 'Cérémonie & Prestige' | 'Casual Chic' | 'Faso Danfani' | 'Koko Dunda Moderne' | 'Signature';
+  badge?: 'Nouveau' | 'Promo' | 'Populaire' | 'Édition Limitée';
+  images: string[];
+  colors: ColorVariant[];
+  isAvailable: boolean;
+  featured?: boolean;
+  createdAt: string;
+  rating: number;
+  reviewCount: number;
+}
+
+export interface CartItem {
+  productId: string;
+  product: Product;
+  size: ShirtSize;
+  color: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export type OrderStatus = 'Nouvelle' | 'Confirmée' | 'En préparation' | 'Expédiée' | 'Livrée' | 'Annulée';
+
+export type PaymentMethod = 'Paiement à la livraison' | 'Orange Money' | 'Moov Money' | 'Wave' | 'MTN Mobile Money' | 'Paiement par carte (CinetPay)';
+
+export type DeliveryMethod = 'Livraison à domicile' | 'Récupération en showroom / boutique';
+
+export interface CustomerInfo {
+  fullName: string;
+  phone: string;
+  whatsapp: string;
+  city: string;
+  district: string;
+  landmark: string;
+  deliveryInstructions?: string;
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  customer: CustomerInfo;
+  items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
+  discount: number;
+  total: number;
+  deliveryMethod: DeliveryMethod;
+  paymentMethod: PaymentMethod;
+  status: OrderStatus;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Review {
+  id: string;
+  productId?: string;
+  productName?: string;
+  authorName: string;
+  city: string;
+  rating: number;
+  comment: string;
+  date: string;
+  verifiedBuyer: boolean;
+  avatarUrl?: string;
+  userPhoto?: string;
+}
+
+export interface StoreSettings {
+  storeName: string;
+  brandSlogan: string;
+  whatsappNumber: string; // e.g. "22670000000"
+  whatsappDisplay: string; // e.g. "+226 70 00 00 00"
+  phoneDisplay: string;
+  emailContact: string;
+  addressShowroom: string;
+  cityCountry: string;
+  freeShippingThreshold: number; // in FCFA
+  defaultDeliveryFee: number; // in FCFA
+  bannerAnnouncement: string;
+  bannerEnabled: boolean;
+  currency: string;
+}
+
+export interface FilterState {
+  search: string;
+  category: string;
+  sizes: ShirtSize[];
+  colors: string[];
+  minPrice: number;
+  maxPrice: number;
+  inStockOnly: boolean;
+  onSaleOnly: boolean;
+  sortBy: 'featured' | 'price-asc' | 'price-desc' | 'newest' | 'rating';
+}
