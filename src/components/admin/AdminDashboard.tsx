@@ -30,6 +30,7 @@ import {
 import { Order, OrderStatus, Product, ShirtSize, SizeStock, StoreSettings } from '../../types';
 import { formatFCFA, generateCustomerDirectWhatsAppUrl } from '../../services/storeService';
 import { Logo } from '../common/Logo';
+import { supabase } from '../../services/supabaseClient';
 
 interface AdminDashboardProps {
   isOpen: boolean;
@@ -79,18 +80,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Settings State form
   const [settingsForm, setSettingsForm] = useState<StoreSettings>(settings);
 
+  // Image Upload State
+  const [isUploading, setIsUploading] = useState(false);
+
   // Authentication check
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim() && password.trim()) {
-      onLogin(true);
-      setLoginError('');
-    } else {
-      setLoginError('Veuillez renseigner vos identifiants administrateur.');
+    setLoginError('');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        onLogin(true);
+      }
+    } catch (err: any) {
+      setLoginError(err.message || 'Identifiants incorrects.');
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     onLogin(false);
   };
 
@@ -190,6 +205,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       return p;
     });
     onSaveProducts(updated);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${editingProduct.id}-${Math.random()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('product-images').getPublicUrl(filePath);
+
+      if (data?.publicUrl) {
+        setEditingProduct({
+          ...editingProduct,
+          images: [data.publicUrl, ...editingProduct.images.slice(1)],
+        });
+      }
+    } catch (err: any) {
+      alert("Erreur lors de l'envoi de l'image : " + err.message);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSaveProductModal = (e: React.FormEvent) => {
@@ -1218,22 +1264,56 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                    Photo Principale (URL)
-                  </label>
-                  <input
-                    type="url"
-                    required
-                    value={editingProduct.images[0] || ''}
-                    onChange={(e) =>
-                      setEditingProduct({
-                        ...editingProduct,
-                        images: [e.target.value, ...(editingProduct.images.slice(1))],
-                      })
-                    }
-                    className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-xs font-mono text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                  />
+                <div className="space-y-4">
+                  <div className="p-4 bg-[#050B18] border-2 border-dashed border-[#C5A059]/30 rounded-2xl">
+                    <label className="block text-[10px] font-bold uppercase text-[#C5A059] mb-2 tracking-widest">
+                      📸 AJOUTER UNE VRAIE PHOTO (DEPUIS MOBILE)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={isUploading}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      />
+                      <div className={`py-4 flex flex-col items-center justify-center gap-2 transition-all ${isUploading ? 'opacity-50' : 'text-slate-400'}`}>
+                        {isUploading ? (
+                          <>
+                            <div className="w-6 h-6 border-2 border-[#C5A059] border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-xs font-bold">Envoi de la photo...</span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="p-3 bg-[#10192C] rounded-full text-[#C5A059]">
+                              <Plus className="w-6 h-6" />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-tighter text-white">Prendre une photo / Choisir un fichier</span>
+                            <span className="text-[9px] text-slate-500">Formats acceptés : JPG, PNG (Max 5Mo)</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
+                      OU LIEN DE LA PHOTO (URL)
+                    </label>
+                    <input
+                      type="url"
+                      required
+                      value={editingProduct.images[0] || ''}
+                      onChange={(e) =>
+                        setEditingProduct({
+                          ...editingProduct,
+                          images: [e.target.value, ...editingProduct.images.slice(1)],
+                        })
+                      }
+                      placeholder="https://..."
+                      className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-xs font-mono text-[#F5F5F0] focus:border-[#C5A059] outline-none"
+                    />
+                  </div>
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3 border-t border-[#C5A059]/20">

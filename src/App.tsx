@@ -14,6 +14,7 @@ import {
   formatFCFA,
 } from './services/storeService';
 import { INITIAL_SETTINGS } from './data/initialData';
+import { supabase } from './services/supabaseClient';
 
 // Layout & Navigation
 import { Header } from './components/layout/Header';
@@ -95,6 +96,11 @@ export default function App() {
     const initApp = async () => {
       setIsLoading(true);
       try {
+        // 1. Check Auth Session
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAdminAuthenticated(!!session);
+
+        // 2. Fetch Data
         const [prodData, orderData, settingsData] = await Promise.all([
           getProducts(),
           getOrders(),
@@ -105,7 +111,7 @@ export default function App() {
         setOrdersState(orderData);
         setSettingsState(settingsData);
 
-        // Cart and Wishlist remain local
+        // 3. Cart and Wishlist remain local
         setCartState(getCart());
         setWishlistState(getWishlist());
       } catch (error) {
@@ -117,6 +123,31 @@ export default function App() {
     };
 
     initApp();
+
+    // --- REALTIME SUBSCRIPTIONS ---
+    const ordersSubscription = supabase
+      .channel('public:orders')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            setOrdersState((current) => [payload.new as Order, ...current]);
+            showToast('🔔 Nouvelle commande reçue !', 'success');
+          } else if (payload.eventType === 'UPDATE') {
+            setOrdersState((current) =>
+              current.map((o) => (o.id === payload.new.id ? (payload.new as Order) : o))
+            );
+          } else if (payload.eventType === 'DELETE') {
+            setOrdersState((current) => current.filter((o) => o.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ordersSubscription);
+    };
   }, []);
 
   // Handlers for Data Updates
