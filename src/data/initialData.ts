@@ -3,9 +3,9 @@ import { Product, Review, StoreSettings, Order } from '../types';
 export const INITIAL_SETTINGS: StoreSettings = {
   storeName: 'AZIZ FASHION',
   brandSlogan: "L'élégance locale, autrement.",
-  whatsappNumber: '22670000000',
-  whatsappDisplay: '+226 70 00 00 00',
-  phoneDisplay: '+226 70 00 00 00 / +226 25 30 00 00',
+  whatsappNumber: '22670844150',
+  whatsappDisplay: '+226 70 84 41 50',
+  phoneDisplay: '+226 70 84 41 50 / +226 76 38 25 32',
   emailContact: 'contact@azizfashion.com',
   addressShowroom: 'Avenue Kwamé N\'Krumah, Immeuble Prestige, Ouagadougou',
   cityCountry: 'Ouagadougou, Burkina Faso',

@@ -101,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   key={link.id}
                   onClick={() => handleLinkClick(link.id)}
-                  className={`text-sm font-semibold tracking-wider transition-all duration-200 relative py-1 uppercase cursor-pointer ${
+                  className={`text-[13px] font-bold tracking-widest transition-all duration-200 relative py-1 uppercase cursor-pointer ${
                     isActive
                       ? 'text-[#C5A059]'
                       : 'text-[#F5F5F0]/80 hover:text-white'
@@ -109,11 +109,24 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#C5A059] to-transparent" />
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#C5A059]" />
                   )}
                 </button>
               );
             })}
+
+            {/* Added Quick Contact in Nav */}
+            <div className="flex items-center gap-4 pl-4 border-l border-white/10 ml-4">
+               <a
+                href={`https://wa.me/${settings.whatsappNumber}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[11px] font-bold text-[#25D366] flex items-center gap-1.5 hover:scale-105 transition-transform"
+              >
+                <Phone className="w-3 h-3" />
+                <span>{settings.whatsappDisplay}</span>
+              </a>
+            </div>
           </nav>
 
           {/* Header Action Icons */}

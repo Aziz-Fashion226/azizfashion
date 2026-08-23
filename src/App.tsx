@@ -57,8 +57,8 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // Navigation View State: 'home' | 'shop' | 'about' | 'contact'
-  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact'>('home');
+  // Navigation View State: 'home' | 'shop' | 'about' | 'contact' | 'new'
+  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'new'>('home');
   const [shopCategoryFilter, setShopCategoryFilter] = useState<string>('all');
 
   // Core Data States
@@ -555,7 +555,7 @@ export default function App() {
         )}
 
         {/* VIEW 2: SHOP CATALOG */}
-        {currentView === 'shop' && (
+        {(currentView === 'shop' || currentView === 'new') && (
           <ShopPage
             products={products}
             onSelectProduct={(p) => setSelectedProduct(p)}
@@ -563,7 +563,7 @@ export default function App() {
             wishlistIds={wishlistIds}
             onToggleWishlist={handleToggleWishlist}
             settings={settings}
-            initialCategory={shopCategoryFilter}
+            initialCategory={currentView === 'new' ? 'all' : shopCategoryFilter}
           />
         )}
 
