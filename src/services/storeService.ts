@@ -360,11 +360,11 @@ export const generateCustomerDirectWhatsAppUrl = (
   const cleanPhone = customerPhone.replace(/[^0-9]/g, '');
   const text = `Bonjour ${customerName} 👋🏾,
 
-La maison *AZIZ FASHION* a bien reçu votre commande *#${orderNumber}*.
+La boutique *AZIZ FASHION* a bien reçu votre commande *#${orderNumber}*.
 
-Nous vous remercions infiniment pour votre confiance envers notre savoir-faire. ✨
+Nous vous remercions pour votre confiance envers notre savoir-faire. ✨
 
-Votre commande est actuellement en statut : *${status}*. Nous préparons vos articles avec le plus grand soin.
+Votre commande est actuellement en cours de traitement. Nous préparons vos articles avec le plus grand soin.
 
 Nous restons à votre entière disposition pour toute question.
 
