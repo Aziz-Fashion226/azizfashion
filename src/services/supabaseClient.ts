@@ -2,8 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 
 // Compatibilité Environnement (Vite / Node.js)
 const getEnvVar = (name: string): string | undefined => {
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[name];
+  // @ts-ignore
+  const env = import.meta.env;
+  if (env) {
+    return env[name];
   }
   return undefined;
 };

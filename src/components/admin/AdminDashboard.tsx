@@ -269,7 +269,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {safeProducts.map(p => {
-                          const total = Object.values(p.stock).reduce((a, b) => a + b, 0);
+                          const total = (Object.values(p.stock) as number[]).reduce((a, b) => a + b, 0);
                           return (
                             <tr key={p.id} className="hover:bg-white/5 transition-colors">
                               <td className="p-4 font-bold">{p.name}</td>
