@@ -317,17 +317,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                           key={size}
                           disabled={!inStock}
                           onClick={() => setSelectedSize(size)}
-                          className={`py-3 px-2 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-0.5 cursor-pointer ${
+                          className={`py-4 px-2 sm:py-3 sm:px-2 rounded-2xl sm:rounded-xl text-sm sm:text-xs font-bold border transition-all flex flex-col items-center gap-0.5 cursor-pointer ${
                             !inStock
                               ? 'bg-[#10192C]/40 text-slate-600 border-slate-800 line-through cursor-not-allowed'
                               : isSelected
-                              ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059] shadow-md font-extrabold'
+                              ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059] shadow-lg ring-2 ring-[#C5A059]/20 font-black scale-105'
                               : 'bg-[#10192C] text-[#F5F5F0] border-[#C5A059]/20 hover:border-[#C5A059]'
                           }`}
                         >
-                          <span className="text-sm">{size}</span>
-                          <span className="text-[9px] font-normal opacity-80">
-                            {inStock ? `${stockCount} dispo` : '0'}
+                          <span className="text-base sm:text-sm">{size}</span>
+                          <span className="text-[10px] sm:text-[9px] font-normal opacity-80">
+                            {inStock ? `${stockCount}` : '0'}
                           </span>
                         </button>
                       );
@@ -396,7 +396,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="space-y-3 pt-4">
+                <div className="space-y-3 pt-4 pb-24 sm:pb-0">
                   {/* Add to Cart */}
                   <button
                     disabled={isOutOfStock}
@@ -412,14 +412,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     {addedToast ? (
                       <>
                         <Check className="w-5 h-5 text-white" />
-                        <span>Article ajouté au panier !</span>
+                        <span>Article ajouté !</span>
                       </>
                     ) : isOutOfStock ? (
-                      <span>Rupture de stock dans cette taille</span>
+                      <span>Rupture de stock</span>
                     ) : (
                       <>
-                        <ShoppingBag className="w-5 h-5 text-[#050B18]" />
-                        <span>Ajouter au panier ({formatFCFA(product.price * quantity)})</span>
+                        <ShoppingBag className="w-5 h-5" />
+                        <span>Ajouter au panier</span>
                       </>
                     )}
                   </button>
@@ -430,8 +430,36 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     className="w-full py-3.5 px-6 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm uppercase tracking-wider rounded-2xl shadow-lg flex items-center justify-center gap-3 transition-all duration-200 transform hover:-translate-y-0.5 cursor-pointer"
                   >
                     <MessageCircle className="w-5 h-5 fill-white text-[#25D366]" />
-                    <span>Commander via WhatsApp</span>
+                    <span>WhatsApp</span>
                   </button>
+                </div>
+
+                {/* Mobile Sticky Bar */}
+                <div className="sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#0B1325]/95 backdrop-blur-xl border-t border-[#C5A059]/30 p-4 animate-slideUp">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                       <button
+                        disabled={isOutOfStock}
+                        onClick={handleAddToCart}
+                        className={`w-full py-4 px-2 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${
+                          isOutOfStock
+                            ? 'bg-slate-800 text-slate-500'
+                            : addedToast
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-[#C5A059] text-[#050B18]'
+                        }`}
+                      >
+                        {addedToast ? <Check className="w-4 h-4" /> : <ShoppingBag className="w-4 h-4" />}
+                        <span>{addedToast ? 'Ajouté' : formatFCFA(product.price * quantity)}</span>
+                      </button>
+                    </div>
+                    <button
+                      onClick={handleWhatsAppOrder}
+                      className="w-14 h-14 bg-[#25D366] rounded-xl flex items-center justify-center shadow-lg text-white"
+                    >
+                      <MessageCircle className="w-6 h-6 fill-current" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Service Guarantees */}

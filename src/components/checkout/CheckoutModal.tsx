@@ -206,6 +206,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                           value={customer.fullName}
                           onChange={(e) => setCustomer({ ...customer, fullName: e.target.value })}
                           placeholder="Ex: Ibrahim Ouédraogo"
+                          autoComplete="name"
                           className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059]"
                         />
                       </div>
@@ -228,6 +229,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                               });
                             }}
                             placeholder="Ex: +226 70 00 00 00"
+                            inputMode="tel"
+                            autoComplete="tel"
                             className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059]"
                           />
                         </div>
@@ -242,6 +245,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                             value={sameAsPhone ? customer.phone : customer.whatsapp}
                             onChange={(e) => setCustomer({ ...customer, whatsapp: e.target.value })}
                             placeholder="Ex: +226 76 00 00 00"
+                            inputMode="tel"
                             className={`w-full p-3 border rounded-xl text-sm focus:outline-none ${
                               sameAsPhone
                                 ? 'bg-[#050B18] text-[#F5F5F0]/40 border-[#C5A059]/20'
@@ -365,6 +369,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                             value={customer.district}
                             onChange={(e) => setCustomer({ ...customer, district: e.target.value })}
                             placeholder="Ex: Ouaga 2000, Koulouba, Somgandé..."
+                            autoComplete="address-level2"
                             className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059]"
                           />
                         </div>
@@ -380,6 +385,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                           value={customer.landmark}
                           onChange={(e) => setCustomer({ ...customer, landmark: e.target.value })}
                           placeholder="Ex: Non loin de la pharmacie, portail noir, face à l'école..."
+                          autoComplete="street-address"
                           className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059]"
                         />
                       </div>

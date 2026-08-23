@@ -1,0 +1,24 @@
+{
+  "short_name": "Aziz Fashion",
+  "name": "Aziz Fashion - L'élégance locale",
+  "description": "Boutique en ligne de chemises locales haut de gamme au Burkina Faso.",
+  "icons": [
+    {
+      "src": "/assets/logo-official.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/logo-official.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0B1325",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait"
+}
