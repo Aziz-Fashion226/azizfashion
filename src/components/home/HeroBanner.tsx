@@ -40,7 +40,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             </h1>
 
             <p className="text-base sm:text-xl text-slate-300 font-medium max-w-xl mx-auto leading-relaxed">
-              L'élégance africaine contemporaine. Des chemises d'exception en <span className="text-white border-b border-[#D4AF37]">Faso Danfani</span> et cotonnades nobles, conçues pour l'homme moderne à Ouagadougou.
+              Portez vos racines. Affirmez votre style.<br className="hidden sm:block" />
+              Des matières authentiques, un savoir-faire local, une élégance résolument moderne. <strong className="text-white">Aziz Fashion</strong> transforme chaque chemise en une signature : la vôtre.
             </p>
           </div>
 
