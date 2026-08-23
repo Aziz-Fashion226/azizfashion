@@ -46,38 +46,71 @@ export const getStoredProducts = async (): Promise<Product[]> => {
 };
 
 export const saveStoredProducts = async (products: Product[]) => {
-  // En mode DB, on ne sauvegarde généralement pas toute la liste
-  // Mais pour rester compatible avec la logique actuelle, on peut faire un upsert
-  try {
-    const toUpsert = products.map(p => ({
-      id: p.id,
-      name: p.name,
-      reference: p.reference,
-      tagline: p.tagline,
-      description: p.description,
-      features: p.features,
-      fabric: p.fabric,
-      origin: p.origin,
-      fit: p.fit,
-      collar: p.collar,
-      price: p.price,
-      original_price: p.originalPrice,
-      stock: p.stock,
-      category: p.category,
-      badge: p.badge,
-      images: p.images,
-      colors: p.colors,
-      is_available: p.isAvailable,
-      featured: p.featured,
-      rating: p.rating,
-      review_count: p.reviewCount,
-    }));
+  // We no longer send the whole list, but we update the database record by record
+  // To keep compatibility with existing handlers, we'll implement a more specific save logic if needed
+  // But for now, we'll improve the individual product handling in AdminDashboard
+};
 
-    const { error } = await supabase.from('products').upsert(toUpsert);
-    if (error) throw error;
-  } catch (e) {
-    console.error('Error saving products to Supabase:', e);
-  }
+// Specific helpers for CRUD
+export const addProduct = async (product: Product) => {
+  const toInsert = {
+    id: product.id,
+    name: product.name,
+    reference: product.reference,
+    tagline: product.tagline,
+    description: product.description,
+    features: product.features,
+    fabric: product.fabric,
+    origin: product.origin,
+    fit: product.fit,
+    collar: product.collar,
+    price: product.price,
+    original_price: product.originalPrice,
+    stock: product.stock,
+    category: product.category,
+    badge: product.badge,
+    images: product.images,
+    colors: product.colors,
+    is_available: product.isAvailable,
+    featured: product.featured,
+    rating: product.rating,
+    review_count: product.reviewCount,
+  };
+  const { error } = await supabase.from('products').insert(toInsert);
+  if (error) throw error;
+};
+
+export const updateProduct = async (product: Product) => {
+  const toUpdate = {
+    name: product.name,
+    reference: product.reference,
+    tagline: product.tagline,
+    description: product.description,
+    features: product.features,
+    fabric: product.fabric,
+    origin: product.origin,
+    fit: product.fit,
+    collar: product.collar,
+    price: product.price,
+    original_price: product.originalPrice,
+    stock: product.stock,
+    category: product.category,
+    badge: product.badge,
+    images: product.images,
+    colors: product.colors,
+    is_available: product.isAvailable,
+    featured: product.featured,
+    rating: product.rating,
+    review_count: product.reviewCount,
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = await supabase.from('products').update(toUpdate).eq('id', product.id);
+  if (error) throw error;
+};
+
+export const deleteProduct = async (productId: string) => {
+  const { error } = await supabase.from('products').delete().eq('id', productId);
+  if (error) throw error;
 };
 
 // Orders

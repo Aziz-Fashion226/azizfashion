@@ -152,9 +152,9 @@ export default function App() {
 
   // Handlers for Data Updates
   const handleUpdateProducts = async (newProducts: Product[]) => {
+    // This handler is now used mainly for local state sync,
+    // individual CRUD operations are handled in AdminDashboard for DB persistence
     setProductsState(newProducts);
-    await saveProducts(newProducts);
-    showToast('Catalogue mis à jour');
   };
 
   const handleUpdateOrders = async (newOrders: Order[]) => {

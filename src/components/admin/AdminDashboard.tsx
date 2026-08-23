@@ -28,7 +28,13 @@ import {
   Filter,
 } from 'lucide-react';
 import { Order, OrderStatus, Product, ShirtSize, SizeStock, StoreSettings } from '../../types';
-import { formatFCFA, generateCustomerDirectWhatsAppUrl } from '../../services/storeService';
+import {
+  formatFCFA,
+  generateCustomerDirectWhatsAppUrl,
+  addProduct,
+  updateProduct,
+  deleteProduct
+} from '../../services/storeService';
 import { Logo } from '../common/Logo';
 import { supabase } from '../../services/supabaseClient';
 
@@ -179,32 +185,57 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setProductModalOpen(true);
   };
 
-  const handleDeleteProduct = (prodId: string) => {
+  const handleDeleteProduct = async (prodId: string) => {
     if (window.confirm('Êtes-vous certain de vouloir supprimer définitivement cette chemise ?')) {
-      const updated = products.filter((p) => p.id !== prodId);
-      onSaveProducts(updated);
+      try {
+        await deleteProduct(prodId);
+        const updated = products.filter((p) => p.id !== prodId);
+        await onSaveProducts(updated);
+      } catch (err: any) {
+        alert("Erreur lors de la suppression : " + err.message);
+      }
     }
   };
 
-  const handleToggleProductAvailability = (prodId: string) => {
-    const updated = products.map((p) =>
-      p.id === prodId ? { ...p, isAvailable: !p.isAvailable } : p
-    );
-    onSaveProducts(updated);
+  const handleToggleProductAvailability = async (prodId: string) => {
+    const prod = products.find(p => p.id === prodId);
+    if (!prod) return;
+
+    try {
+      const updatedProd = { ...prod, isAvailable: !prod.isAvailable };
+      await updateProduct(updatedProd);
+      const updated = products.map((p) =>
+        p.id === prodId ? updatedProd : p
+      );
+      await onSaveProducts(updated);
+    } catch (err: any) {
+      alert("Erreur de mise à jour : " + err.message);
+    }
   };
 
-  const handleQuickStockUpdate = (productId: string, size: ShirtSize, delta: number) => {
-    const updated = products.map((p) => {
-      if (p.id === productId) {
-        const currentStock = p.stock[size] || 0;
-        const newStock = Math.max(0, currentStock + delta);
-        const updatedStock = { ...p.stock, [size]: newStock };
-        const totalStock = (Object.values(updatedStock) as number[]).reduce((a, b) => a + b, 0);
-        return { ...p, stock: updatedStock, isAvailable: totalStock > 0 };
-      }
-      return p;
-    });
-    onSaveProducts(updated);
+  const handleQuickStockUpdate = async (productId: string, size: ShirtSize, delta: number) => {
+    const prod = products.find(p => p.id === productId);
+    if (!prod) return;
+
+    try {
+      const currentStock = prod.stock[size] || 0;
+      const newStock = Math.max(0, currentStock + delta);
+      const updatedStock = { ...prod.stock, [size]: newStock };
+      const totalStock = (Object.values(updatedStock) as number[]).reduce((a, b) => a + b, 0);
+      const updatedProd = { ...prod, stock: updatedStock, isAvailable: totalStock > 0 };
+
+      await updateProduct(updatedProd);
+
+      const updated = products.map((p) => {
+        if (p.id === productId) {
+          return updatedProd;
+        }
+        return p;
+      });
+      await onSaveProducts(updated);
+    } catch (err: any) {
+      console.error("Stock update error:", err);
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,18 +269,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
-  const handleSaveProductModal = (e: React.FormEvent) => {
+  const handleSaveProductModal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
 
-    if (isNewProduct) {
-      onSaveProducts([editingProduct, ...products]);
-    } else {
-      const updated = products.map((p) => (p.id === editingProduct.id ? editingProduct : p));
-      onSaveProducts(updated);
+    try {
+      if (isNewProduct) {
+        await addProduct(editingProduct);
+        await onSaveProducts([editingProduct, ...products]);
+      } else {
+        await updateProduct(editingProduct);
+        const updated = products.map((p) => (p.id === editingProduct.id ? editingProduct : p));
+        await onSaveProducts(updated);
+      }
+      setProductModalOpen(false);
+      setEditingProduct(null);
+    } catch (err: any) {
+      alert("Erreur lors de l'enregistrement : " + err.message);
     }
-    setProductModalOpen(false);
-    setEditingProduct(null);
   };
 
   // Filtered Orders
