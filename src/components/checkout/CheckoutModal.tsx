@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   CheckCircle2,
@@ -73,6 +73,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const handleBack = () => { if (step > 1) setStep((step - 1) as any); };
+
+  useEffect(() => {
+    if (step === 'success') {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [step, onClose]);
 
   const handleSubmit = async () => {
     try {
@@ -213,12 +222,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <a href={generateOrderConfirmationWhatsAppUrl(placedOrder, settings)} target="_blank" className="flex-1 p-4 bg-[#25D366] rounded-2xl text-white font-black text-xs flex items-center justify-center gap-2 uppercase hover:scale-105 transition-all"><MessageCircle className="w-5 h-5" /> Confirmer via WhatsApp</a>
                     <button onClick={() => window.print()} className="flex-1 p-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-2 uppercase hover:bg-white/10 transition-all"><Printer className="w-5 h-5" /> Reçu PDF</button>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="text-xs font-black uppercase tracking-widest text-[#C5A059] hover:underline pt-4"
-                >
-                  Retour à la boutique
-                </button>
+                <div className="pt-4 space-y-4">
+                  <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest italic animate-pulse">Redirection automatique vers la boutique...</p>
+                  <button
+                    onClick={onClose}
+                    className="px-8 py-3 bg-[#10192C] border border-[#C5A059]/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#C5A059] hover:bg-[#C5A059] hover:text-[#050B18] transition-all"
+                  >
+                    Continuer mes achats
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

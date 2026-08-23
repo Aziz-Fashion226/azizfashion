@@ -788,15 +788,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <h4 className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest border-b border-white/5 pb-2">Articles Commandés</h4>
                   <div className="space-y-3">
                     {selectedOrder.items.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-4 bg-[#050B18] rounded-2xl border border-white/5">
+                      <div key={idx} className="flex items-center justify-between p-4 bg-[#050B18] rounded-2xl border border-white/5 group">
                         <div className="flex items-center gap-4">
-                           <div className="w-12 h-14 bg-white/5 rounded-lg flex items-center justify-center font-bold text-[10px]">{item.size}</div>
+                           <div className="w-14 h-16 bg-white/5 rounded-xl overflow-hidden border border-white/10 shrink-0">
+                              <img
+                                src={item.product?.images?.[0]}
+                                className="w-full h-full object-cover"
+                                alt=""
+                                onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/100?text=AF')}
+                              />
+                           </div>
                            <div>
                               <div className="text-sm font-black">{item.product?.name || item.productName}</div>
-                              <div className="text-[9px] text-slate-500 uppercase font-bold tracking-widest">{item.color} — Qte: {item.quantity}</div>
+                              <div className="text-[10px] text-[#C5A059] font-bold">Taille: {item.size} • {item.color}</div>
+                              <div className="text-[9px] text-slate-500 uppercase font-bold tracking-widest mt-0.5">Quantité: {item.quantity}</div>
                            </div>
                         </div>
-                        <div className="text-xs font-black text-[#C5A059]">{formatFCFA(item.unitPrice * item.quantity)}</div>
+                        <div className="text-right">
+                          <div className="text-xs font-black text-[#C5A059]">{formatFCFA(item.unitPrice * item.quantity)}</div>
+                          <div className="text-[9px] text-slate-600 font-mono">{formatFCFA(item.unitPrice)}/u</div>
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -67,7 +67,7 @@ const mapOrderFromDb = (o: any): Order => ({
     product: item.product || {
       name: item.productName || 'Produit archivé',
       reference: item.productReference || 'N/A',
-      images: ['']
+      images: [item.productImage || '']
     }
   }))
 });
@@ -83,8 +83,9 @@ const mapOrderToDb = (o: Order) => ({
     quantity: item.quantity,
     unitPrice: item.unitPrice,
     // We store minimal product info for history
-    productName: item.product.name,
-    productReference: item.product.reference
+    productName: item.product?.name,
+    productReference: item.product?.reference,
+    productImage: item.product?.images?.[0]
   })),
   subtotal: o.subtotal,
   delivery_fee: o.deliveryFee,

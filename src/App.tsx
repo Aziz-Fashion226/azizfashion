@@ -533,7 +533,10 @@ export default function App() {
       {/* 2. Checkout Modal */}
       <CheckoutModal
         isOpen={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
+        onClose={() => {
+          setCheckoutOpen(false);
+          if (currentView === 'cart') setCurrentView('shop');
+        }}
         items={cart}
         onOrderPlaced={handleOrderPlaced}
         settings={settings}
