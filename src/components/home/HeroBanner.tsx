@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Sparkles, ShieldCheck, Shirt, Award, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { ArrowRight, Sparkles, ShieldCheck, Award, Truck } from 'lucide-react';
 import { StoreSettings } from '../../types';
 
 interface HeroBannerProps {

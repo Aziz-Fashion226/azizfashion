@@ -4,20 +4,20 @@ import { Logo } from '../common/Logo';
 import { StoreSettings } from '../../types';
 
 interface HeaderProps {
-  currentTab: string;
-  onNavigate: (tab: string) => void;
+  currentView: string;
+  onNavigate: (view: string) => void;
   cartCount: number;
   wishlistCount: number;
   onOpenCart: () => void;
   onOpenWishlist: () => void;
   onOpenSearch: () => void;
   onOpenAdmin: () => void;
-  isAdminLoggedIn: boolean;
+  isAdminLoggedIn?: boolean;
   settings: StoreSettings;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  currentTab,
+  currentView,
   onNavigate,
   cartCount,
   wishlistCount,
@@ -96,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-8">
             {(navLinks || []).map((link) => {
-              const isActive = currentTab === link.id;
+              const isActive = currentView === link.id;
               return (
                 <button
                   key={link.id}
@@ -184,13 +184,13 @@ export const Header: React.FC<HeaderProps> = ({
                 key={link.id}
                 onClick={() => handleLinkClick(link.id)}
                 className={`w-full text-left py-3 px-4 rounded-xl text-lg font-serif font-bold transition-all flex items-center justify-between cursor-pointer ${
-                  currentTab === link.id
+                  currentView === link.id
                     ? 'bg-[#10192C] text-[#C5A059] border-l-4 border-[#C5A059]'
                     : 'text-[#F5F5F0] hover:bg-white/5'
                 }`}
               >
                 <span>{link.label}</span>
-                {currentTab === link.id && <span className="text-xs text-[#C5A059]">●</span>}
+                {currentView === link.id && <span className="text-xs text-[#C5A059]">●</span>}
               </button>
             ))}
 

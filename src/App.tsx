@@ -331,6 +331,7 @@ export default function App() {
         onOpenSearch={() => setSearchOpen(true)}
         onOpenSizeGuide={() => setSizeGuideOpen(true)}
         onOpenAdmin={() => setAdminOpen(true)}
+        isAdminLoggedIn={isAdminAuthenticated}
         settings={settings}
       />
 
