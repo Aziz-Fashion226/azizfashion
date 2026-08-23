@@ -571,36 +571,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             )}
           </div>
 
-          {/* "Vous aimerez peut-être" Similar Products */}
-          {similarProducts.length > 0 && (
-            <div className="pt-8 border-t border-[#C5A059]/20 space-y-6">
-              <div>
-                <h3
-                  className="text-xl font-bold text-[#F5F5F0] font-serif"
-                >
-                  Vous aimerez peut-être
-                </h3>
-                <p className="text-xs text-[#F5F5F0]/60">D'autres créations confectionnées dans le même esprit d'élégance</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {similarProducts.map((simProd) => (
-                  <ProductCard
-                    key={simProd.id}
-                    product={simProd}
-                    isWishlisted={isWishlisted}
-                    onToggleWishlist={onToggleWishlist}
-                    onSelectProduct={(p) => {
-                      onSelectProduct(p);
-                      setActiveImageIndex(0);
-                    }}
-                    onQuickAddToCart={(p, size) => onAddToCart(p, size, 1, p.colors?.[0]?.name || 'Standard')}
-                    settings={settings}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </motion.div>
     </div>
