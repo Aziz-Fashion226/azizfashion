@@ -477,16 +477,16 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
           {/* Description & Technical Specifications Tabs */}
           <div className="pt-8 border-t border-[#C5A059]/30 space-y-8 pb-10">
-            <div className="flex border-b border-white/10 gap-4 sm:gap-8 overflow-x-auto no-scrollbar">
+            <div className="flex border-b border-white/10 gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
               {[
                 { id: 'details', label: 'Description' },
-                { id: 'fabric', label: 'Matière & Savoir-faire' },
+                { id: 'fabric', label: 'Caractéristiques' },
                 { id: 'shipping', label: 'Livraison' }
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`pb-4 text-xs sm:text-sm font-black uppercase tracking-[0.15em] transition-all relative cursor-pointer whitespace-nowrap ${
+                  className={`pb-4 text-[11px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'text-[#C5A059]'
                       : 'text-slate-500 hover:text-slate-300'
@@ -501,17 +501,19 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             </div>
 
             {/* Tab content */}
-            <div className="animate-in fade-in duration-500">
+            <div className="animate-in fade-in duration-500 min-h-[200px]">
               {activeTab === 'details' && (
                 <div className="space-y-6">
-                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-medium">
+                  <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium bg-[#10192C] p-6 rounded-[2rem] border border-[#C5A059]/10">
                     {product.description}
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {(product.features || []).map((feat, idx) => (
                       <div key={idx} className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <Sparkles className="w-4 h-4 text-[#C5A059] shrink-0" />
-                        <span className="text-xs font-bold text-slate-200">{feat}</span>
+                        <div className="p-2 bg-[#C5A059]/10 rounded-lg text-[#C5A059]">
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-xs font-bold text-slate-100">{feat}</span>
                       </div>
                     ))}
                   </div>
@@ -520,35 +522,30 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
               {activeTab === 'fabric' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
-                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">🧵 Tissu & Matière</span>
-                    <p className="text-sm font-bold text-slate-200">{product.fabric}</p>
-                  </div>
-                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
-                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">📍 Origine</span>
-                    <p className="text-sm font-bold text-slate-200">{product.origin}</p>
-                  </div>
-                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
-                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">👔 Coupe</span>
-                    <p className="text-sm font-bold text-slate-200">Style {product.fit}</p>
-                  </div>
-                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
-                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">✨ Entretien</span>
-                    <p className="text-sm font-bold text-slate-200">Lavage délicat / Nettoyage à sec recommandé</p>
-                  </div>
+                  {[
+                    { label: '🧵 Tissu & Matière', value: product.fabric },
+                    { label: '📍 Origine', value: product.origin },
+                    { label: '👔 Coupe & Style', value: product.fit },
+                    { label: '✨ Entretien', value: 'Lavage délicat recommandé' }
+                  ].map((item, i) => (
+                    <div key={i} className="p-6 bg-[#10192C] rounded-[1.5rem] border border-[#C5A059]/10 space-y-2 group hover:border-[#C5A059]/30 transition-all">
+                      <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block opacity-70">{item.label}</span>
+                      <p className="text-sm font-black text-slate-100">{item.value}</p>
+                    </div>
+                  ))}
                 </div>
               )}
 
               {activeTab === 'shipping' && (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {[
                     { loc: 'Ouagadougou', time: 'Livraison sous 24h ou retrait showroom' },
-                    { loc: 'Provinces du Burkina', time: 'Expédition express sous 24h-48h' },
-                    { loc: 'International (Sous-région)', time: 'Livraison sécurisée sous 3-5 jours' }
+                    { loc: 'Provinces du Burkina', time: 'Expédition express sécurisée (24h-48h)' },
+                    { loc: 'International', time: 'Livraison DHL/FedEx sous 3-5 jours' }
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5">
-                      <span className="text-xs font-black uppercase tracking-wider text-[#C5A059]">{item.loc}</span>
-                      <span className="text-xs font-bold text-slate-300">{item.time}</span>
+                    <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-[#10192C] rounded-[1.5rem] border border-[#C5A059]/10 gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C5A059]">{item.loc}</span>
+                      <span className="text-xs font-bold text-slate-200">{item.time}</span>
                     </div>
                   ))}
                 </div>

@@ -28,7 +28,7 @@ export const WhatsAppFloat: React.FC<WhatsAppFloatProps> = ({ settings }) => {
   };
 
   return (
-    <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end">
+    <div className="fixed bottom-32 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end">
       {/* Interactive Popover */}
       {isOpen && (
         <div className="mb-3 w-80 sm:w-96 bg-[#0B1325] rounded-2xl shadow-2xl border border-[#C5A059]/40 overflow-hidden animate-scaleUp text-[#F5F5F0]">
