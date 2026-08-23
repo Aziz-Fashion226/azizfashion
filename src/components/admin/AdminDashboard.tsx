@@ -65,6 +65,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const outOfStockCount = safeProducts.filter(p => (Object.values(p.stock || {}) as number[]).reduce((a, b) => a + b, 0) === 0).length;
   const lowStockItems = safeProducts.filter(p => (Object.values(p.stock) as number[]).some(s => s > 0 && s <= lowStockThreshold));
 
+  const handleResetOrders = async () => {
+    if (window.confirm("⚠️ ATTENTION : Vous allez supprimer TOUTES les commandes de la base de données. Cette action est irréversible. Voulez-vous continuer ?")) {
+      try {
+        const { error } = await supabase.from('orders').delete().neq('id', 'placeholder');
+        if (error) throw error;
+        onSaveOrders([]);
+        alert("Le compteur a été réinitialisé avec succès.");
+      } catch (err: any) {
+        alert("Erreur lors de la réinitialisation : " + err.message);
+      }
+    }
+  };
+
   const handleOpenNewProduct = () => {
     setEditingProduct({
       id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
@@ -163,7 +176,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               ))}
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-white/5 hidden sm:block">
+            <div className="mt-auto pt-6 border-t border-white/5 hidden sm:block space-y-4">
+              <button
+                onClick={handleResetOrders}
+                className="w-full flex items-center gap-3 px-4 py-3 text-[#C5A059] hover:bg-[#C5A059]/10 rounded-2xl text-[10px] font-black uppercase tracking-tighter transition-all"
+                title="Réinitialiser toutes les commandes"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Réinitialiser Compteur</span>
+              </button>
+
               <button
                 onClick={() => { supabase.auth.signOut(); onLogin(false); }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-900/10 rounded-2xl text-xs font-bold uppercase transition-all"
@@ -182,7 +204,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <h2 className="text-lg font-serif font-black text-[#F5F5F0]">
                 {!isAuthenticated ? 'Espace Personnel' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
               </h2>
-              {isAuthenticated && <p className="text-[10px] text-[#C5A059] font-bold uppercase tracking-[0.2em]">Maison Aziz Fashion</p>}
+              {isAuthenticated && <p className="text-[10px] text-[#C5A059] font-bold uppercase tracking-[0.2em]">Boutique Aziz Fashion</p>}
             </div>
             <button onClick={onClose} className="p-2 text-slate-500 hover:text-white transition-colors">
               <XCircle className="w-6 h-6" />
@@ -276,7 +298,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       <div className="bg-[#10192C] p-8 rounded-[2rem] border border-[#C5A059]/10 relative overflow-hidden group">
                         <TrendingUp className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-[#C5A059]/10 transition-all" />
-                        <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest mb-2 block">CA Total</span>
+                        <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest mb-2 block">Chiffre d'Affaires</span>
                         <div className="text-3xl font-black">{formatFCFA(totalRevenue)}</div>
                       </div>
                       <div className="bg-[#10192C] p-8 rounded-[2rem] border border-[#C5A059]/10 relative overflow-hidden group">
