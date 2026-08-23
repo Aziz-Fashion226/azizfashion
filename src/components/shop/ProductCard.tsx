@@ -143,7 +143,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Category & Tagline */}
           <div className="text-[11px] font-semibold text-[#C5A059] uppercase tracking-wider flex items-center justify-between">
             <span>{product.category}</span>
-            <span className="text-[#F5F5F0]/40 font-normal text-[10px]">{product.collar}</span>
           </div>
 
           {/* Product Name */}

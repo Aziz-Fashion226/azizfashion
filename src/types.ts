@@ -24,7 +24,6 @@ export interface Product {
   fabric: string;
   origin: string;
   fit: 'Ajustée (Slim)' | 'Droite (Regular)' | 'Moderne Relax';
-  collar: 'Col Officier' | 'Col Mao' | 'Col Français Contemporain' | 'Col V Épuré';
   price: number; // in FCFA
   originalPrice?: number; // for promo
   stock: SizeStock;

@@ -476,99 +476,84 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           </div>
 
           {/* Description & Technical Specifications Tabs */}
-          <div className="pt-6 border-t border-[#C5A059]/20 space-y-6">
-            <div className="flex border-b border-[#C5A059]/20 gap-6">
-              <button
-                onClick={() => setActiveTab('details')}
-                className={`pb-3 text-sm font-serif font-bold uppercase tracking-wider transition-colors relative cursor-pointer ${
-                  activeTab === 'details'
-                    ? 'text-[#C5A059] border-b-2 border-[#C5A059]'
-                    : 'text-[#F5F5F0]/50 hover:text-[#F5F5F0]'
-                }`}
-              >
-                Description & Caractéristiques
-              </button>
-              <button
-                onClick={() => setActiveTab('fabric')}
-                className={`pb-3 text-sm font-serif font-bold uppercase tracking-wider transition-colors relative cursor-pointer ${
-                  activeTab === 'fabric'
-                    ? 'text-[#C5A059] border-b-2 border-[#C5A059]'
-                    : 'text-[#F5F5F0]/50 hover:text-[#F5F5F0]'
-                }`}
-              >
-                Matière & Savoir-Faire
-              </button>
-              <button
-                onClick={() => setActiveTab('shipping')}
-                className={`pb-3 text-sm font-serif font-bold uppercase tracking-wider transition-colors relative cursor-pointer ${
-                  activeTab === 'shipping'
-                    ? 'text-[#C5A059] border-b-2 border-[#C5A059]'
-                    : 'text-[#F5F5F0]/50 hover:text-[#F5F5F0]'
-                }`}
-              >
-                Livraison & Retours
-              </button>
+          <div className="pt-8 border-t border-[#C5A059]/30 space-y-8 pb-10">
+            <div className="flex border-b border-white/10 gap-4 sm:gap-8 overflow-x-auto no-scrollbar">
+              {[
+                { id: 'details', label: 'Description' },
+                { id: 'fabric', label: 'Matière & Savoir-faire' },
+                { id: 'shipping', label: 'Livraison' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`pb-4 text-xs sm:text-sm font-black uppercase tracking-[0.15em] transition-all relative cursor-pointer whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'text-[#C5A059]'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {tab.label}
+                  {activeTab === tab.id && (
+                    <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C5A059]" />
+                  )}
+                </button>
+              ))}
             </div>
 
             {/* Tab content */}
-            {activeTab === 'details' && (
-              <div className="space-y-4 text-sm text-[#F5F5F0]/80 leading-relaxed">
-                <p>{product.description}</p>
-                <div className="grid sm:grid-cols-2 gap-3 pt-2">
-                  {(product.features || []).map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-xs">
-                      <Sparkles className="w-4 h-4 text-[#C5A059] shrink-0 mt-0.5" />
-                      <span>{feat}</span>
+            <div className="animate-in fade-in duration-500">
+              {activeTab === 'details' && (
+                <div className="space-y-6">
+                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-medium">
+                    {product.description}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {(product.features || []).map((feat, idx) => (
+                      <div key={idx} className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <Sparkles className="w-4 h-4 text-[#C5A059] shrink-0" />
+                        <span className="text-xs font-bold text-slate-200">{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'fabric' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
+                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">🧵 Tissu & Matière</span>
+                    <p className="text-sm font-bold text-slate-200">{product.fabric}</p>
+                  </div>
+                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
+                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">📍 Origine</span>
+                    <p className="text-sm font-bold text-slate-200">{product.origin}</p>
+                  </div>
+                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
+                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">👔 Coupe</span>
+                    <p className="text-sm font-bold text-slate-200">Style {product.fit}</p>
+                  </div>
+                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2">
+                    <span className="text-[10px] font-black uppercase text-[#C5A059] tracking-widest block">✨ Entretien</span>
+                    <p className="text-sm font-bold text-slate-200">Lavage délicat / Nettoyage à sec recommandé</p>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'shipping' && (
+                <div className="space-y-4">
+                  {[
+                    { loc: 'Ouagadougou', time: 'Livraison sous 24h ou retrait showroom' },
+                    { loc: 'Provinces du Burkina', time: 'Expédition express sous 24h-48h' },
+                    { loc: 'International (Sous-région)', time: 'Livraison sécurisée sous 3-5 jours' }
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5">
+                      <span className="text-xs font-black uppercase tracking-wider text-[#C5A059]">{item.loc}</span>
+                      <span className="text-xs font-bold text-slate-300">{item.time}</span>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {activeTab === 'fabric' && (
-              <div className="space-y-3 text-sm text-[#F5F5F0]/80 leading-relaxed">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                    <span className="text-xs font-bold uppercase text-[#C5A059] block mb-1">
-                      🧵 Tissu & Matière
-                    </span>
-                    <p className="text-xs text-[#F5F5F0]/70">{product.fabric}</p>
-                  </div>
-                  <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                    <span className="text-xs font-bold uppercase text-[#C5A059] block mb-1">
-                      📍 Origine & Confection
-                    </span>
-                    <p className="text-xs text-[#F5F5F0]/70">{product.origin}</p>
-                  </div>
-                  <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                    <span className="text-xs font-bold uppercase text-[#C5A059] block mb-1">
-                      👔 Coupe & Col
-                    </span>
-                    <p className="text-xs text-[#F5F5F0]/70">Coupe {product.fit} — {product.collar}</p>
-                  </div>
-                  <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                    <span className="text-xs font-bold uppercase text-[#C5A059] block mb-1">
-                      ✨ Entretien recommandé
-                    </span>
-                    <p className="text-xs text-[#F5F5F0]/70">Lavage délicat à 30°C ou à la main. Repassage sur l'envers à température modérée.</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'shipping' && (
-              <div className="space-y-3 text-sm text-[#F5F5F0]/80 leading-relaxed">
-                <p>
-                  • <strong className="text-[#C5A059]">Ouagadougou :</strong> Livraison le jour même ou sous 24h ouvrées. Retrait immédiat possible au Showroom Aziz Fashion.
-                </p>
-                <p>
-                  • <strong className="text-[#C5A059]">Provinces (Bobo-Dioulasso, Koudougou, etc.) :</strong> Expédition express par car ou transporteur sécurisé sous 24h à 48h.
-                </p>
-                <p>
-                  • <strong className="text-[#C5A059]">Sous-région (Abidjan, Dakar, Lomé, Cotonou, Bamako, etc.) :</strong> Expédition express sous 3 à 5 jours ouvrés.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
         </div>

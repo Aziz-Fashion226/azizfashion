@@ -41,7 +41,6 @@ const mapProductToDb = (p: Product) => ({
   fabric: p.fabric,
   origin: p.origin,
   fit: p.fit,
-  collar: p.collar,
   price: p.price,
   original_price: p.originalPrice,
   stock: p.stock,

@@ -33,7 +33,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: '100% Coton peigné tissé main (Faso Danfani noble)',
     origin: 'Atelier Aziz Fashion - Ouagadougou / Koudougou',
     fit: 'Ajustée (Slim)',
-    collar: 'Col Officier',
     price: 28500,
     originalPrice: 35000,
     stock: {
@@ -75,7 +74,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: 'Fil de coton local filé à la main & popeline de coton égyptien',
     origin: 'Confection locale Burkinabè',
     fit: 'Droite (Regular)',
-    collar: 'Col Mao',
     price: 32000,
     stock: {
       S: 2,
@@ -115,7 +113,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: '100% Coton haute densité infroissable',
     origin: 'Atelier de création Aziz Fashion',
     fit: 'Ajustée (Slim)',
-    collar: 'Col Français Contemporain',
     price: 24500,
     originalPrice: 29000,
     stock: {
@@ -156,7 +153,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: '55% Lin naturel, 45% Coton peigné & Koko Dunda authentique',
     origin: 'Bobo-Dioulasso / Ouagadougou',
     fit: 'Moderne Relax',
-    collar: 'Col V Épuré',
     price: 26000,
     stock: {
       S: 5,
@@ -196,7 +192,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: 'Coton stretch grand luxe & Faso Danfani premium',
     origin: 'Atelier Aziz Fashion Ouaga',
     fit: 'Ajustée (Slim)',
-    collar: 'Col Officier',
     price: 35000,
     stock: {
       S: 1,
@@ -236,7 +231,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: '100% Coton naturel local lavé pour un toucher doux',
     origin: 'Confection locale certifiée',
     fit: 'Droite (Regular)',
-    collar: 'Col Officier',
     price: 22000,
     stock: {
       S: 6,
@@ -275,7 +269,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: 'Popeline de coton d\'exception et broderie haute précision',
     origin: 'Atelier Principal Aziz Fashion',
     fit: 'Ajustée (Slim)',
-    collar: 'Col Mao',
     price: 38000,
     originalPrice: 42000,
     stock: {
@@ -316,7 +309,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     fabric: 'Satin de coton peigné supérieur 120 fils',
     origin: 'Confection d\'art Ouagadougou',
     fit: 'Ajustée (Slim)',
-    collar: 'Col Officier',
     price: 36000,
     stock: {
       S: 2,

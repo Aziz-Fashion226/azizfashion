@@ -51,8 +51,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             (p.name || '').toLowerCase().includes(query.toLowerCase()) ||
             (p.description || '').toLowerCase().includes(query.toLowerCase()) ||
             (p.category || '').toLowerCase().includes(query.toLowerCase()) ||
-            (p.fabric || '').toLowerCase().includes(query.toLowerCase()) ||
-            (p.collar || '').toLowerCase().includes(query.toLowerCase())
+            (p.fabric || '').toLowerCase().includes(query.toLowerCase())
           )
       );
 

@@ -68,7 +68,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleOpenNewProduct = () => {
     setEditingProduct({
       id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
-      features: ['100% Coton peigné tissé main'], fabric: 'Faso Danfani noble', origin: 'Burkina Faso', fit: 'Ajustée (Slim)', collar: 'Col Officier',
+      features: ['100% Coton peigné tissé main'], fabric: 'Faso Danfani noble', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
       price: 25000, stock: { S: 5, M: 5, L: 5, XL: 2, XXL: 0 }, category: 'Faso Danfani', images: [''], colors: [{ name: 'Bleu Nuit', hex: '#0B192C' }],
       isAvailable: true, createdAt: new Date().toISOString(), rating: 5, reviewCount: 0
     });
