@@ -200,12 +200,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/20"><CheckCircle2 className="w-10 h-10 text-white" /></div>
                 <div>
                     <h2 className="text-3xl font-serif font-black text-[#C5A059]">Félicitations !</h2>
-                    <p className="text-sm opacity-60 mt-2">Votre commande <span className="font-black">#{placedOrder.orderNumber}</span> est validée.</p>
+                    <p className="text-sm opacity-90 mt-2 text-white">Votre commande <span className="font-black text-[#C5A059]">#{placedOrder.orderNumber}</span> est validée.</p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                    <a href={generateOrderConfirmationWhatsAppUrl(placedOrder, settings)} target="_blank" className="flex-1 p-4 bg-[#25D366] rounded-2xl text-white font-black text-xs flex items-center justify-center gap-2 uppercase"><MessageCircle className="w-5 h-5" /> Confirmer via WhatsApp</a>
-                    <button onClick={() => window.print()} className="flex-1 p-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-2 uppercase"><Printer className="w-5 h-5" /> Reçu PDF</button>
+                <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto relative z-10">
+                    <a href={generateOrderConfirmationWhatsAppUrl(placedOrder, settings)} target="_blank" className="flex-1 p-4 bg-[#25D366] rounded-2xl text-white font-black text-xs flex items-center justify-center gap-2 uppercase hover:scale-105 transition-all"><MessageCircle className="w-5 h-5" /> Confirmer via WhatsApp</a>
+                    <button onClick={() => window.print()} className="flex-1 p-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-2 uppercase hover:bg-white/10 transition-all"><Printer className="w-5 h-5" /> Reçu PDF</button>
                 </div>
+                <button
+                  onClick={onClose}
+                  className="text-xs font-black uppercase tracking-widest text-[#C5A059] hover:underline pt-4"
+                >
+                  Retour à la boutique
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
