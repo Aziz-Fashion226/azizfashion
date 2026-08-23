@@ -475,9 +475,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Description & Technical Specifications Tabs */}
+          {/* Description & Technical Specifications Tabs in Pills Style */}
           <div className="pt-8 border-t border-[#C5A059]/30 space-y-8 pb-10">
-            <div className="flex border-b border-white/10 gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 px-1">
               {[
                 { id: 'details', label: 'Description' },
                 { id: 'fabric', label: 'Caractéristiques' },
@@ -486,22 +486,19 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`pb-4 text-[11px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer whitespace-nowrap ${
+                  className={`px-6 py-2.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 whitespace-nowrap border cursor-pointer ${
                     activeTab === tab.id
-                      ? 'text-[#C5A059]'
-                      : 'text-slate-500 hover:text-slate-300'
+                      ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059] shadow-lg shadow-[#C5A059]/20'
+                      : 'bg-[#10192C] text-slate-400 border-white/10 hover:border-[#C5A059]/50 hover:text-white'
                   }`}
                 >
                   {tab.label}
-                  {activeTab === tab.id && (
-                    <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C5A059]" />
-                  )}
                 </button>
               ))}
             </div>
 
             {/* Tab content */}
-            <div className="animate-in fade-in duration-500 min-h-[200px]">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 min-h-[200px]">
               {activeTab === 'details' && (
                 <div className="space-y-6">
                   <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium bg-[#10192C] p-6 rounded-[2rem] border border-[#C5A059]/10">
