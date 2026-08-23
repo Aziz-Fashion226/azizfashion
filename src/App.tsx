@@ -386,13 +386,7 @@ export default function App() {
               </div>
             </section>
 
-            {/* Brand Story (Reduced) */}
-            <BrandStory
-              onDiscoverShowroom={() => {
-                setCurrentView('contact');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
+            {/* Brand Story (Reduced) - REMOVED for simplification as per user request */}
           </div>
         )}
 
