@@ -332,20 +332,20 @@ export const generateOrderConfirmationWhatsAppUrl = (
 
   const text = `Bonjour Aziz Fashion 👋🏾
 
-Je viens de passer la commande *#${order.orderNumber}* sur votre boutique en ligne.
+Je viens de valider ma commande *#${order.orderNumber}* sur votre boutique en ligne.
 
+Merci de m'accuser réception et de me confirmer les prochaines étapes.
+
+*Détails de la commande :*
 *Client :* ${order.customer.fullName}
 *Téléphone :* ${order.customer.phone}
-*Ville & Quartier :* ${order.customer.city}, ${order.customer.district}
 *Mode de livraison :* ${order.deliveryMethod}
-*Paiement :* ${order.paymentMethod}
-
-*Articles commandés :*
+*Articles :*
 ${itemsText}
 
-*Total à régler :* ${formatFCFA(order.total)}
+*Total :* ${formatFCFA(order.total)}
 
-Merci de me confirmer la prise en charge et le créneau de livraison !`;
+Merci pour votre professionnalisme !`;
 
   const phone = settings.whatsappNumber.replace(/[^0-9]/g, '');
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
@@ -358,12 +358,17 @@ export const generateCustomerDirectWhatsAppUrl = (
   status: OrderStatus
 ): string => {
   const cleanPhone = customerPhone.replace(/[^0-9]/g, '');
-  const text = `Bonjour ${customerName} 👋🏾, ici la maison AZIZ FASHION.
+  const text = `Bonjour ${customerName} 👋🏾,
 
-Nous vous contactons concernant votre commande #${orderNumber}.
-Son statut actuel est : *${status}*.
+La maison *AZIZ FASHION* a bien reçu votre commande *#${orderNumber}*.
 
-Restons à votre disposition pour toute question. Merci pour votre confiance !`;
+Nous vous remercions infiniment pour votre confiance envers notre savoir-faire. ✨
+
+Votre commande est actuellement en statut : *${status}*. Nous préparons vos articles avec le plus grand soin.
+
+Nous restons à votre entière disposition pour toute question.
+
+À très bientôt ! 👔`;
 
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 };

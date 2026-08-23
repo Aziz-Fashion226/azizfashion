@@ -78,7 +78,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     if (step === 'success') {
       const timer = setTimeout(() => {
         onClose();
-      }, 8000);
+      }, 5000); // Réduit à 5 secondes pour plus de réactivité
       return () => clearTimeout(timer);
     }
   }, [step, onClose]);
