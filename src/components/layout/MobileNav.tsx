@@ -2,18 +2,18 @@ import React from 'react';
 import { Home, Compass, Heart, ShoppingBag, UserCircle, Shield } from 'lucide-react';
 
 interface MobileNavProps {
-  currentTab: string;
-  onNavigate: (tab: string) => void;
+  currentView: string;
+  onNavigate: (view: string) => void;
   cartCount: number;
-  wishlistCount: number;
   onOpenCart: () => void;
+  wishlistCount: number;
   onOpenWishlist: () => void;
   onOpenAdmin: () => void;
   isAdminLoggedIn: boolean;
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
-  currentTab,
+  currentView,
   onNavigate,
   cartCount,
   wishlistCount,
@@ -23,70 +23,77 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   isAdminLoggedIn,
 }) => {
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#050B18]/95 backdrop-blur-md border-t border-[#C5A059]/30 px-3 py-2 shadow-2xl">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#F7F3ED]/95 backdrop-blur-lg border-t border-[#D4AF37]/20 px-3 py-2 shadow-2xl">
       <div className="flex items-center justify-around">
         {/* Home */}
         <button
           onClick={() => onNavigate('home')}
           className={`flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
-            currentTab === 'home' ? 'text-[#C5A059]' : 'text-slate-400 hover:text-white'
+            currentView === 'home' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
           }`}
         >
-          <Home className="w-5 h-5" />
-          <span className="text-[10px] font-medium tracking-tight">Accueil</span>
+          <Home className={`w-5 h-5 ${currentView === 'home' ? 'fill-[#D4AF37]/10' : ''}`} />
+          <span className="text-[10px] font-black uppercase tracking-tighter">Accueil</span>
         </button>
 
         {/* Boutique */}
         <button
           onClick={() => onNavigate('shop')}
           className={`flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
-            currentTab === 'shop' || currentTab === 'new' ? 'text-[#C5A059]' : 'text-slate-400 hover:text-white'
+            currentView === 'shop' || currentView === 'new' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
           }`}
         >
-          <Compass className="w-5 h-5" />
-          <span className="text-[10px] font-medium tracking-tight">Boutique</span>
+          <Compass className={`w-5 h-5 ${currentView === 'shop' ? 'fill-[#D4AF37]/10' : ''}`} />
+          <span className="text-[10px] font-black uppercase tracking-tighter">Boutique</span>
         </button>
 
         {/* Favorites / Wishlist */}
         <button
           onClick={onOpenWishlist}
-          className="relative flex flex-col items-center gap-1 p-1.5 text-slate-400 hover:text-[#C5A059] transition-colors cursor-pointer"
+          className="relative flex flex-col items-center gap-1 p-1.5 text-[#1A1510]/60 hover:text-[#D4AF37] transition-colors cursor-pointer"
         >
-          <Heart className="w-5 h-5" />
+          <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-[#D4AF37]/10' : ''}`} />
           {wishlistCount > 0 && (
-            <span className="absolute top-0.5 right-1.5 bg-[#C5A059] text-[#050B18] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+            <span className="absolute top-0.5 right-1.5 bg-[#D4AF37] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
               {wishlistCount}
             </span>
           )}
-          <span className="text-[10px] font-medium tracking-tight">Favoris</span>
+          <span className="text-[10px] font-black uppercase tracking-tighter">Favoris</span>
         </button>
 
         {/* Cart */}
         <button
           onClick={onOpenCart}
-          className="relative flex flex-col items-center gap-1 p-1.5 text-[#C5A059] transition-colors cursor-pointer"
+          className={`relative flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
+            currentView === 'cart' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
+          }`}
         >
-          <div className="p-1 bg-[#10192C] rounded-full border border-[#C5A059]/30">
-            <ShoppingBag className="w-5 h-5 text-[#C5A059]" />
-          </div>
+          <ShoppingBag className="w-5 h-5" />
           {cartCount > 0 && (
-            <span className="absolute top-0 right-1.5 bg-[#C5A059] text-[#050B18] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
+            <span className="absolute top-0 right-1.5 bg-[#1A1510] text-[#D4AF37] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
               {cartCount}
             </span>
           )}
-          <span className="text-[10px] font-bold tracking-tight text-[#C5A059]">Panier</span>
+          <span className="text-[10px] font-black uppercase tracking-tighter">Panier</span>
         </button>
 
         {/* Admin / Compte */}
         <button
           onClick={onOpenAdmin}
           className={`flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
-            currentTab === 'admin' ? 'text-[#C5A059]' : 'text-slate-400 hover:text-white'
+            currentView === 'admin' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
           }`}
         >
           <Shield className="w-5 h-5" />
-          <span className="text-[10px] font-medium tracking-tight">
+          <span className="text-[10px] font-black uppercase tracking-tighter">
             {isAdminLoggedIn ? 'Admin' : 'Compte'}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};
+: 'Compte'}
           </span>
         </button>
       </div>
