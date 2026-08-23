@@ -58,35 +58,6 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full transition-all duration-300">
-      {/* Top Notification Announcement Bar */}
-      {settings.bannerEnabled && (
-        <div className="bg-[#070C18] text-[#FDFBF7] text-[11px] sm:text-xs py-1.5 px-4 border-b border-[#D4AF37]/20 flex items-center justify-between">
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#D4AF37] font-medium mx-auto sm:mx-0">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span className="truncate">{settings.bannerAnnouncement}</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-4 text-slate-300 text-[11px]">
-              <a
-                href={`tel:${settings.phoneDisplay.split('/')[0].trim()}`}
-                className="flex items-center gap-1.5 hover:text-[#D4AF37] transition-colors"
-              >
-                <Phone className="w-3 h-3 text-[#D4AF37]" />
-                <span>Service client : {settings.whatsappDisplay}</span>
-              </a>
-              <span className="text-slate-600">|</span>
-              <button
-                onClick={onOpenAdmin}
-                className="flex items-center gap-1 hover:text-[#D4AF37] transition-colors"
-              >
-                <Shield className="w-3 h-3 text-[#D4AF37]" />
-                <span>{isAdminLoggedIn ? 'Espace Admin (Connecté)' : 'Espace Gérant'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Navigation Bar */}
       <div
         className={`w-full transition-all duration-300 ${
