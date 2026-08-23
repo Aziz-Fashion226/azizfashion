@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Product, CartItem, Order, StoreSettings, ShirtSize } from './types';
 import {
   getProducts,
-  saveProducts,
   getOrders,
-  saveOrders,
+  saveOrder,
   getCart,
   saveCart,
   getWishlist,
@@ -12,6 +11,7 @@ import {
   getSettings,
   saveSettings,
   formatFCFA,
+  updateProductStockInDb,
 } from './services/storeService';
 import { INITIAL_SETTINGS } from './data/initialData';
 import { supabase } from './services/supabaseClient';
@@ -145,8 +145,30 @@ export default function App() {
       )
       .subscribe();
 
+    const productsSubscription = supabase
+      .channel('public:products')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        (payload) => {
+          if (payload.eventType === 'UPDATE') {
+            setProductsState((current) =>
+              current.map((p) => (p.id === payload.new.id ? {
+                ...p,
+                ...payload.new,
+                originalPrice: payload.new.original_price,
+                isAvailable: payload.new.is_available,
+                reviewCount: payload.new.review_count,
+              } : p))
+            );
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(ordersSubscription);
+      supabase.removeChannel(productsSubscription);
     };
   }, []);
 
@@ -159,8 +181,7 @@ export default function App() {
 
   const handleUpdateOrders = async (newOrders: Order[]) => {
     setOrdersState(newOrders);
-    await saveOrders(newOrders);
-    showToast('Commandes mises à jour');
+    // Persistance handled individually in AdminDashboard or Checkout
   };
 
   const handleUpdateSettings = async (newSettings: StoreSettings) => {
@@ -264,34 +285,49 @@ export default function App() {
 
   // Order Placement (Checkout)
   const handleOrderPlaced = async (order: Order) => {
-    // 1. Save order to list
-    const updatedOrders = [order, ...orders];
-    setOrdersState(updatedOrders);
-    await saveOrders(updatedOrders);
+    try {
+      // 1. Save order to Supabase
+      await saveOrder(order);
 
-    // 2. Decrement stock for each item
-    const updatedProducts = products.map((prod) => {
-      const purchasedForThis = order.items.filter((it) => it.productId === prod.id);
-      if (purchasedForThis.length === 0) return prod;
+      // 2. Decrement stock for each item in Supabase
+      const stockUpdates = order.items.map(item =>
+        updateProductStockInDb(item.productId, item.size, item.quantity)
+      );
+      await Promise.all(stockUpdates);
 
-      const newStock = { ...prod.stock };
-      purchasedForThis.forEach((it) => {
-        if (newStock[it.size] !== undefined) {
-          newStock[it.size] = Math.max(0, newStock[it.size] - it.quantity);
-        }
+      // 3. Update local state
+      setOrdersState([order, ...orders]);
+
+      // Update local products state for immediate feedback
+      const updatedProducts = products.map((prod) => {
+        const purchasedForThis = order.items.filter((it) => it.productId === prod.id);
+        if (purchasedForThis.length === 0) return prod;
+
+        const newStock = { ...prod.stock };
+        purchasedForThis.forEach((it) => {
+          if (newStock[it.size] !== undefined) {
+            newStock[it.size] = Math.max(0, newStock[it.size] - it.quantity);
+          }
+        });
+
+        // Check availability
+        const totalStock = (Object.values(newStock) as number[]).reduce((a, b) => a + b, 0);
+
+        return {
+          ...prod,
+          stock: newStock,
+          isAvailable: totalStock > 0,
+        };
       });
+      setProductsState(updatedProducts);
 
-      return {
-        ...prod,
-        stock: newStock,
-      };
-    });
-
-    setProductsState(updatedProducts);
-    await saveProducts(updatedProducts);
-
-    // 3. Clear cart
-    handleClearCart();
+      // 4. Clear cart
+      handleClearCart();
+      showToast('Commande validée avec succès !', 'success');
+    } catch (error: any) {
+      console.error('Error placing order:', error);
+      showToast('Erreur lors de la commande : ' + error.message, 'info');
+    }
   };
 
   // Derived Values
@@ -339,7 +375,7 @@ export default function App() {
       <main className="flex-1 pb-20 md:pb-0">
         {/* VIEW 1: HOME */}
         {currentView === 'home' && (
-          <div className="space-y-16 sm:space-y-24">
+          <div className="space-y-8 sm:space-y-24">
             {/* Hero Banner Section */}
             <HeroBanner
               onExplore={() => navigateToShop('all')}
@@ -347,23 +383,23 @@ export default function App() {
             />
 
             {/* Reassurance & Featured Creations */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#D4AF37]/20 pb-8">
-                <div>
-                  <h2 className="text-3xl sm:text-4xl font-black text-[#1A1510] font-serif tracking-tight">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#C5A059]/30 pb-6">
+                <div className="space-y-1">
+                  <h2 className="text-2xl sm:text-4xl font-black text-[#1A1510] font-serif tracking-tight">
                     Nos Créations Vedettes
                   </h2>
-                  <p className="text-sm text-slate-500 mt-2">
+                  <p className="text-[11px] sm:text-sm text-slate-500 font-medium italic">
                     L'excellence du savoir-faire textile burkinabè.
                   </p>
                 </div>
 
                 <button
                   onClick={() => navigateToShop('all')}
-                  className="inline-flex items-center gap-2 text-xs font-black tracking-widest text-[#D4AF37] hover:text-[#B88E2F] transition-colors group uppercase"
+                  className="inline-flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-[#C5A059] hover:text-[#997A1E] transition-colors group uppercase"
                 >
                   <span>Voir toute la collection</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
 

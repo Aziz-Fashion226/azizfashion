@@ -13,19 +13,21 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 }) => {
   return (
     <section className="relative min-h-[80vh] sm:min-h-[85vh] bg-[#1A1510] flex items-center overflow-hidden">
-      {/* Visual background - Single strong image for clarity */}
+      {/* Visual background - Local Creation Image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1600&q=85"
-          alt="Aziz Fashion"
-          className="w-full h-full object-cover object-top sm:object-center filter brightness-[0.55]"
-          referrerPolicy="no-referrer"
+          src="/assets/creation.jpg"
+          alt="Aziz Fashion Haute Couture"
+          className="w-full h-full object-cover object-top sm:object-center filter brightness-[0.75] contrast-[1.05]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1510] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1510] via-transparent to-black/20" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full text-center">
-        <div className="max-w-3xl mx-auto space-y-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-16 w-full text-center">
+        <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 relative">
+          {/* Subtle readability halo behind text */}
+          <div className="absolute inset-x-[-20%] inset-y-[-30%] bg-[#1A1510]/45 blur-[80px] rounded-full pointer-events-none -z-10" />
+
           {/* Brand Presentation */}
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-[10px] font-black tracking-[0.2em] uppercase">

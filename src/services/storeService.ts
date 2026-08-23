@@ -19,6 +19,86 @@ export const formatFCFA = (amount: number): string => {
   }).format(amount) + ' FCFA';
 };
 
+// --- Mapping Helpers (snake_case DB <-> camelCase TS) ---
+
+const mapProductFromDb = (p: any): Product => ({
+  ...p,
+  originalPrice: p.original_price,
+  isAvailable: p.is_available,
+  reviewCount: p.review_count,
+  createdAt: p.created_at,
+  updatedAt: p.updated_at,
+});
+
+const mapProductToDb = (p: Product) => ({
+  id: p.id,
+  name: p.name,
+  reference: p.reference,
+  tagline: p.tagline,
+  description: p.description,
+  features: p.features,
+  fabric: p.fabric,
+  origin: p.origin,
+  fit: p.fit,
+  collar: p.collar,
+  price: p.price,
+  original_price: p.originalPrice,
+  stock: p.stock,
+  category: p.category,
+  badge: p.badge,
+  images: p.images,
+  colors: p.colors,
+  is_available: p.isAvailable,
+  featured: p.featured,
+  rating: p.rating,
+  review_count: p.reviewCount,
+});
+
+const mapOrderFromDb = (o: any): Order => ({
+  ...o,
+  orderNumber: o.order_number,
+  deliveryFee: o.delivery_fee,
+  deliveryMethod: o.delivery_method,
+  paymentMethod: o.payment_method,
+  createdAt: o.created_at,
+  updatedAt: o.updated_at,
+  items: (o.items || []).map((item: any) => ({
+    ...item,
+    // Ensure we have a product object for the UI, even if stripped in DB
+    product: item.product || {
+      name: item.productName || 'Produit archivé',
+      reference: item.productReference || 'N/A',
+      images: ['']
+    }
+  }))
+});
+
+const mapOrderToDb = (o: Order) => ({
+  id: o.id,
+  order_number: o.orderNumber,
+  customer: o.customer,
+  items: o.items.map(item => ({
+    productId: item.productId,
+    size: item.size,
+    color: item.color,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    // We store minimal product info for history
+    productName: item.product.name,
+    productReference: item.product.reference
+  })),
+  subtotal: o.subtotal,
+  delivery_fee: o.deliveryFee,
+  discount: o.discount,
+  total: o.total,
+  delivery_method: o.deliveryMethod,
+  payment_method: o.paymentMethod,
+  status: o.status,
+  notes: o.notes,
+  created_at: o.createdAt,
+  updated_at: o.updatedAt,
+});
+
 // --- Supabase Database Integration ---
 
 // Products
@@ -32,76 +112,21 @@ export const getStoredProducts = async (): Promise<Product[]> => {
     if (error) throw error;
     if (!data || data.length === 0) return INITIAL_PRODUCTS;
 
-    // Mapping snake_case (DB) to camelCase (TS) if necessary
-    return data.map(p => ({
-      ...p,
-      originalPrice: p.original_price,
-      isAvailable: p.is_available,
-      reviewCount: p.review_count,
-    }));
+    return data.map(mapProductFromDb);
   } catch (e) {
     console.error('Error fetching products from Supabase:', e);
     return INITIAL_PRODUCTS;
   }
 };
 
-export const saveStoredProducts = async (products: Product[]) => {
-  // We no longer send the whole list, but we update the database record by record
-  // To keep compatibility with existing handlers, we'll implement a more specific save logic if needed
-  // But for now, we'll improve the individual product handling in AdminDashboard
-};
-
-// Specific helpers for CRUD
 export const addProduct = async (product: Product) => {
-  const toInsert = {
-    id: product.id,
-    name: product.name,
-    reference: product.reference,
-    tagline: product.tagline,
-    description: product.description,
-    features: product.features,
-    fabric: product.fabric,
-    origin: product.origin,
-    fit: product.fit,
-    collar: product.collar,
-    price: product.price,
-    original_price: product.originalPrice,
-    stock: product.stock,
-    category: product.category,
-    badge: product.badge,
-    images: product.images,
-    colors: product.colors,
-    is_available: product.isAvailable,
-    featured: product.featured,
-    rating: product.rating,
-    review_count: product.reviewCount,
-  };
-  const { error } = await supabase.from('products').insert(toInsert);
+  const { error } = await supabase.from('products').insert(mapProductToDb(product));
   if (error) throw error;
 };
 
 export const updateProduct = async (product: Product) => {
   const toUpdate = {
-    name: product.name,
-    reference: product.reference,
-    tagline: product.tagline,
-    description: product.description,
-    features: product.features,
-    fabric: product.fabric,
-    origin: product.origin,
-    fit: product.fit,
-    collar: product.collar,
-    price: product.price,
-    original_price: product.originalPrice,
-    stock: product.stock,
-    category: product.category,
-    badge: product.badge,
-    images: product.images,
-    colors: product.colors,
-    is_available: product.isAvailable,
-    featured: product.featured,
-    rating: product.rating,
-    review_count: product.reviewCount,
+    ...mapProductToDb(product),
     updated_at: new Date().toISOString(),
   };
   const { error } = await supabase.from('products').update(toUpdate).eq('id', product.id);
@@ -122,17 +147,27 @@ export const getStoredOrders = async (): Promise<Order[]> => {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map(mapOrderFromDb);
   } catch (e) {
     console.error('Error fetching orders:', e);
     return [];
   }
 };
 
-export const saveStoredOrders = async (orders: Order[]) => {
-  // Ici on upsert généralement la commande modifiée
+export const saveOrder = async (order: Order) => {
   try {
-    const { error } = await supabase.from('orders').upsert(orders);
+    const { error } = await supabase.from('orders').upsert(mapOrderToDb(order));
+    if (error) throw error;
+  } catch (e) {
+    console.error('Error saving order:', e);
+    throw e;
+  }
+};
+
+export const saveStoredOrders = async (orders: Order[]) => {
+  // Keeping this for compatibility but ideally we should update record by record
+  try {
+    const { error } = await supabase.from('orders').upsert(orders.map(mapOrderToDb));
     if (error) throw error;
   } catch (e) {
     console.error('Error saving orders:', e);
@@ -145,10 +180,16 @@ export const getStoredSettings = async (): Promise<StoreSettings> => {
     const { data, error } = await supabase
       .from('store_settings')
       .select('*')
-      .single();
+      .limit(1);
 
     if (error) throw error;
-    return data || INITIAL_SETTINGS;
+
+    if (!data || data.length === 0) {
+      console.warn('⚠️ store_settings vide sur Supabase, utilisation des données locales.');
+      return INITIAL_SETTINGS;
+    }
+
+    return data[0];
   } catch (e) {
     console.error('Error fetching settings:', e);
     return INITIAL_SETTINGS;
@@ -164,8 +205,7 @@ export const saveStoredSettings = async (settings: StoreSettings) => {
   }
 };
 
-// --- Local Storage Utilities (Cart & Wishlist remain local for UX) ---
-
+// Reviews
 export const getStoredReviews = async (): Promise<Review[]> => {
   try {
     const { data, error } = await supabase
@@ -190,6 +230,8 @@ export const saveStoredReviews = async (reviews: Review[]) => {
     console.error('Error saving reviews:', e);
   }
 };
+
+// --- Local Storage Utilities (Cart & Wishlist remain local for UX) ---
 
 export const getStoredWishlist = (): string[] => {
   try {
@@ -329,64 +371,62 @@ Restons à votre disposition pour toute question. Merci pour votre confiance !`;
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 };
 
-// Stock deduction helper
-export const processOrderStockDeduction = (products: Product[], items: CartItem[]): Product[] => {
-  const updatedProducts = [...products];
-
-  for (const item of items) {
-    const pIndex = updatedProducts.findIndex((p) => p.id === item.productId);
-    if (pIndex !== -1) {
-      const prod = { ...updatedProducts[pIndex] };
-      const currentStock = prod.stock[item.size] || 0;
-      prod.stock = {
-        ...prod.stock,
-        [item.size]: Math.max(0, currentStock - item.quantity),
-      };
-
-      // Check if completely out of stock across all sizes
-      const totalStock = (Object.values(prod.stock) as number[]).reduce((a, b) => a + b, 0);
-      if (totalStock === 0) {
-        prod.isAvailable = false;
-      }
-
-      updatedProducts[pIndex] = prod;
-    }
-  }
-
-  return updatedProducts;
-};
-
 // Stock management helpers
-export const updateProductStock = (
-  products: Product[],
+export const updateProductStockInDb = async (
   productId: string,
   size: ShirtSize,
-  delta: number
-): Product[] => {
-  return products.map((p) => {
-    if (p.id === productId) {
-      const currentStock = p.stock[size] || 0;
-      const newStock = Math.max(0, currentStock + delta);
-      const updatedStock = { ...p.stock, [size]: newStock };
+  quantityToSubtract: number
+) => {
+  const { data: prod, error: fetchError } = await supabase
+    .from('products')
+    .select('stock')
+    .eq('id', productId)
+    .single();
 
-      // Auto-update availability
-      const totalStock = (Object.values(updatedStock) as number[]).reduce((a, b) => a + b, 0);
+  if (fetchError || !prod) throw fetchError || new Error('Product not found');
 
-      return {
-        ...p,
-        stock: updatedStock,
-        isAvailable: totalStock > 0,
-      };
-    }
-    return p;
-  });
+  const newStock = { ...prod.stock };
+  const currentVal = newStock[size] || 0;
+
+  if (currentVal < quantityToSubtract) {
+    throw new Error(`Stock insuffisant pour la taille ${size}`);
+  }
+
+  newStock[size] = currentVal - quantityToSubtract;
+
+  const totalStock = (Object.values(newStock) as number[]).reduce((a, b) => a + b, 0);
+  const { error: updateError } = await supabase
+    .from('products')
+    .update({
+      stock: newStock,
+      is_available: totalStock > 0,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', productId);
+
+  if (updateError) throw updateError;
+};
+
+// Specific order fetch for tracking
+export const getOrderByNumber = async (orderNumber: string): Promise<Order | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('order_number', orderNumber)
+      .single();
+
+    if (error) throw error;
+    return mapOrderFromDb(data);
+  } catch (e) {
+    console.error('Error fetching order for tracking:', e);
+    return null;
+  }
 };
 
 // Aliases for cleaner imports
 export const getProducts = getStoredProducts;
-export const saveProducts = saveStoredProducts;
 export const getOrders = getStoredOrders;
-export const saveOrders = saveStoredOrders;
 export const getSettings = getStoredSettings;
 export const saveSettings = saveStoredSettings;
 export const getWishlist = getStoredWishlist;

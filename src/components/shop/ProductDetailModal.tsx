@@ -16,6 +16,7 @@ import {
   ZoomIn,
   Sparkles,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Product, ShirtSize, StoreSettings } from '../../types';
 import { formatFCFA, generateProductWhatsAppUrl } from '../../services/storeService';
 import { ProductCard } from './ProductCard';
@@ -85,13 +86,19 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const imagesList = product.images && product.images.length > 0 ? product.images : ['https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80'];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 animate-fadeIn">
-      <div
-        className="relative w-full max-w-5xl bg-[#0B1325] text-[#F5F5F0] rounded-2xl sm:rounded-3xl shadow-2xl border border-[#C5A059]/30 overflow-hidden my-auto animate-scaleUp max-h-[92vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header bar */}
-        <div className="sticky top-0 z-20 bg-[#0B1325]/95 backdrop-blur-md px-4 sm:px-6 py-3.5 border-b border-[#C5A059]/20 flex items-center justify-between">
+    <AnimatePresence>
+      {isOpen && product && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="relative w-full max-w-5xl bg-[#0B1325] text-[#F5F5F0] rounded-2xl sm:rounded-3xl shadow-2xl border border-[#C5A059]/30 overflow-hidden my-auto max-h-[92vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header bar */}
+            <div className="sticky top-0 z-20 bg-[#0B1325]/95 backdrop-blur-md px-4 sm:px-6 py-3.5 border-b border-[#C5A059]/20 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059] px-2.5 py-1 bg-[#10192C] rounded-md border border-[#C5A059]/30">
               {product.category}
@@ -133,14 +140,21 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[#10192C] border border-[#C5A059]/20 group cursor-crosshair"
                 onClick={() => setIsZoomed(!isZoomed)}
               >
-                <img
-                  src={imagesList[activeImageIndex] || imagesList[0]}
-                  alt={product.name}
-                  className={`w-full h-full object-cover object-top transition-transform duration-500 ${
-                    isZoomed ? 'scale-150' : 'group-hover:scale-105'
-                  }`}
-                  referrerPolicy="no-referrer"
-                />
+                <AnimatePresence mode="wait">
+                    <motion.img
+                      key={activeImageIndex}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      src={imagesList[activeImageIndex] || imagesList[0]}
+                      alt={product.name}
+                      className={`w-full h-full object-cover object-top transition-transform duration-500 ${
+                        isZoomed ? 'scale-150' : 'group-hover:scale-105'
+                      }`}
+                      referrerPolicy="no-referrer"
+                    />
+                </AnimatePresence>
 
                 {/* Badge Overlay */}
                 {product.badge && (
@@ -608,7 +622,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
+      )}
+    </AnimatePresence>
   );
 };

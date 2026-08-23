@@ -41,7 +41,9 @@ export interface Product {
 
 export interface CartItem {
   productId: string;
-  product: Product;
+  product?: Product; // Made optional to support lightweight history
+  productName?: string; // Stored in history
+  productReference?: string; // Stored in history
   size: ShirtSize;
   color: string;
   quantity: number;

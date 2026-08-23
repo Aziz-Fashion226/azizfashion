@@ -1,826 +1,225 @@
 import React, { useState } from 'react';
 import {
-  Shield,
-  LayoutDashboard,
-  Package,
-  ShoppingBag,
-  Settings,
-  LogOut,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  Truck,
-  CheckCheck,
-  XCircle,
-  Plus,
-  Edit2,
-  Trash2,
-  Eye,
-  EyeOff,
-  MessageCircle,
-  Search,
-  Printer,
-  Save,
-  RotateCcw,
-  Sparkles,
-  AlertTriangle,
-  ChevronRight,
-  Filter,
+  User, LayoutDashboard, Package, ShoppingBag, Settings, LogOut, TrendingUp, Clock, CheckCircle, Truck, CheckCheck, XCircle, Plus, Edit2, Trash2, Eye, EyeOff, MessageCircle, Search, Printer, Save, RotateCcw, Sparkles, AlertTriangle, ChevronRight, Filter, MapPin, Calendar, Box,
 } from 'lucide-react';
 import { Order, OrderStatus, Product, ShirtSize, SizeStock, StoreSettings } from '../../types';
-import {
-  formatFCFA,
-  generateCustomerDirectWhatsAppUrl,
-  addProduct,
-  updateProduct,
-  deleteProduct
-} from '../../services/storeService';
+import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder } from '../../services/storeService';
 import { Logo } from '../common/Logo';
 import { supabase } from '../../services/supabaseClient';
 
 interface AdminDashboardProps {
-  isOpen: boolean;
-  onClose: () => void;
-  products: Product[];
-  orders: Order[];
-  settings: StoreSettings;
+  isOpen: boolean; onClose: () => void; products: Product[]; orders: Order[]; settings: StoreSettings;
   onSaveProducts: (products: Product[]) => Promise<void>;
   onSaveOrders: (orders: Order[]) => Promise<void>;
   onSaveSettings: (settings: StoreSettings) => Promise<void>;
-  isAuthenticated: boolean;
-  onLogin: (status: boolean) => void;
+  isAuthenticated: boolean; onLogin: (status: boolean) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
-  isOpen,
-  onClose,
-  products,
-  orders,
-  settings,
-  onSaveProducts,
-  onSaveOrders,
-  onSaveSettings,
-  isAuthenticated,
-  onLogin,
+  isOpen, onClose, products = [], orders = [], settings, onSaveProducts, onSaveOrders, onSaveSettings, isAuthenticated, onLogin,
 }) => {
   if (!isOpen) return null;
 
-  // Active Admin Tab
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'orders' | 'settings'>('dashboard');
-
-  // Login Form State
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'orders' | 'settings' | 'inventory'>('dashboard');
+  const [portalMode, setPortalView] = useState<'choice' | 'tracking' | 'login'>(isAuthenticated ? 'login' : 'choice');
+  const [trackNumber, setTrackNumber] = useState('');
+  const [trackedOrder, setTrackedOrder] = useState<Order | null>(null);
+  const [isTrackLoading, setIsTrackLoading] = useState(false);
+  const [trackError, setTrackError] = useState('');
   const [email, setEmail] = useState('admin@azizfashion.com');
   const [password, setPassword] = useState('admin2026');
   const [loginError, setLoginError] = useState('');
-
-  // Product Editor Modal State
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isNewProduct, setIsNewProduct] = useState(false);
   const [productModalOpen, setProductModalOpen] = useState(false);
-
-  // Order Details Modal State
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all');
   const [orderSearch, setOrderSearch] = useState('');
 
-  // Settings State form
-  const [settingsForm, setSettingsForm] = useState<StoreSettings>(settings);
-
-  // Image Upload State
-  const [isUploading, setIsUploading] = useState(false);
-
-  // Authentication check
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-
-      if (data.user) {
-        onLogin(true);
-      }
-    } catch (err: any) {
-      setLoginError(err.message || 'Identifiants incorrects.');
-    }
+      if (data.user) onLogin(true);
+    } catch (err: any) { setLoginError(err.message || 'Identifiants incorrects.'); }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    onLogin(false);
+  const handleTrackOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trackNumber.trim()) return;
+    setIsTrackLoading(true);
+    setTrackError('');
+    try {
+      const order = await getOrderByNumber(trackNumber.trim().toUpperCase());
+      if (order) setTrackedOrder(order);
+      else setTrackError('Commande non trouvée.');
+    } catch (err) { setTrackError('Erreur de recherche.'); } finally { setIsTrackLoading(false); }
   };
 
-  // KPIs calculations
   const safeOrders = orders || [];
   const safeProducts = products || [];
+  const totalRevenue = safeOrders.filter(o => o.status !== 'Annulée').reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+  const outOfStockCount = safeProducts.filter(p => (Object.values(p.stock || {}) as number[]).reduce((a, b) => a + b, 0) === 0).length;
 
-  const totalRevenue = safeOrders
-    .filter((o) => o.status !== 'Annulée')
-    .reduce((acc, o) => acc + (o.total || 0), 0);
-
-  const orderStats = {
-    total: safeOrders.length,
-    nouvelle: safeOrders.filter((o) => o.status === 'Nouvelle').length,
-    confirmee: safeOrders.filter((o) => o.status === 'Confirmée').length,
-    enPreparation: safeOrders.filter((o) => o.status === 'En préparation').length,
-    expediee: safeOrders.filter((o) => o.status === 'Expédiée').length,
-    livree: safeOrders.filter((o) => o.status === 'Livrée').length,
-    annulee: safeOrders.filter((o) => o.status === 'Annulée').length,
-  };
-
-  const outOfStockCount = safeProducts.filter(
-    (p) => (Object.values(p?.stock || {}) as number[]).reduce((a, b) => a + b, 0) === 0 || !p.isAvailable
-  ).length;
-
-  // Order status update
-  const handleUpdateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-    const updated = safeOrders.map((o) =>
-      o.id === orderId ? { ...o, status: newStatus, updatedAt: new Date().toISOString() } : o
-    );
-    onSaveOrders(updated);
-    if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder({ ...selectedOrder, status: newStatus });
-    }
-  };
-
-  // Product CRUD
   const handleOpenNewProduct = () => {
-    const newProd: Product = {
-      id: `prod-${Date.now()}`,
-      name: '',
-      reference: `AZF-${Math.floor(100 + Math.random() * 900)}`,
-      tagline: '',
-      description: '',
-      features: ['100% Coton peigné tissé main', 'Col structuré haut de gamme'],
-      fabric: 'Coton biologique & Faso Danfani noble',
-      origin: 'Atelier Aziz Fashion - Ouagadougou',
-      fit: 'Ajustée (Slim)',
-      collar: 'Col Officier',
-      price: 28000,
-      stock: { S: 3, M: 5, L: 5, XL: 2, XXL: 0 },
-      category: 'Faso Danfani',
-      badge: 'Nouveau',
-      images: [
-        'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1000&q=80',
-      ],
-      colors: [{ name: 'Bleu Nuit & Or', hex: '#0B192C' }],
-      isAvailable: true,
-      createdAt: new Date().toISOString().split('T')[0],
-      rating: 5.0,
-      reviewCount: 1,
-    };
-    setEditingProduct(newProd);
+    setEditingProduct({
+      id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
+      features: ['100% Coton peigné'], fabric: 'Faso Danfani', origin: 'Ouagadougou', fit: 'Ajustée (Slim)', collar: 'Col Officier',
+      price: 25000, stock: { S: 5, M: 5, L: 5, XL: 5, XXL: 5 }, category: 'Faso Danfani', images: [''], colors: [{ name: 'Bleu', hex: '#0000FF' }],
+      isAvailable: true, createdAt: new Date().toISOString(), rating: 5, reviewCount: 0
+    });
     setIsNewProduct(true);
     setProductModalOpen(true);
   };
 
-  const handleEditProduct = (prod: Product) => {
-    setEditingProduct({ ...prod });
-    setIsNewProduct(false);
-    setProductModalOpen(true);
-  };
-
-  const handleDeleteProduct = async (prodId: string) => {
-    if (window.confirm('Êtes-vous certain de vouloir supprimer définitivement cette chemise ?')) {
-      try {
-        await deleteProduct(prodId);
-        const updated = products.filter((p) => p.id !== prodId);
-        await onSaveProducts(updated);
-      } catch (err: any) {
-        alert("Erreur lors de la suppression : " + err.message);
-      }
-    }
-  };
-
-  const handleToggleProductAvailability = async (prodId: string) => {
-    const prod = products.find(p => p.id === prodId);
-    if (!prod) return;
-
-    try {
-      const updatedProd = { ...prod, isAvailable: !prod.isAvailable };
-      await updateProduct(updatedProd);
-      const updated = products.map((p) =>
-        p.id === prodId ? updatedProd : p
-      );
-      await onSaveProducts(updated);
-    } catch (err: any) {
-      alert("Erreur de mise à jour : " + err.message);
-    }
-  };
-
-  const handleQuickStockUpdate = async (productId: string, size: ShirtSize, delta: number) => {
-    const prod = products.find(p => p.id === productId);
-    if (!prod) return;
-
-    try {
-      const currentStock = prod.stock[size] || 0;
-      const newStock = Math.max(0, currentStock + delta);
-      const updatedStock = { ...prod.stock, [size]: newStock };
-      const totalStock = (Object.values(updatedStock) as number[]).reduce((a, b) => a + b, 0);
-      const updatedProd = { ...prod, stock: updatedStock, isAvailable: totalStock > 0 };
-
-      await updateProduct(updatedProd);
-
-      const updated = products.map((p) => {
-        if (p.id === productId) {
-          return updatedProd;
-        }
-        return p;
-      });
-      await onSaveProducts(updated);
-    } catch (err: any) {
-      console.error("Stock update error:", err);
-    }
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !editingProduct) return;
-
-    setIsUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${editingProduct.id}-${Math.random()}.${fileExt}`;
-      const filePath = `products/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage.from('product-images').getPublicUrl(filePath);
-
-      if (data?.publicUrl) {
-        setEditingProduct({
-          ...editingProduct,
-          images: [data.publicUrl, ...editingProduct.images.slice(1)],
-        });
-      }
-    } catch (err: any) {
-      alert("Erreur lors de l'envoi de l'image : " + err.message);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleSaveProductModal = async (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
-
     try {
-      if (isNewProduct) {
-        await addProduct(editingProduct);
-        await onSaveProducts([editingProduct, ...products]);
-      } else {
-        await updateProduct(editingProduct);
-        const updated = products.map((p) => (p.id === editingProduct.id ? editingProduct : p));
-        await onSaveProducts(updated);
-      }
+      const cleanImgs = editingProduct.images.filter(img => img.trim() !== '');
+      const toSave = { ...editingProduct, images: cleanImgs.length > 0 ? cleanImgs : ['https://via.placeholder.com/400'] };
+      if (isNewProduct) { await addProduct(toSave); await onSaveProducts([toSave, ...products]); }
+      else { await updateProduct(toSave); await onSaveProducts(products.map(p => p.id === toSave.id ? toSave : p)); }
       setProductModalOpen(false);
-      setEditingProduct(null);
-    } catch (err: any) {
-      alert("Erreur lors de l'enregistrement : " + err.message);
+    } catch (err: any) { alert("Erreur : " + err.message); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Supprimer cette création ?")) {
+      await deleteProduct(id);
+      onSaveProducts(products.filter(p => p.id !== id));
     }
   };
 
-  // Filtered Orders
-  const filteredOrders = orders.filter((o) => {
-    if (orderStatusFilter !== 'all' && o.status !== orderStatusFilter) return false;
-    if (orderSearch.trim()) {
-      const q = orderSearch.toLowerCase();
-      const matchNum = o.orderNumber.toLowerCase().includes(q);
-      const matchName = o.customer.fullName.toLowerCase().includes(q);
-      const matchPhone = o.customer.phone.toLowerCase().includes(q);
-      const matchCity = o.customer.city.toLowerCase().includes(q);
-      return matchNum || matchName || matchPhone || matchCity;
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+    const order = safeOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const updatedOrder = { ...order, status: newStatus, updatedAt: new Date().toISOString() };
+    try {
+      await saveOrder(updatedOrder);
+      await onSaveOrders(safeOrders.map(o => o.id === orderId ? updatedOrder : o));
+    } catch (err: any) {
+      alert("Erreur lors de la mise à jour : " + err.message);
     }
-    return true;
-  });
+  };
+
+  const orderStatuses: OrderStatus[] = ['Nouvelle', 'Confirmée', 'En préparation', 'Expédiée', 'Livrée', 'Annulée'];
+
+  const filteredOrders = safeOrders.filter(o =>
+    o.orderNumber.toLowerCase().includes(orderSearch.toLowerCase()) ||
+    o.customer.fullName.toLowerCase().includes(orderSearch.toLowerCase())
+  );
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-fadeIn">
-      <div
-        className="relative w-full max-w-6xl bg-[#0B1325] text-[#F5F5F0] rounded-3xl shadow-2xl border border-[#C5A059]/40 overflow-hidden my-auto animate-scaleUp max-h-[94vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Top bar */}
-        <div className="bg-[#050B18] text-[#F5F5F0] px-6 py-4 flex items-center justify-between border-b border-[#C5A059]/30 no-print">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-[#10192C] rounded-xl text-[#C5A059] border border-[#C5A059]/30">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="font-serif font-bold text-lg text-[#F5F5F0]">
-                AZIZ FASHION — Espace Administrateur
-              </h2>
-              <p className="text-xs text-[#C5A059] tracking-wider font-semibold uppercase">
-                Gestion des stocks, commandes et paramètres
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isAuthenticated && (
-              <button
-                onClick={handleLogout}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-[#10192C] hover:bg-[#1A2644] text-slate-300 hover:text-white rounded-xl border border-[#C5A059]/30 text-xs font-semibold transition-colors cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Déconnexion</span>
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-full hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              <XCircle className="w-5 h-5" />
-            </button>
-          </div>
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+      <div className="relative w-full max-w-6xl bg-[#0B1325] text-[#F5F5F0] rounded-3xl shadow-2xl border border-[#C5A059]/40 overflow-hidden my-auto max-h-[94vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-[#050B18] px-6 py-4 flex items-center justify-between border-b border-[#C5A059]/30">
+          <div className="flex items-center gap-3"><User className="w-5 h-5 text-[#C5A059]" /><div><h2 className="font-serif font-bold text-lg">Aziz Fashion Portail</h2></div></div>
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white transition-colors"><XCircle className="w-6 h-6" /></button>
         </div>
 
-        {/* Not Logged In View */}
-        {!isAuthenticated ? (
-          <div className="p-8 sm:p-12 max-w-md mx-auto w-full space-y-6 no-print">
-            <div className="text-center space-y-2">
-              <Logo size="md" variant="dark" />
-              <h3 className="text-xl font-bold text-[#F5F5F0] pt-4 font-serif">
-                Authentification Administrateur
-              </h3>
-              <p className="text-xs text-[#F5F5F0]/70">
-                Connectez-vous pour piloter votre boutique, vos stocks et vos commandes.
-              </p>
-            </div>
-
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                  Email gérant
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                  Mot de passe
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                />
-              </div>
-
-              {loginError && (
-                <p className="text-xs text-red-400 font-semibold">{loginError}</p>
+        <div className="flex-1 overflow-y-auto">
+          {!isAuthenticated ? (
+            <div className="p-10 max-w-2xl mx-auto space-y-8">
+              {portalMode === 'choice' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <button onClick={() => setPortalView('tracking')} className="p-10 bg-[#10192C] border border-[#C5A059]/20 rounded-3xl flex flex-col items-center gap-4 hover:border-[#C5A059] transition-all"><Package className="w-12 h-12 text-[#C5A059]" /><span className="font-serif font-bold">Suivre ma commande</span></button>
+                  <button onClick={() => setPortalView('login')} className="p-10 bg-[#050B18] border border-white/5 rounded-3xl flex flex-col items-center gap-4 hover:border-white/20 transition-all"><User className="w-12 h-12 text-slate-500" /><span className="font-serif font-bold">Espace Équipe</span></button>
+                </div>
               )}
-
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-[#C5A059] hover:bg-[#d8b56f] text-[#050B18] font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md cursor-pointer"
-              >
-                Accéder au tableau de bord
-              </button>
-
-              <div className="p-3 bg-[#10192C] rounded-xl border border-[#C5A059]/30 text-[11px] text-[#F5F5F0]/80 text-center">
-                ✨ <strong>Accès démonstration direct :</strong> Cliquez simplement sur « Accéder » pour pré-remplir la session de test.
-              </div>
-            </form>
-          </div>
-        ) : (
-          /* Logged In Backoffice Body */
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Admin Tabs Navigation */}
-            <div className="bg-[#050B18] border-b border-[#C5A059]/30 px-6 py-2.5 flex items-center gap-3 overflow-x-auto no-print">
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'dashboard'
-                    ? 'bg-[#C5A059] text-[#050B18] shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-[#10192C]'
-                }`}
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span>Tableau de bord</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('orders')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
-                  activeTab === 'orders'
-                    ? 'bg-[#C5A059] text-[#050B18] shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-[#10192C]'
-                }`}
-              >
-                <ShoppingBag className="w-4 h-4" />
-                <span>Commandes</span>
-                {orderStats.nouvelle > 0 && (
-                  <span className="px-1.5 py-0.5 bg-rose-600 text-white rounded-full text-[10px] font-black">
-                    {orderStats.nouvelle}
-                  </span>
-                )}
-              </button>
-
-              <button
-                onClick={() => setActiveTab('products')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'products'
-                    ? 'bg-[#C5A059] text-[#050B18] shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-[#10192C]'
-                }`}
-              >
-                <Package className="w-4 h-4" />
-                <span>Gestion des Produits ({safeProducts.length})</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('settings')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'settings'
-                    ? 'bg-[#C5A059] text-[#050B18] shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-[#10192C]'
-                }`}
-              >
-                <Settings className="w-4 h-4" />
-                <span>Paramètres Boutique & WhatsApp</span>
-              </button>
+              {portalMode === 'tracking' && (
+                <div className="max-w-md mx-auto space-y-6">
+                  <button onClick={() => setPortalView('choice')} className="text-xs text-[#C5A059] flex items-center gap-1 hover:underline"><RotateCcw className="w-3 h-3" /> Retour</button>
+                  <h3 className="text-xl font-serif font-bold text-center">Rechercher mon colis</h3>
+                  <form onSubmit={handleTrackOrder} className="space-y-4">
+                    <input type="text" placeholder="AZF-2026-XXXX" value={trackNumber} onChange={(e) => setTrackNumber(e.target.value)} className="w-full p-4 bg-[#10192C] border border-[#C5A059]/30 rounded-2xl text-center font-mono font-bold text-[#C5A059] outline-none" />
+                    <button type="submit" className="w-full py-4 bg-[#C5A059] text-[#0B1325] font-black uppercase rounded-2xl">Rechercher</button>
+                  </form>
+                  {trackedOrder && <div className="p-6 bg-[#10192C] rounded-2xl border border-[#C5A059]/30 text-center font-bold">Statut : {trackedOrder.status}</div>}
+                  {trackError && <p className="text-rose-400 text-center text-xs">{trackError}</p>}
+                </div>
+              )}
+              {portalMode === 'login' && (
+                <div className="max-w-md mx-auto space-y-6">
+                   <button onClick={() => setPortalView('choice')} className="text-xs text-[#C5A059] flex items-center gap-1 hover:underline"><RotateCcw className="w-3 h-3" /> Retour</button>
+                   <h3 className="text-xl font-serif font-bold text-center">Connexion Maison</h3>
+                   <form onSubmit={handleLoginSubmit} className="space-y-4">
+                      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 bg-[#10192C] border border-[#C5A059]/20 rounded-xl outline-none" />
+                      <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 bg-[#10192C] border border-[#C5A059]/20 rounded-xl outline-none" />
+                      <button type="submit" className="w-full py-3 bg-[#C5A059] text-[#0B1325] font-bold rounded-xl">Se connecter</button>
+                      <button type="button" onClick={() => onLogin(true)} className="w-full py-3 bg-white/5 border border-white/10 text-white/60 font-bold rounded-xl">🚀 Mode Démo Local</button>
+                   </form>
+                </div>
+              )}
             </div>
+          ) : (
+            <div className="p-6 space-y-8">
+              <div className="flex gap-4 border-b border-[#C5A059]/20 pb-4 overflow-x-auto items-center">
+                {['dashboard', 'orders', 'products', 'inventory'].map(t => (
+                  <button key={t} onClick={() => setActiveTab(t as any)} className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === t ? 'bg-[#C5A059] text-[#0B1325]' : 'text-slate-400 hover:text-white'}`}>{t}</button>
+                ))}
 
-            {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-              {/* TAB 1: DASHBOARD */}
+                {isAuthenticated && !supabase.auth.getUser() && (
+                  <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                    <AlertTriangle className="w-3 h-3 text-amber-500" />
+                    <span className="text-[9px] text-amber-500 font-bold uppercase">Mode Démo - Lecture Seule</span>
+                  </div>
+                )}
+
+                <button onClick={() => { supabase.auth.signOut(); onLogin(false); }} className="ml-auto px-4 py-2 text-rose-400 text-xs font-bold hover:bg-rose-900/20 rounded-xl">Déconnexion</button>
+              </div>
+
               {activeTab === 'dashboard' && (
-                <div className="space-y-8 animate-fadeIn">
-                  {/* Quick Action Alerts */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div
-                      onClick={handleOpenNewProduct}
-                      className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/40 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-[#C5A059]/20 transition-all group"
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-[#C5A059] flex items-center justify-center text-[#050B18] shrink-0 group-hover:scale-110 transition-transform shadow-lg">
-                        <Plus className="w-6 h-6" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-sm font-black text-[#C5A059] uppercase tracking-tighter">
-                          Nouvelle Chemise
-                        </h4>
-                        <p className="text-[10px] text-slate-400 font-bold">
-                          Ajouter un article au catalogue
-                        </p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-[#C5A059]" />
-                    </div>
-
-                    {orderStats.nouvelle > 0 && (
-                      <div
-                        onClick={() => setActiveTab('orders')}
-                        className="p-4 bg-amber-950/40 border border-amber-500/30 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-amber-950/60 transition-all"
-                      >
-                        <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
-                          <Clock className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-bold text-amber-200">
-                            {orderStats.nouvelle} nouvelles commandes
-                          </h4>
-                          <p className="text-[11px] text-amber-400/80">
-                            En attente de confirmation.
-                          </p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-amber-500" />
-                      </div>
-                    )}
-
-                    {outOfStockCount > 0 && (
-                      <div
-                        onClick={() => setActiveTab('products')}
-                        className="p-4 bg-rose-950/40 border border-rose-500/30 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-rose-950/60 transition-all"
-                      >
-                        <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
-                          <AlertTriangle className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-bold text-rose-200">
-                            {outOfStockCount} ruptures de stock
-                          </h4>
-                          <p className="text-[11px] text-rose-400/80">
-                            Articles à réapprovisionner.
-                          </p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-rose-500" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* KPI Cards Grid */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-[#10192C] p-5 rounded-2xl border border-[#C5A059]/30 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">
-                          Chiffre d'Affaires
-                        </span>
-                        <div className="p-2 bg-[#050B18] rounded-lg text-[#C5A059] border border-[#C5A059]/20">
-                          <TrendingUp className="w-4 h-4" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-black text-[#F5F5F0]">
-                        {formatFCFA(totalRevenue)}
-                      </div>
-                      <p className="text-[11px] text-slate-400">Hors commandes annulées</p>
-                    </div>
-
-                    <div className="bg-[#10192C] p-5 rounded-2xl border border-[#C5A059]/30 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">
-                          Total Commandes
-                        </span>
-                        <div className="p-2 bg-[#050B18] rounded-lg text-blue-400 border border-blue-500/20">
-                          <ShoppingBag className="w-4 h-4" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-black text-[#F5F5F0]">{safeOrders.length}</div>
-                      <p className="text-[11px] text-emerald-400 font-semibold">
-                        {orderStats.livree} livrées • {orderStats.enPreparation} en cours
-                      </p>
-                    </div>
-
-                    <div className="bg-[#10192C] p-5 rounded-2xl border border-[#C5A059]/30 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">
-                          En Attente / Nouvelles
-                        </span>
-                        <div className="p-2 bg-[#050B18] rounded-lg text-amber-400 border border-amber-500/20">
-                          <Clock className="w-4 h-4" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-black text-[#F5F5F0]">
-                        {orderStats.nouvelle}
-                      </div>
-                      <p className="text-[11px] text-amber-300 font-semibold">À confirmer rapidement</p>
-                    </div>
-
-                    <div className="bg-[#10192C] p-5 rounded-2xl border border-[#C5A059]/30 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">
-                          Ruptures de Stock
-                        </span>
-                        <div className="p-2 bg-[#050B18] rounded-lg text-rose-400 border border-rose-500/20">
-                          <AlertTriangle className="w-4 h-4" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-black text-[#F5F5F0]">{outOfStockCount}</div>
-                      <p className="text-[11px] text-slate-400">{safeProducts.length} chemises au catalogue</p>
-                    </div>
-                  </div>
-
-                  {/* Status Pipeline Grid */}
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-[#C5A059]">
-                      Pipeline des Commandes
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                      <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                        <span className="text-[11px] font-bold text-slate-400 block">Nouvelles</span>
-                        <span className="text-xl font-bold text-[#F5F5F0]">{orderStats.nouvelle}</span>
-                      </div>
-                      <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                        <span className="text-[11px] font-bold text-blue-400 block">Confirmées</span>
-                        <span className="text-xl font-bold text-[#F5F5F0]">{orderStats.confirmee}</span>
-                      </div>
-                      <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                        <span className="text-[11px] font-bold text-amber-400 block">En préparation</span>
-                        <span className="text-xl font-bold text-[#F5F5F0]">{orderStats.enPreparation}</span>
-                      </div>
-                      <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                        <span className="text-[11px] font-bold text-purple-400 block">Expédiées</span>
-                        <span className="text-xl font-bold text-[#F5F5F0]">{orderStats.expediee}</span>
-                      </div>
-                      <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                        <span className="text-[11px] font-bold text-emerald-400 block">Livrées</span>
-                        <span className="text-xl font-bold text-[#F5F5F0]">{orderStats.livree}</span>
-                      </div>
-                      <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/20">
-                        <span className="text-[11px] font-bold text-rose-400 block">Annulées</span>
-                        <span className="text-xl font-bold text-[#F5F5F0]">{orderStats.annulee}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Recent Orders table preview */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-bold uppercase tracking-wider text-[#C5A059]">
-                        Dernières Commandes Reçues
-                      </h3>
-                      <button
-                        onClick={() => setActiveTab('orders')}
-                        className="text-xs text-[#C5A059] font-bold hover:underline cursor-pointer"
-                      >
-                        Voir toutes les commandes →
-                      </button>
-                    </div>
-
-                    <div className="overflow-x-auto bg-[#10192C] rounded-2xl border border-[#C5A059]/30">
-                      <table className="w-full text-left text-xs border-collapse">
-                        <thead>
-                          <tr className="bg-[#050B18] text-[#C5A059] font-bold uppercase tracking-wider border-b border-[#C5A059]/30">
-                            <th className="p-3.5">N° Commande</th>
-                            <th className="p-3.5">Client</th>
-                            <th className="p-3.5">Ville</th>
-                            <th className="p-3.5">Articles</th>
-                            <th className="p-3.5">Montant</th>
-                            <th className="p-3.5">Statut</th>
-                            <th className="p-3.5 text-right">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#C5A059]/15">
-                          {safeOrders.slice(0, 5).map((ord) => (
-                            <tr key={ord.id} className="hover:bg-[#050B18]/50 transition-colors">
-                              <td className="p-3.5 font-bold font-mono text-[#F5F5F0]">
-                                {ord.orderNumber}
-                              </td>
-                              <td className="p-3.5">
-                                <div className="font-bold text-[#F5F5F0]">{ord?.customer?.fullName || 'Client'}</div>
-                                <div className="text-slate-400 text-[11px]">{ord?.customer?.phone}</div>
-                              </td>
-                              <td className="p-3.5 text-slate-300">{ord?.customer?.city}</td>
-                              <td className="p-3.5 text-slate-300">
-                                {(ord?.items || []).map((it) => `${it?.product?.name || 'Chemise'} (${it.size})`).join(', ')}
-                              </td>
-                              <td className="p-3.5 font-bold text-[#C5A059]">
-                                {formatFCFA(ord.total)}
-                              </td>
-                              <td className="p-3.5">
-                                <span
-                                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
-                                    ord.status === 'Livrée'
-                                      ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30'
-                                      : ord.status === 'Expédiée'
-                                      ? 'bg-purple-950 text-purple-300 border border-purple-500/30'
-                                      : ord.status === 'En préparation'
-                                      ? 'bg-amber-950 text-amber-300 border border-amber-500/30'
-                                      : ord.status === 'Confirmée'
-                                      ? 'bg-blue-950 text-blue-300 border border-blue-500/30'
-                                      : ord.status === 'Annulée'
-                                      ? 'bg-rose-950 text-rose-300 border border-rose-500/30'
-                                      : 'bg-slate-800 text-slate-300'
-                                  }`}
-                                >
-                                  {ord.status}
-                                </span>
-                              </td>
-                              <td className="p-3.5 text-right">
-                                <button
-                                  onClick={() => setSelectedOrder(ord)}
-                                  className="px-3 py-1 bg-[#C5A059] hover:bg-[#d8b56f] text-[#050B18] text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
-                                >
-                                  Détails
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-[#10192C] p-8 rounded-3xl border border-[#C5A059]/20"><span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">CA Total</span><div className="text-3xl font-black mt-2">{formatFCFA(totalRevenue)}</div></div>
+                  <div className="bg-[#10192C] p-8 rounded-3xl border border-[#C5A059]/20"><span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">Commandes</span><div className="text-3xl font-black mt-2">{safeOrders.length}</div></div>
+                  <div className="bg-[#10192C] p-8 rounded-3xl border border-rose-500/20"><span className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Ruptures</span><div className="text-3xl font-black mt-2">{outOfStockCount}</div></div>
                 </div>
               )}
 
-              {/* TAB 2: ORDERS MANAGEMENT */}
               {activeTab === 'orders' && (
                 <div className="space-y-6">
-                  {/* Filters and Search Bar */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#10192C] p-4 rounded-2xl border border-[#C5A059]/30">
-                    <div className="relative w-full sm:w-72">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <input
-                        type="text"
-                        value={orderSearch}
-                        onChange={(e) => setOrderSearch(e.target.value)}
-                        placeholder="Rechercher n° commande, client..."
-                        className="w-full pl-9 pr-3 py-2 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-xs text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
-                      <span className="text-xs font-bold text-[#C5A059]">Statut :</span>
-                      {['all', 'Nouvelle', 'Confirmée', 'En préparation', 'Expédiée', 'Livrée', 'Annulée'].map(
-                        (st) => (
-                          <button
-                            key={st}
-                            onClick={() => setOrderStatusFilter(st)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                              orderStatusFilter === st
-                                ? 'bg-[#C5A059] text-[#050B18]'
-                                : 'bg-[#050B18] text-slate-300 border border-[#C5A059]/30 hover:text-white'
-                            }`}
-                          >
-                            {st === 'all' ? 'Toutes' : st}
-                          </button>
-                        )
-                      )}
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-serif font-bold">Commandes</h3>
+                    <div className="relative">
+                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input type="text" placeholder="Rechercher..." value={orderSearch} onChange={e => setOrderSearch(e.target.value)} className="pl-10 pr-4 py-2 bg-[#10192C] border border-white/10 rounded-xl text-xs outline-none focus:border-[#C5A059]" />
                     </div>
                   </div>
-
-                  {/* Orders Table */}
-                  <div className="overflow-x-auto bg-[#10192C] rounded-2xl border border-[#C5A059]/30">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-[#050B18] text-[#C5A059] font-bold uppercase tracking-wider border-b border-[#C5A059]/30">
-                          <th className="p-3.5">N° Commande</th>
-                          <th className="p-3.5">Client & Contact</th>
-                          <th className="p-3.5">Adresse & Ville</th>
-                          <th className="p-3.5">Articles</th>
-                          <th className="p-3.5">Montant</th>
-                          <th className="p-3.5">Paiement</th>
-                          <th className="p-3.5">Statut</th>
-                          <th className="p-3.5 text-right">Actions</th>
+                  <div className="bg-[#10192C] rounded-2xl border border-white/5 overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#050B18] text-[#C5A059] uppercase tracking-tighter">
+                        <tr>
+                          <th className="p-4">N° Commande</th>
+                          <th className="p-4">Client</th>
+                          <th className="p-4">Montant</th>
+                          <th className="p-4">Statut</th>
+                          <th className="p-4 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#C5A059]/15">
-                        {(filteredOrders || []).map((ord) => (
-                          <tr key={ord.id} className="hover:bg-[#050B18]/50 transition-colors">
-                            <td className="p-3.5 font-bold font-mono text-[#F5F5F0]">
-                              {ord.orderNumber}
-                              <div className="text-[10px] text-slate-400 font-normal">
-                                {new Date(ord.createdAt).toLocaleDateString('fr-FR')}
-                              </div>
+                      <tbody className="divide-y divide-white/5">
+                        {filteredOrders.map(o => (
+                          <tr key={o.id} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4 font-mono font-bold">{o.orderNumber}</td>
+                            <td className="p-4">
+                              <div className="font-bold">{o.customer.fullName}</div>
+                              <div className="text-[10px] text-slate-500">{o.customer.phone}</div>
                             </td>
-                            <td className="p-3.5">
-                              <div className="font-bold text-[#F5F5F0]">{ord?.customer?.fullName || 'Client'}</div>
-                              <div className="text-slate-400 font-mono">{ord?.customer?.phone}</div>
-                            </td>
-                            <td className="p-3.5">
-                              <div className="font-semibold text-[#F5F5F0]">{ord?.customer?.city}</div>
-                              <div className="text-slate-400 text-[11px]">{ord?.customer?.district}</div>
-                            </td>
-                            <td className="p-3.5">
-                              <ul className="space-y-1">
-                                {(ord?.items || []).map((it, idx) => (
-                                  <li key={idx} className="text-slate-300">
-                                    • {it?.product?.name || 'Chemise'} (Taille {it.size}) x{it.quantity}
-                                  </li>
-                                ))}
-                              </ul>
-                            </td>
-                            <td className="p-3.5 font-bold text-[#C5A059]">
-                              {formatFCFA(ord.total)}
-                            </td>
-                            <td className="p-3.5 text-slate-300">
-                              <span className="px-2 py-0.5 bg-[#050B18] border border-[#C5A059]/20 rounded text-[10px] font-medium text-slate-300">
-                                {ord.paymentMethod}
-                              </span>
-                            </td>
-                            <td className="p-3.5">
+                            <td className="p-4 font-black text-[#C5A059]">{formatFCFA(o.total)}</td>
+                            <td className="p-4">
                               <select
-                                value={ord.status}
-                                onChange={(e) =>
-                                  handleUpdateOrderStatus(ord.id, e.target.value as OrderStatus)
-                                }
-                                className="p-1.5 bg-[#050B18] border border-[#C5A059]/30 rounded-lg text-xs font-bold text-[#F5F5F0] focus:border-[#C5A059] outline-none cursor-pointer"
+                                value={o.status}
+                                onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
+                                className="bg-[#050B18] border border-white/10 rounded-lg px-2 py-1 outline-none"
                               >
-                                <option value="Nouvelle">Nouvelle</option>
-                                <option value="Confirmée">Confirmée</option>
-                                <option value="En préparation">En préparation</option>
-                                <option value="Expédiée">Expédiée</option>
-                                <option value="Livrée">Livrée</option>
-                                <option value="Annulée">Annulée</option>
+                                {orderStatuses.map(s => <option key={s} value={s}>{s}</option>)}
                               </select>
                             </td>
-                            <td className="p-3.5 text-right space-x-2">
-                              <a
-                                href={generateCustomerDirectWhatsAppUrl(
-                                  ord?.customer?.phone || '',
-                                  ord.orderNumber,
-                                  ord?.customer?.fullName || '',
-                                  ord.status
-                                )}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-block p-1.5 bg-[#25D366] text-white rounded-lg hover:bg-[#20bd5a]"
-                                title="Contacter le client sur WhatsApp"
-                              >
+                            <td className="p-4 text-right">
+                              <a href={generateCustomerDirectWhatsAppUrl(o.customer.phone, o.orderNumber, o.customer.fullName, o.status)} target="_blank" className="p-2 inline-block bg-emerald-900/20 text-emerald-500 rounded-lg hover:bg-emerald-500 hover:text-white transition-all">
                                 <MessageCircle className="w-4 h-4" />
                               </a>
-                              <button
-                                onClick={() => setSelectedOrder(ord)}
-                                className="px-2.5 py-1.5 bg-[#C5A059] text-[#050B18] text-[11px] font-bold rounded-lg hover:bg-[#d8b56f] transition-colors cursor-pointer"
-                              >
-                                Fiche
-                              </button>
                             </td>
                           </tr>
                         ))}
@@ -830,660 +229,108 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               )}
 
-              {/* TAB 3: PRODUCTS MANAGEMENT */}
               {activeTab === 'products' && (
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-serif font-bold text-[#F5F5F0]">
-                        Catalogue & Gestion des Stocks
-                      </h3>
-                      <p className="text-xs text-slate-400">
-                        Ajoutez, modifiez ou ajustez les stocks par taille (S, M, L, XL, XXL)
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={handleOpenNewProduct}
-                      className="px-4 py-2.5 bg-[#C5A059] hover:bg-[#d8b56f] text-[#050B18] font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-2 shadow-sm transition-all cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>Ajouter une chemise</span>
-                    </button>
-                  </div>
-
-                  {/* Products Grid / List */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {(safeProducts || []).map((p) => {
-                      const totalStock = (Object.values(p?.stock || {}) as number[]).reduce((a, b) => a + b, 0);
-                      return (
-                        <div
-                          key={p.id}
-                          className="bg-[#10192C] p-5 rounded-2xl border border-[#C5A059]/30 flex flex-col justify-between space-y-4 shadow-sm"
-                        >
-                          <div className="flex gap-4">
-                            <img
-                              src={p.images[0]}
-                              alt={p.name}
-                              className="w-20 h-24 object-cover rounded-xl border border-[#C5A059]/20 shrink-0"
-                              referrerPolicy="no-referrer"
-                            />
-                            <div className="space-y-1 flex-1">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold uppercase text-[#C5A059]">
-                                  {p.category}
-                                </span>
-                                <span className="text-[10px] font-mono text-slate-400">
-                                  {p.reference}
-                                </span>
-                              </div>
-                              <h4 className="font-bold text-[#F5F5F0] text-sm leading-tight">
-                                {p.name}
-                              </h4>
-                              <p className="text-xs font-extrabold text-[#C5A059]">
-                                {formatFCFA(p.price)}
-                              </p>
-                              <p className="text-[11px] text-slate-400">{p.collar}</p>
-                            </div>
-                          </div>
-
-                          {/* Stocks by size preview with quick update */}
-                          <div className="pt-2 border-t border-[#C5A059]/20">
-                            <span className="text-[10px] font-bold uppercase text-slate-400 block mb-2">
-                              Stock par variante (Ajustement rapide) :
-                            </span>
-                            <div className="grid grid-cols-5 gap-1.5 text-center text-[10px]">
-                              {(['S', 'M', 'L', 'XL', 'XXL'] as ShirtSize[]).map((size) => (
-                                <div
-                                  key={size}
-                                  className={`relative group/stock p-1 rounded-lg font-bold border ${
-                                    (p?.stock?.[size] || 0) > 0
-                                      ? 'bg-[#050B18] text-[#F5F5F0] border-[#C5A059]/30'
-                                      : 'bg-rose-950/40 text-rose-400 border-rose-500/20'
-                                  }`}
-                                >
-                                  <div className="text-[8px] text-slate-500 mb-0.5">{size}</div>
-                                  <div className="text-xs">{p?.stock?.[size] ?? 0}</div>
-
-                                  {/* Quick Adjust Buttons on Hover/Action */}
-                                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex gap-1 opacity-0 group-hover/stock:opacity-100 transition-opacity">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleQuickStockUpdate(p.id, size, -1);
-                                      }}
-                                      className="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center hover:bg-rose-500 shadow-lg cursor-pointer"
-                                    >
-                                      -
-                                    </button>
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleQuickStockUpdate(p.id, size, 1);
-                                      }}
-                                      className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-500 shadow-lg cursor-pointer"
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Actions */}
-                          <div className="pt-2 border-t border-[#C5A059]/20 flex items-center justify-between">
-                            <button
-                              onClick={() => handleToggleProductAvailability(p.id)}
-                              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg cursor-pointer ${
-                                p.isAvailable
-                                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30'
-                                  : 'bg-slate-800 text-slate-400 border border-slate-700'
-                              }`}
-                            >
-                              {p.isAvailable ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                              <span>{p.isAvailable ? 'Actif' : 'Désactivé'}</span>
-                            </button>
-
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => handleEditProduct(p)}
-                                className="p-2 text-slate-300 hover:text-[#C5A059] hover:bg-[#050B18] rounded-lg border border-[#C5A059]/30 transition-colors cursor-pointer"
-                                title="Modifier"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteProduct(p.id)}
-                                className="p-2 text-rose-400 hover:bg-rose-950/50 rounded-lg border border-rose-500/30 transition-colors cursor-pointer"
-                                title="Supprimer"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
+                  <div className="flex justify-between items-center"><h3 className="text-xl font-serif font-bold">Catalogue</h3><button onClick={handleOpenNewProduct} className="px-6 py-2.5 bg-[#C5A059] text-[#0B1325] font-black text-xs uppercase rounded-xl">+ Ajouter</button></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {safeProducts.map(p => (
+                      <div key={p.id} className="bg-[#10192C] p-4 rounded-2xl border border-white/5 flex gap-4 items-center">
+                        <img src={p.images[0]} className="w-16 h-20 object-cover rounded-lg" alt="" />
+                        <div className="flex-1">
+                          <h4 className="font-bold text-sm">{p.name}</h4>
+                          <p className="text-[#C5A059] font-black text-xs">{formatFCFA(p.price)}</p>
                         </div>
-                      );
-                    })}
+                        <div className="flex gap-2">
+                          <button onClick={() => { setEditingProduct(p); setIsNewProduct(false); setProductModalOpen(true); }} className="p-2 bg-white/5 rounded-lg hover:text-[#C5A059]"><Edit2 className="w-4 h-4" /></button>
+                          <button onClick={() => handleDelete(p.id)} className="p-2 bg-white/5 rounded-lg hover:text-rose-500"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
 
-              {/* TAB 4: SETTINGS */}
-              {activeTab === 'settings' && (
-                <div className="max-w-2xl mx-auto space-y-6">
-                  <div>
-                    <h3 className="text-lg font-serif font-bold text-[#F5F5F0]">
-                      Paramètres Généraux & Numéro WhatsApp
-                    </h3>
-                    <p className="text-xs text-slate-400">
-                      Configurez les coordonnées du magasin, le numéro de contact WhatsApp et la livraison
-                    </p>
+              {activeTab === 'inventory' && (
+                <div className="space-y-6">
+                  <h3 className="text-xl font-serif font-bold">Gestion des Stocks</h3>
+                  <div className="bg-[#10192C] rounded-2xl border border-white/5 overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#050B18] text-[#C5A059] uppercase tracking-tighter">
+                        <tr>
+                          <th className="p-4">Produit</th>
+                          <th className="p-4">S</th>
+                          <th className="p-4">M</th>
+                          <th className="p-4">L</th>
+                          <th className="p-4">XL</th>
+                          <th className="p-4">XXL</th>
+                          <th className="p-4">Total</th>
+                          <th className="p-4">Statut</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {safeProducts.map(p => {
+                          const total = Object.values(p.stock).reduce((a, b) => a + b, 0);
+                          return (
+                            <tr key={p.id} className="hover:bg-white/5 transition-colors">
+                              <td className="p-4 font-bold">{p.name}</td>
+                              <td className={`p-4 ${p.stock.S === 0 ? 'text-rose-500' : ''}`}>{p.stock.S}</td>
+                              <td className={`p-4 ${p.stock.M === 0 ? 'text-rose-500' : ''}`}>{p.stock.M}</td>
+                              <td className={`p-4 ${p.stock.L === 0 ? 'text-rose-500' : ''}`}>{p.stock.L}</td>
+                              <td className={`p-4 ${p.stock.XL === 0 ? 'text-rose-500' : ''}`}>{p.stock.XL}</td>
+                              <td className={`p-4 ${p.stock.XXL === 0 ? 'text-rose-500' : ''}`}>{p.stock.XXL}</td>
+                              <td className="p-4 font-black">{total}</td>
+                              <td className="p-4">
+                                {total === 0 ? (
+                                  <span className="text-rose-500 font-bold uppercase text-[9px]">Rupture</span>
+                                ) : (
+                                  <span className="text-emerald-500 font-bold uppercase text-[9px]">En stock</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      onSaveSettings(settingsForm);
-                      alert('Paramètres enregistrés avec succès !');
-                    }}
-                    className="bg-[#10192C] p-6 rounded-3xl border border-[#C5A059]/30 space-y-4 text-[#F5F5F0]"
-                  >
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                        Numéro WhatsApp Réception Commandes (Sans symbole, ex: 22670000000) *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={settingsForm.whatsappNumber}
-                        onChange={(e) =>
-                          setSettingsForm({ ...settingsForm, whatsappNumber: e.target.value })
-                        }
-                        className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm font-mono text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                      />
-                      <p className="text-[11px] text-slate-400 mt-1">
-                        Ce numéro sera utilisé dynamiquement pour tous les boutons "Commander via WhatsApp".
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                          Affichage WhatsApp Public
-                        </label>
-                        <input
-                          type="text"
-                          value={settingsForm.whatsappDisplay}
-                          onChange={(e) =>
-                            setSettingsForm({ ...settingsForm, whatsappDisplay: e.target.value })
-                          }
-                          className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                          Téléphone Appel Showroom
-                        </label>
-                        <input
-                          type="text"
-                          value={settingsForm.phoneDisplay}
-                          onChange={(e) =>
-                            setSettingsForm({ ...settingsForm, phoneDisplay: e.target.value })
-                          }
-                          className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                        Adresse du Showroom
-                      </label>
-                      <input
-                        type="text"
-                        value={settingsForm.addressShowroom}
-                        onChange={(e) =>
-                          setSettingsForm({ ...settingsForm, addressShowroom: e.target.value })
-                        }
-                        className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                          Frais de livraison standard (FCFA)
-                        </label>
-                        <input
-                          type="number"
-                          value={settingsForm.defaultDeliveryFee}
-                          onChange={(e) =>
-                            setSettingsForm({
-                              ...settingsForm,
-                              defaultDeliveryFee: Number(e.target.value),
-                            })
-                          }
-                          className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                          Seuil Livraison Gratuite (FCFA)
-                        </label>
-                        <input
-                          type="number"
-                          value={settingsForm.freeShippingThreshold}
-                          onChange={(e) =>
-                            setSettingsForm({
-                              ...settingsForm,
-                              freeShippingThreshold: Number(e.target.value),
-                            })
-                          }
-                          className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#C5A059] mb-1">
-                        Texte du bandeau d'annonce
-                      </label>
-                      <input
-                        type="text"
-                        value={settingsForm.bannerAnnouncement}
-                        onChange={(e) =>
-                          setSettingsForm({ ...settingsForm, bannerAnnouncement: e.target.value })
-                        }
-                        className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                      />
-                    </div>
-
-                    <div className="pt-4 flex justify-end">
-                      <button
-                        type="submit"
-                        className="px-6 py-3 bg-[#C5A059] hover:bg-[#d8b56f] text-[#050B18] font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
-                      >
-                        <Save className="w-4 h-4" />
-                        <span>Enregistrer les paramètres</span>
-                      </button>
-                    </div>
-                  </form>
                 </div>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Modal: Edit or Create Product */}
         {productModalOpen && editingProduct && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div
-              className="bg-[#0B1325] border border-[#C5A059]/40 rounded-3xl max-w-2xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto text-[#F5F5F0] shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between border-b border-[#C5A059]/20 pb-4">
-                <h3 className="font-serif font-bold text-lg text-[#C5A059]">
-                  {isNewProduct ? 'Ajouter une nouvelle chemise' : 'Modifier la chemise'}
-                </h3>
-                <button onClick={() => setProductModalOpen(false)} className="cursor-pointer">
-                  <XCircle className="w-5 h-5 text-slate-400 hover:text-white" />
-                </button>
+          <div className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4">
+            <form onSubmit={handleSaveProduct} className="bg-[#0B1325] border border-[#C5A059]/40 p-8 rounded-3xl w-full max-w-2xl space-y-6 overflow-y-auto max-h-[90vh]">
+              <h3 className="text-2xl font-serif font-bold text-[#C5A059]">{isNewProduct ? 'Nouvelle Création' : 'Modifier Création'}</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <input type="text" placeholder="Nom" value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} className="p-3 bg-[#10192C] rounded-xl outline-none border border-white/10" required />
+                <input type="number" placeholder="Prix" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: Number(e.target.value)})} className="p-3 bg-[#10192C] rounded-xl outline-none border border-white/10" required />
               </div>
 
-              <form onSubmit={handleSaveProductModal} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      Nom de la chemise *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={editingProduct.name}
-                      onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, name: e.target.value })
-                      }
-                      className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                    />
+              <div className="grid grid-cols-5 gap-2">
+                {(['S', 'M', 'L', 'XL', 'XXL'] as ShirtSize[]).map(s => (
+                  <div key={s}>
+                    <label className="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-widest">Stock {s}</label>
+                    <input type="number" value={editingProduct.stock[s]} onChange={e => setEditingProduct({...editingProduct, stock: {...editingProduct.stock, [s]: Number(e.target.value)}})} className="w-full p-2 bg-[#10192C] rounded-lg border border-white/10 text-xs text-center" />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      Référence
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProduct.reference}
-                      onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, reference: e.target.value })
-                      }
-                      className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                    Slogan / Sous-titre
-                  </label>
-                  <input
-                    type="text"
-                    value={editingProduct.tagline}
-                    onChange={(e) =>
-                      setEditingProduct({ ...editingProduct, tagline: e.target.value })
-                    }
-                    className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                    Description détaillée
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={editingProduct.description}
-                    onChange={(e) =>
-                      setEditingProduct({ ...editingProduct, description: e.target.value })
-                    }
-                    className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      Prix de vente (FCFA) *
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={editingProduct.price}
-                      onChange={(e) =>
-                        setEditingProduct({
-                          ...editingProduct,
-                          price: Number(e.target.value),
-                        })
-                      }
-                      className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm font-bold text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      Prix promo barré (Optionnel)
-                    </label>
-                    <input
-                      type="number"
-                      value={editingProduct.originalPrice || ''}
-                      onChange={(e) =>
-                        setEditingProduct({
-                          ...editingProduct,
-                          originalPrice: e.target.value ? Number(e.target.value) : undefined,
-                        })
-                      }
-                      className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-sm text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      Catégorie
-                    </label>
-                    <select
-                      value={editingProduct.category}
-                      onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, category: e.target.value as any })
-                      }
-                      className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-xs font-semibold text-[#F5F5F0] focus:border-[#C5A059] outline-none cursor-pointer"
-                    >
-                      <option value="Faso Danfani">Faso Danfani</option>
-                      <option value="Cérémonie & Prestige">Cérémonie & Prestige</option>
-                      <option value="Signature">Signature</option>
-                      <option value="Koko Dunda Moderne">Koko Dunda Moderne</option>
-                      <option value="Casual Chic">Casual Chic</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      Col
-                    </label>
-                    <select
-                      value={editingProduct.collar}
-                      onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, collar: e.target.value as any })
-                      }
-                      className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-xs font-semibold text-[#F5F5F0] focus:border-[#C5A059] outline-none cursor-pointer"
-                    >
-                      <option value="Col Officier">Col Officier</option>
-                      <option value="Col Mao">Col Mao</option>
-                      <option value="Col Français Contemporain">Col Français</option>
-                      <option value="Col V Épuré">Col V Épuré</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      Badge
-                    </label>
-                    <select
-                      value={editingProduct.badge || ''}
-                      onChange={(e) =>
-                        setEditingProduct({
-                          ...editingProduct,
-                          badge: (e.target.value || undefined) as any,
-                        })
-                      }
-                      className="w-full p-2.5 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-xs font-semibold text-[#F5F5F0] focus:border-[#C5A059] outline-none cursor-pointer"
-                    >
-                      <option value="">Aucun</option>
-                      <option value="Nouveau">Nouveau</option>
-                      <option value="Promo">Promo</option>
-                      <option value="Populaire">Populaire</option>
-                      <option value="Édition Limitée">Édition Limitée</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Per size stock inputs */}
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[#C5A059] mb-2">
-                    Gestion du stock par taille :
-                  </label>
-                  <div className="grid grid-cols-5 gap-2">
-                    {(['S', 'M', 'L', 'XL', 'XXL'] as ShirtSize[]).map((size) => (
-                      <div key={size} className="space-y-1 text-center">
-                        <span className="text-xs font-bold text-[#F5F5F0]">{size}</span>
-                        <input
-                          type="number"
-                          min={0}
-                          value={editingProduct.stock[size]}
-                          onChange={(e) =>
-                            setEditingProduct({
-                              ...editingProduct,
-                              stock: {
-                                ...editingProduct.stock,
-                                [size]: Math.max(0, parseInt(e.target.value) || 0),
-                              },
-                            })
-                          }
-                          className="w-full p-2 bg-[#050B18] border border-[#C5A059]/30 rounded-lg text-center text-sm font-bold text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-4 bg-[#050B18] border-2 border-dashed border-[#C5A059]/30 rounded-2xl">
-                    <label className="block text-[10px] font-bold uppercase text-[#C5A059] mb-2 tracking-widest">
-                      📸 AJOUTER UNE VRAIE PHOTO (DEPUIS MOBILE)
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={isUploading}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                      />
-                      <div className={`py-4 flex flex-col items-center justify-center gap-2 transition-all ${isUploading ? 'opacity-50' : 'text-slate-400'}`}>
-                        {isUploading ? (
-                          <>
-                            <div className="w-6 h-6 border-2 border-[#C5A059] border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-xs font-bold">Envoi de la photo...</span>
-                          </>
-                        ) : (
-                          <>
-                            <div className="p-3 bg-[#10192C] rounded-full text-[#C5A059]">
-                              <Plus className="w-6 h-6" />
-                            </div>
-                            <span className="text-xs font-black uppercase tracking-tighter text-white">Prendre une photo / Choisir un fichier</span>
-                            <span className="text-[9px] text-slate-500">Formats acceptés : JPG, PNG (Max 5Mo)</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[#C5A059] mb-1">
-                      OU LIEN DE LA PHOTO (URL)
-                    </label>
-                    <input
-                      type="url"
-                      required
-                      value={editingProduct.images[0] || ''}
-                      onChange={(e) =>
-                        setEditingProduct({
-                          ...editingProduct,
-                          images: [e.target.value, ...editingProduct.images.slice(1)],
-                        })
-                      }
-                      placeholder="https://..."
-                      className="w-full p-3 bg-[#050B18] border border-[#C5A059]/30 rounded-xl text-xs font-mono text-[#F5F5F0] focus:border-[#C5A059] outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 flex justify-end gap-3 border-t border-[#C5A059]/20">
-                  <button
-                    type="button"
-                    onClick={() => setProductModalOpen(false)}
-                    className="px-4 py-2 text-xs font-bold uppercase rounded-xl bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-6 py-2 bg-[#C5A059] hover:bg-[#d8b56f] text-[#050B18] font-bold text-xs uppercase rounded-xl transition-all cursor-pointer"
-                  >
-                    Enregistrer
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Modal: Order Details Fiche */}
-        {selectedOrder && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 no-print">
-            <div
-              className="bg-[#0B1325] border border-[#C5A059]/40 rounded-3xl max-w-xl w-full p-6 space-y-6 text-[#F5F5F0] shadow-2xl relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Printable Header (Visible only on print) */}
-              <div className="hidden print-only text-black text-center mb-8">
-                <h1 className="text-2xl font-black uppercase tracking-widest">{settings.storeName}</h1>
-                <p className="text-xs">{settings.addressShowroom} | {settings.phoneDisplay}</p>
-                <div className="h-px bg-black my-4 w-full"></div>
-                <h2 className="text-xl font-bold">BON DE COMMANDE #{selectedOrder.orderNumber}</h2>
+                ))}
               </div>
 
-              <div className="flex items-center justify-between border-b border-[#C5A059]/20 pb-4 no-print">
-                <div>
-                  <h3 className="font-serif font-bold text-lg text-[#C5A059]">
-                    Commande #{selectedOrder.orderNumber}
-                  </h3>
-                  <span className="text-xs text-slate-400">
-                    {new Date(selectedOrder.createdAt).toLocaleString('fr-FR')}
-                  </span>
-                </div>
-                <button onClick={() => setSelectedOrder(null)} className="cursor-pointer no-print">
-                  <XCircle className="w-5 h-5 text-slate-400 hover:text-white" />
-                </button>
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-[#C5A059] uppercase tracking-widest">Photos (Plusieurs URLs possibles)</label>
+                {editingProduct.images.map((img, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input type="url" value={img} onChange={e => { const im = [...editingProduct.images]; im[i] = e.target.value; setEditingProduct({...editingProduct, images: im}); }} className="flex-1 p-3 bg-[#10192C] rounded-xl outline-none border border-white/10 text-xs font-mono" placeholder="Lien image..." />
+                    <button type="button" onClick={() => setEditingProduct({...editingProduct, images: editingProduct.images.filter((_, idx) => idx !== i)})} className="p-3 bg-rose-900/20 text-rose-500 rounded-xl"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                ))}
+                <button type="button" onClick={() => setEditingProduct({...editingProduct, images: [...editingProduct.images, '']})} className="w-full py-2 bg-white/5 border border-dashed border-white/20 rounded-xl text-[10px] uppercase font-bold">+ Ajouter une vue</button>
               </div>
-
-              <div className="space-y-4 text-xs">
-                <div className="p-4 bg-[#10192C] rounded-xl border border-[#C5A059]/30 space-y-2 print:bg-white print:text-black print:border-black">
-                  <div className="font-bold text-sm text-[#F5F5F0] print:text-black">
-                    CLIENT : {selectedOrder?.customer?.fullName || 'Client'}
-                  </div>
-                  <div className="text-slate-300 print:text-black">📞 Téléphone : {selectedOrder?.customer?.phone}</div>
-                  <div className="text-slate-300 print:text-black">💬 WhatsApp : {selectedOrder?.customer?.whatsapp}</div>
-                  <div className="text-slate-300 print:text-black">
-                    📍 Destination : {selectedOrder?.customer?.city}, {selectedOrder?.customer?.district} (
-                    {selectedOrder?.customer?.landmark})
-                  </div>
-                  {selectedOrder?.customer?.deliveryInstructions && (
-                    <div className="text-slate-400 print:text-black italic">📝 Instructions : {selectedOrder.customer.deliveryInstructions}</div>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="font-bold text-[#C5A059] print:text-black uppercase tracking-wider">Articles commandés :</div>
-                  <div className="divide-y divide-[#C5A059]/15 border border-[#C5A059]/30 rounded-xl p-3 bg-[#050B18] print:bg-white print:text-black print:border-black">
-                    {(selectedOrder?.items || []).map((it, idx) => (
-                      <div key={idx} className="py-2 flex justify-between">
-                        <div className="text-slate-300 print:text-black">
-                          <strong className="text-[#F5F5F0] print:text-black">{it?.product?.name || 'Chemise'}</strong> (Taille {it.size}) x{it.quantity}
-                        </div>
-                        <div className="font-bold text-[#C5A059] print:text-black">{formatFCFA((it.unitPrice || 0) * it.quantity)}</div>
-                      </div>
-                    ))}
-                    <div className="pt-2 flex justify-between font-bold text-sm text-[#F5F5F0] print:text-black border-t border-[#C5A059]/30 print:border-black">
-                      <span>MONTANT TOTAL :</span>
-                      <span className="text-[#C5A059] print:text-black">{formatFCFA(selectedOrder.total)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Info Payment/Delivery for print */}
-                <div className="hidden print:block text-[10px] space-y-1 pt-4">
-                  <div><strong>Mode de livraison :</strong> {selectedOrder.deliveryMethod}</div>
-                  <div><strong>Mode de paiement :</strong> {selectedOrder.paymentMethod}</div>
-                </div>
-
-                <div className="pt-2 flex items-center justify-between gap-3 no-print">
-                  <a
-                    href={generateCustomerDirectWhatsAppUrl(
-                      selectedOrder?.customer?.phone || '',
-                      selectedOrder.orderNumber,
-                      selectedOrder?.customer?.fullName || '',
-                      selectedOrder.status
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Contacter le client</span>
-                  </a>
-
-                  <button
-                    onClick={() => window.print()}
-                    className="px-4 py-2.5 bg-[#10192C] hover:bg-[#15233e] text-[#C5A059] border border-[#C5A059]/30 font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Printer className="w-4 h-4" />
-                    <span>Imprimer</span>
-                  </button>
-                </div>
+              <div className="flex gap-3 pt-4">
+                <button type="button" onClick={() => setProductModalOpen(false)} className="flex-1 py-3 bg-white/5 rounded-xl font-bold uppercase text-xs">Annuler</button>
+                <button type="submit" className="flex-1 py-3 bg-[#C5A059] text-[#0B1325] rounded-xl font-black uppercase text-xs">Enregistrer</button>
               </div>
-            </div>
+            </form>
           </div>
         )}
       </div>

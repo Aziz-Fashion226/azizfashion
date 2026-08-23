@@ -1,0 +1,5 @@
+- [x] Générer le schéma SQL Supabase
+- [x] Créer le script de migration (seed)
+- [ ] Demander à l'utilisateur d'exécuter le SQL sur Supabase
+- [ ] Lancer la synchronisation des données (Seed)
+- [ ] Vérifier la connexion en mode lecture dans l'App

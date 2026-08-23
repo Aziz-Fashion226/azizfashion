@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Compass, Heart, ShoppingBag, UserCircle, Shield } from 'lucide-react';
+import { Home, Compass, Heart, ShoppingBag, User } from 'lucide-react';
 
 interface MobileNavProps {
   currentView: string;
@@ -23,16 +23,16 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   isAdminLoggedIn,
 }) => {
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#F7F3ED]/95 backdrop-blur-lg border-t border-[#D4AF37]/20 px-3 py-2 shadow-2xl">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0B1325]/95 backdrop-blur-lg border-t border-[#C5A059]/20 px-3 py-2 shadow-2xl">
       <div className="flex items-center justify-around">
         {/* Home */}
         <button
           onClick={() => onNavigate('home')}
           className={`flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
-            currentView === 'home' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
+            currentView === 'home' ? 'text-[#C5A059]' : 'text-[#F5F5F0]/60'
           }`}
         >
-          <Home className={`w-5 h-5 ${currentView === 'home' ? 'fill-[#D4AF37]/10' : ''}`} />
+          <Home className={`w-5 h-5 ${currentView === 'home' ? 'fill-[#C5A059]/10' : ''}`} />
           <span className="text-[10px] font-black uppercase tracking-tighter">Accueil</span>
         </button>
 
@@ -40,21 +40,21 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <button
           onClick={() => onNavigate('shop')}
           className={`flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
-            currentView === 'shop' || currentView === 'new' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
+            currentView === 'shop' || currentView === 'new' ? 'text-[#C5A059]' : 'text-[#F5F5F0]/60'
           }`}
         >
-          <Compass className={`w-5 h-5 ${currentView === 'shop' ? 'fill-[#D4AF37]/10' : ''}`} />
+          <Compass className={`w-5 h-5 ${currentView === 'shop' || currentView === 'new' ? 'fill-[#C5A059]/10' : ''}`} />
           <span className="text-[10px] font-black uppercase tracking-tighter">Boutique</span>
         </button>
 
         {/* Favorites / Wishlist */}
         <button
           onClick={onOpenWishlist}
-          className="relative flex flex-col items-center gap-1 p-1.5 text-[#1A1510]/60 hover:text-[#D4AF37] transition-colors cursor-pointer"
+          className="relative flex flex-col items-center gap-1 p-1.5 text-[#F5F5F0]/60 hover:text-[#C5A059] transition-colors cursor-pointer"
         >
-          <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-[#D4AF37]/10' : ''}`} />
+          <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-[#C5A059]/10' : ''}`} />
           {wishlistCount > 0 && (
-            <span className="absolute top-0.5 right-1.5 bg-[#D4AF37] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+            <span className="absolute top-0.5 right-1.5 bg-[#C5A059] text-[#050B18] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
               {wishlistCount}
             </span>
           )}
@@ -65,12 +65,12 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <button
           onClick={onOpenCart}
           className={`relative flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
-            currentView === 'cart' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
+            currentView === 'cart' ? 'text-[#C5A059]' : 'text-[#F5F5F0]/60'
           }`}
         >
           <ShoppingBag className="w-5 h-5" />
           {cartCount > 0 && (
-            <span className="absolute top-0 right-1.5 bg-[#1A1510] text-[#D4AF37] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
+            <span className="absolute top-0 right-1.5 bg-[#C5A059] text-[#050B18] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
               {cartCount}
             </span>
           )}
@@ -81,19 +81,12 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <button
           onClick={onOpenAdmin}
           className={`flex flex-col items-center gap-1 p-1.5 transition-colors cursor-pointer ${
-            currentView === 'admin' ? 'text-[#D4AF37]' : 'text-[#1A1510]/60'
+            currentView === 'admin' ? 'text-[#C5A059]' : 'text-[#F5F5F0]/60'
           }`}
         >
-          <Shield className="w-5 h-5" />
+          <User className="w-5 h-5" />
           <span className="text-[10px] font-black uppercase tracking-tighter">
-            {isAdminLoggedIn ? 'Admin' : 'Compte'}
-          </span>
-        </button>
-      </div>
-    </div>
-  );
-};
-: 'Compte'}
+            Compte
           </span>
         </button>
       </div>

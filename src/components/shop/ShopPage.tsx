@@ -154,53 +154,52 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     (filters.maxPrice < 60000 ? 1 : 0);
 
   return (
-    <div className="py-4 sm:py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[#1A1510]">
+    <div className="pt-2 pb-6 sm:py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[#1A1510]">
       {/* Page Header - Refined Luxury Style - Compact on Mobile */}
-      <div className="mb-6 sm:mb-12 space-y-4 sm:space-y-8 text-center md:text-left">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-8">
-          <div className="space-y-2 sm:space-y-4">
+      <div className="mb-2 sm:mb-12 space-y-1 sm:space-y-8 text-center md:text-left">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-8">
+          <div className="space-y-1 sm:space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-[10px] font-black tracking-[0.2em] uppercase mx-auto md:mx-0">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Collection Exclusive</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black text-[#1A1510] tracking-tighter font-serif leading-none">
-              LA <span className="text-[#D4AF37]">BOUTIQUE</span>
+            <h1 className="hidden sm:block text-2xl sm:text-5xl font-black text-[#1A1510] tracking-tighter font-serif leading-none mt-1">
+              LA <span className="text-[#C5A059]">BOUTIQUE</span>
             </h1>
-            <p className="text-[11px] sm:text-sm text-slate-500 max-w-xl leading-relaxed hidden sm:block">
+            <p className="hidden sm:block text-[11px] sm:text-sm text-[#1A1510]/60 max-w-xl leading-relaxed">
               Explorez nos confections artisanales. Chaque pièce est un hommage à l'élégance africaine.
             </p>
           </div>
 
           {/* Search bar - More integrated and compact */}
-          <div className="relative w-full md:w-80 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D4AF37]" />
+          <div className="relative w-full md:w-80 group mt-1 md:mt-0">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#C5A059]" />
             <input
               type="text"
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              placeholder="Rechercher une création..."
-              className="w-full pl-11 pr-10 py-3 bg-white border border-[#D4AF37]/20 rounded-xl text-xs sm:text-sm text-[#1A1510] placeholder-slate-400 focus:outline-none focus:border-[#D4AF37] shadow-sm transition-all"
+              placeholder="Rechercher par nom, tissu..."
+              className="w-full pl-11 pr-10 py-3 bg-[#0B1325] border border-[#C5A059]/30 rounded-2xl text-xs sm:text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059] shadow-2xl transition-all"
             />
           </div>
         </div>
 
-        {/* Category Navigation - Elegant Tab Style */}
-        <div className="border-b border-[#D4AF37]/10">
-          <div className="flex items-center gap-8 overflow-x-auto no-scrollbar py-2">
+        {/* Category Navigation - Elegant Pill Style (matching screenshot) */}
+        <div className="pt-2">
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2">
             {(categories || []).map((cat) => {
               const isActive = filters.category === cat.id;
               return (
                 <button
                   key={cat.id}
                   onClick={() => setFilters({ ...filters, category: cat.id })}
-                  className={`relative pb-4 text-[11px] font-black uppercase tracking-[0.2em] whitespace-nowrap transition-all cursor-pointer ${
-                    isActive ? 'text-[#D4AF37]' : 'text-slate-400 hover:text-[#1A1510]'
+                  className={`px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-all cursor-pointer border ${
+                    isActive
+                      ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059] shadow-lg scale-105'
+                      : 'bg-[#10192C] text-[#F5F5F0]/80 border-[#C5A059]/20 hover:border-[#C5A059]/50'
                   }`}
                 >
                   {cat.label}
-                  {isActive && (
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-[#D4AF37] rounded-t-full animate-fadeIn" />
-                  )}
                 </button>
               );
             })}
@@ -300,93 +299,53 @@ export const ShopPage: React.FC<ShopPageProps> = ({
         </div>
 
         {/* Products Column (9 cols) */}
-        <div className="lg:col-span-9 space-y-8">
-          {/* Controls Bar - More subtle and integrated */}
-          <div className="flex items-center justify-between gap-4 py-2">
+        <div className="lg:col-span-9 space-y-6">
+          {/* Controls Bar - Compact & Luxury */}
+          <div className="flex flex-wrap items-center justify-between gap-4 py-2 px-4 bg-[#0B1325] rounded-3xl border border-[#C5A059]/20 shadow-xl">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setFilterDrawerOpen(true)}
-                className="lg:hidden flex items-center gap-2 px-5 py-3 bg-white border border-[#D4AF37]/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-[#1A1510] shadow-sm cursor-pointer"
+                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] text-[#F5F5F0] cursor-pointer"
               >
-                <Filter className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span>Ajuster ({activeFilterCount})</span>
+                <Filter className="w-3.5 h-3.5 text-[#C5A059]" />
+                <span>Filtres ({activeFilterCount})</span>
               </button>
 
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                <span className="text-[#1A1510]">{filteredProducts.length}</span> chemises trouvées
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#F5F5F0]/60">
+                <span className="text-[#C5A059]">{filteredProducts.length}</span> chemises
               </span>
             </div>
 
-            {/* Sort Dropdown - Refined */}
             <div className="flex items-center gap-3">
               <div className="relative group">
                 <select
                   value={filters.sortBy}
                   onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as any })}
-                  className="appearance-none bg-white border border-[#D4AF37]/20 text-[#1A1510] text-[11px] font-black uppercase tracking-widest rounded-2xl pl-5 pr-10 py-3 focus:outline-none focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/5 shadow-sm cursor-pointer"
+                  className="appearance-none bg-[#10192C] border border-[#C5A059]/30 text-[#F5F5F0] text-[10px] font-black uppercase tracking-widest rounded-xl pl-4 pr-9 py-2 focus:outline-none focus:border-[#C5A059] cursor-pointer"
                 >
-                  <option value="featured">Populaires</option>
+                  <option value="featured">Populaires & Vedettes</option>
                   <option value="newest">Nouveautés</option>
                   <option value="price-asc">Prix : croissant</option>
                   <option value="price-desc">Prix : décroissant</option>
+                  <option value="rating">Mieux notés</option>
                 </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-[#D4AF37] pointer-events-none" />
-              </div>
-
-              <div className="hidden sm:flex items-center gap-2 bg-white/50 p-1 rounded-2xl border border-[#D4AF37]/10">
-                <button
-                  onClick={() => setGridCols(3)}
-                  className={`p-2 rounded-xl transition-all cursor-pointer ${
-                    gridCols === 3 ? 'bg-white text-[#D4AF37] shadow-sm' : 'text-slate-400 hover:text-[#1A1510]'
-                  }`}
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setGridCols(4)}
-                  className={`p-2 rounded-xl transition-all cursor-pointer ${
-                    gridCols === 4 ? 'bg-white text-[#D4AF37] shadow-sm' : 'text-slate-400 hover:text-[#1A1510]'
-                  }`}
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-            {/* Sort & Grid switcher */}
-            <div className="flex items-center gap-3 ml-auto">
-              <div className="flex items-center gap-1.5 text-xs">
-                <span className="text-slate-400 hidden sm:inline">Trier par :</span>
-                <select
-                  value={filters.sortBy}
-                  onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as any })}
-                  className="bg-[#10192C] border border-[#C5A059]/30 text-[#F5F5F0] text-xs font-bold rounded-xl px-3 py-2 focus:outline-none focus:border-[#C5A059]"
-                >
-                  <option value="featured" className="bg-[#0B1325] text-white">Populaires & Vedettes</option>
-                  <option value="newest" className="bg-[#0B1325] text-white">Nouveautés</option>
-                  <option value="price-asc" className="bg-[#0B1325] text-white">Prix : croissant</option>
-                  <option value="price-desc" className="bg-[#0B1325] text-white">Prix : décroissant</option>
-                  <option value="rating" className="bg-[#0B1325] text-white">Mieux notés</option>
-                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-[#C5A059] pointer-events-none" />
               </div>
 
               <div className="hidden sm:flex items-center gap-1 border-l border-[#C5A059]/20 pl-3">
                 <button
                   onClick={() => setGridCols(3)}
-                  className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                     gridCols === 3 ? 'bg-[#C5A059] text-[#050B18]' : 'text-slate-400 hover:text-white'
                   }`}
-                  title="Grille 3 colonnes"
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setGridCols(4)}
-                  className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                     gridCols === 4 ? 'bg-[#C5A059] text-[#050B18]' : 'text-slate-400 hover:text-white'
                   }`}
-                  title="Grille 4 colonnes"
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>

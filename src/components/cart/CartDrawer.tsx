@@ -216,23 +216,23 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     )}
                   </span>
                 </div>
-                <div className="pt-2 border-t border-[#C5A059]/20 flex justify-between text-base font-extrabold text-[#F5F5F0]">
-                  <span>Total à payer</span>
-                  <span className="text-lg text-[#C5A059]">{formatFCFA(total)}</span>
+                <div className="pt-3 border-t border-[#C5A059]/40 flex justify-between items-center text-[#F5F5F0]">
+                  <span className="text-sm font-bold uppercase tracking-widest">Total à régler</span>
+                  <span className="text-2xl font-black text-[#C5A059] drop-shadow-lg">{formatFCFA(total)}</span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 <button
                   onClick={() => {
                     onClose();
                     onProceedToCheckout();
                   }}
-                  className="w-full py-4 px-6 bg-[#C5A059] hover:bg-[#d8b56f] text-[#050B18] font-extrabold text-xs sm:text-sm uppercase tracking-widest rounded-2xl shadow-xl flex items-center justify-center gap-3 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                  className="w-full py-4.5 px-6 bg-[#C5A059] hover:bg-[#d8b56f] text-[#050B18] font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-2xl flex items-center justify-center gap-3 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer"
                 >
-                  <span>PASSER LA COMMANDE</span>
-                  <ArrowRight className="w-4 h-4 text-[#050B18]" />
+                  <span>PASSER À LA CAISSE</span>
+                  <ArrowRight className="w-5 h-5 text-[#050B18]" />
                 </button>
 
                 <button
