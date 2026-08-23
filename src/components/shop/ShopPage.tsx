@@ -154,41 +154,33 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     (filters.maxPrice < 60000 ? 1 : 0);
 
   return (
-    <div className="py-8 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[#1A1510]">
-      {/* Page Header - Refined Luxury Style */}
-      <div className="mb-12 space-y-8 text-center md:text-left">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <div className="space-y-4">
+    <div className="py-4 sm:py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[#1A1510]">
+      {/* Page Header - Refined Luxury Style - Compact on Mobile */}
+      <div className="mb-6 sm:mb-12 space-y-4 sm:space-y-8 text-center md:text-left">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-8">
+          <div className="space-y-2 sm:space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-[10px] font-black tracking-[0.2em] uppercase mx-auto md:mx-0">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Collection Exclusive</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-black text-[#1A1510] tracking-tighter font-serif leading-none">
+            <h1 className="text-3xl sm:text-5xl font-black text-[#1A1510] tracking-tighter font-serif leading-none">
               LA <span className="text-[#D4AF37]">BOUTIQUE</span>
             </h1>
-            <p className="text-sm text-slate-500 max-w-xl leading-relaxed">
-              Explorez nos confections artisanales. Chaque pièce est un hommage à l'élégance africaine et au savoir-faire de nos maîtres tailleurs.
+            <p className="text-[11px] sm:text-sm text-slate-500 max-w-xl leading-relaxed hidden sm:block">
+              Explorez nos confections artisanales. Chaque pièce est un hommage à l'élégance africaine.
             </p>
           </div>
 
-          {/* Search bar - More integrated */}
-          <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D4AF37] transition-transform group-focus-within:scale-110" />
+          {/* Search bar - More integrated and compact */}
+          <div className="relative w-full md:w-80 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D4AF37]" />
             <input
               type="text"
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              placeholder="Rechercher une création, un tissu..."
-              className="w-full pl-12 pr-10 py-4 bg-white border border-[#D4AF37]/20 rounded-2xl text-sm text-[#1A1510] placeholder-slate-400 focus:outline-none focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/5 shadow-sm transition-all"
+              placeholder="Rechercher une création..."
+              className="w-full pl-11 pr-10 py-3 bg-white border border-[#D4AF37]/20 rounded-xl text-xs sm:text-sm text-[#1A1510] placeholder-slate-400 focus:outline-none focus:border-[#D4AF37] shadow-sm transition-all"
             />
-            {filters.search && (
-              <button
-                onClick={() => setFilters({ ...filters, search: '' })}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#1A1510] cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
           </div>
         </div>
 
