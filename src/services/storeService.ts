@@ -1,6 +1,7 @@
 import { Product, Order, StoreSettings, Review, CartItem, OrderStatus, ShirtSize } from '../types';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_REVIEWS, INITIAL_SETTINGS } from '../data/initialData';
 import { supabase } from './supabaseClient';
+import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEYS = {
   PRODUCTS: 'aziz_fashion_products_v1',
@@ -405,6 +406,25 @@ export const updateProductStockInDb = async (
     .eq('id', productId);
 
   if (updateError) throw updateError;
+};
+
+// --- Storage / Image Upload ---
+export const uploadProductImage = async (file: File): Promise<string> => {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${uuidv4()}.${fileExt}`;
+  const filePath = `products/${fileName}`;
+
+  const { data, error } = await supabase.storage
+    .from('aziz-assets')
+    .upload(filePath, file);
+
+  if (error) throw error;
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('aziz-assets')
+    .getPublicUrl(filePath);
+
+  return publicUrl;
 };
 
 // Specific order fetch for tracking

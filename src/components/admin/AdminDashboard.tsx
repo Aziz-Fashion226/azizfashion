@@ -3,7 +3,7 @@ import {
   User, LayoutDashboard, Package, ShoppingBag, Settings, LogOut, TrendingUp, Clock, CheckCircle, Truck, CheckCheck, XCircle, Plus, Edit2, Trash2, Eye, EyeOff, MessageCircle, Search, Printer, Save, RotateCcw, Sparkles, AlertTriangle, ChevronRight, Filter, MapPin, Calendar, Box, Camera, Info, Tag, Layers, ArrowLeft
 } from 'lucide-react';
 import { Order, OrderStatus, Product, ShirtSize, SizeStock, StoreSettings } from '../../types';
-import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder } from '../../services/storeService';
+import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder, uploadProductImage } from '../../services/storeService';
 import { Logo } from '../common/Logo';
 import { supabase } from '../../services/supabaseClient';
 
@@ -34,6 +34,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [orderSearch, setOrderSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +78,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct) return;
+    if (!editingProduct || isUploading) return;
     try {
       const cleanImgs = editingProduct.images.filter(img => img.trim() !== '');
       const toSave = { ...editingProduct, images: cleanImgs.length > 0 ? cleanImgs : ['https://via.placeholder.com/400'] };
@@ -85,6 +86,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       else { await updateProduct(toSave); await onSaveProducts(products.map(p => p.id === toSave.id ? toSave : p)); }
       setProductModalOpen(false);
     } catch (err: any) { alert("Erreur : " + err.message); }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !editingProduct) return;
+
+    setIsUploading(true);
+    try {
+      const file = files[0];
+      const publicUrl = await uploadProductImage(file);
+
+      // Add the new URL to the images array, removing empty strings
+      const currentImages = editingProduct.images.filter(img => img.trim() !== '');
+      setEditingProduct({
+        ...editingProduct,
+        images: [...currentImages, publicUrl]
+      });
+    } catch (err: any) {
+      alert("Erreur lors de l'envoi de l'image : " + err.message);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -525,36 +548,81 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 </section>
 
-                {/* Section 2: Photos & Médias */}
                 <section className="space-y-6">
                   <h4 className="flex items-center gap-3 text-xs font-black uppercase text-[#C5A059] tracking-widest border-l-2 border-[#C5A059] pl-4">
                     <Camera className="w-4 h-4" /> Médias & Présentation
                   </h4>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div className="space-y-4">
-                      {editingProduct.images.map((img, i) => (
-                        <div key={i} className="flex gap-2">
-                          <input
-                            type="url"
-                            value={img}
-                            onChange={e => { const im = [...editingProduct.images]; im[i] = e.target.value; setEditingProduct({...editingProduct, images: im}); }}
-                            className="flex-1 p-4 bg-[#10192C] rounded-2xl border border-white/10 text-[10px] font-mono outline-none"
-                            placeholder="URL de la photo (JPEG, PNG...)"
-                          />
-                          <button type="button" onClick={() => setEditingProduct({...editingProduct, images: editingProduct.images.filter((_, idx) => idx !== i)})} className="p-4 bg-rose-500/10 text-rose-500 rounded-2xl hover:bg-rose-500 transition-all"><Trash2 className="w-4 h-4" /></button>
+                      {/* Upload Button */}
+                      <div className="relative group">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          disabled={isUploading}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
+                        />
+                        <div className={`w-full py-8 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-3 transition-all ${isUploading ? 'bg-white/5 border-white/10' : 'bg-[#10192C] border-[#C5A059]/20 group-hover:border-[#C5A059]/50'}`}>
+                          {isUploading ? (
+                            <>
+                              <div className="w-6 h-6 border-2 border-[#C5A059]/20 border-t-[#C5A059] rounded-full animate-spin"></div>
+                              <span className="text-[10px] font-black uppercase text-[#C5A059] animate-pulse">Envoi en cours...</span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="p-4 bg-[#C5A059]/10 rounded-2xl text-[#C5A059]">
+                                <Plus className="w-6 h-6" />
+                              </div>
+                              <div className="text-center">
+                                <span className="text-xs font-black uppercase text-[#F5F5F0]">Ajouter une photo</span>
+                                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Glisser-déposer ou cliquer</p>
+                              </div>
+                            </>
+                          )}
                         </div>
-                      ))}
-                      <button type="button" onClick={() => setEditingProduct({...editingProduct, images: [...editingProduct.images, '']})} className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-[10px] font-black uppercase text-slate-500 hover:border-[#C5A059]/50 hover:text-white transition-all">+ Ajouter une vue</button>
+                      </div>
+
+                      <div className="relative flex items-center gap-4 py-2">
+                        <div className="flex-1 h-px bg-white/5"></div>
+                        <span className="text-[9px] font-bold text-slate-600 uppercase">Ou lien direct</span>
+                        <div className="flex-1 h-px bg-white/5"></div>
+                      </div>
+
+                      <div className="space-y-3">
+                        {editingProduct.images.map((img, i) => (
+                          <div key={i} className="flex gap-2 group/item">
+                            <input
+                              type="url"
+                              value={img}
+                              onChange={e => { const im = [...editingProduct.images]; im[i] = e.target.value; setEditingProduct({...editingProduct, images: im}); }}
+                              className="flex-1 p-4 bg-[#10192C] rounded-2xl border border-white/10 text-[10px] font-mono outline-none focus:border-[#C5A059] transition-all"
+                              placeholder="URL de la photo..."
+                            />
+                            <button type="button" onClick={() => setEditingProduct({...editingProduct, images: editingProduct.images.filter((_, idx) => idx !== i)})} className="p-4 bg-rose-500/10 text-rose-500 rounded-2xl hover:bg-rose-500 hover:text-white transition-all"><Trash2 className="w-4 h-4" /></button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
-                    <div className="flex gap-4 overflow-x-auto pb-4">
+                    <div className="grid grid-cols-2 gap-4 auto-rows-min">
                       {editingProduct.images.filter(img => img).map((img, i) => (
-                        <div key={i} className="w-32 h-40 rounded-2xl overflow-hidden shrink-0 border border-white/10 bg-white/5">
-                          <img src={img} className="w-full h-full object-cover" alt="Preview" onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/400?text=Lien+Invalide')} />
+                        <div key={i} className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 bg-white/5 group/thumb">
+                          <img src={img} className="w-full h-full object-cover" alt="Preview" onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/400?text=Image+Non+Trouvée')} />
+                          <button
+                            type="button"
+                            onClick={() => setEditingProduct({...editingProduct, images: editingProduct.images.filter((_, idx) => idx !== i)})}
+                            className="absolute top-2 right-2 p-2 bg-black/60 backdrop-blur-md text-white rounded-lg opacity-0 group-hover/thumb:opacity-100 transition-all hover:bg-rose-500"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
                         </div>
                       ))}
                       {editingProduct.images.filter(img => img).length === 0 && (
-                        <div className="w-full h-40 bg-[#050B18] border border-white/5 rounded-2xl flex items-center justify-center text-[10px] font-bold text-slate-700 uppercase tracking-widest italic">Aperçu indisponible</div>
+                        <div className="col-span-2 h-48 bg-[#050B18] border border-white/5 rounded-3xl flex flex-col items-center justify-center gap-3 text-slate-700">
+                          <Camera className="w-8 h-8 opacity-20" />
+                          <span className="text-[10px] font-bold uppercase tracking-[0.2em] italic">Aucun aperçu</span>
+                        </div>
                       )}
                     </div>
                   </div>
