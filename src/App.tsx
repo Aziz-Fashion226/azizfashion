@@ -59,6 +59,32 @@ import {
 export default function App() {
   // Navigation View State: 'home' | 'shop' | 'about' | 'contact' | 'new' | 'cart' | 'wishlist'
   const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'new' | 'cart' | 'wishlist'>('home');
+
+  // Sync state with browser history for back button support
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        setCurrentView(event.state.view);
+      } else {
+        setCurrentView('home');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Initial state
+    window.history.replaceState({ view: 'home' }, '');
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateToView = (view: any) => {
+    if (view === currentView) return;
+    setCurrentView(view);
+    window.history.pushState({ view }, '', view === 'home' ? '/' : `#${view}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const [shopCategoryFilter, setShopCategoryFilter] = useState<string>('all');
 
   // Core Data States
@@ -336,8 +362,7 @@ export default function App() {
 
   const navigateToShop = (category: string = 'all') => {
     setShopCategoryFilter(category);
-    setCurrentView('shop');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateToView('shop');
   };
 
   return (
@@ -356,12 +381,9 @@ export default function App() {
         cartCount={totalCartCount}
         wishlistCount={wishlistIds.length}
         currentView={currentView}
-        onNavigate={(view) => {
-          setCurrentView(view as any);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        onOpenCart={() => setCurrentView('cart')}
-        onOpenWishlist={() => setCurrentView('wishlist')}
+        onNavigate={navigateToView}
+        onOpenCart={() => navigateToView('cart')}
+        onOpenWishlist={() => navigateToView('wishlist')}
         onOpenSearch={() => setSearchOpen(true)}
         onOpenSizeGuide={() => setSizeGuideOpen(true)}
         onOpenAdmin={() => setAdminOpen(true)}
@@ -469,7 +491,7 @@ export default function App() {
             onRemoveItem={handleRemoveCartItem}
             onClearCart={handleClearCart}
             onProceedToCheckout={() => setCheckoutOpen(true)}
-            onNavigate={setCurrentView}
+            onNavigate={navigateToView}
             settings={settings}
           />
         )}
@@ -482,17 +504,14 @@ export default function App() {
             onRemoveFromWishlist={handleToggleWishlist}
             onSelectProduct={(p) => setSelectedProduct(p)}
             onAddToCart={handleAddToCart}
-            onNavigate={setCurrentView}
+            onNavigate={navigateToView}
           />
         )}
       </main>
 
       {/* Footer */}
       <Footer
-        onNavigate={(view) => {
-          setCurrentView(view);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onNavigate={navigateToView}
         onOpenSizeGuide={() => setSizeGuideOpen(true)}
         settings={settings}
       />
@@ -502,15 +521,12 @@ export default function App() {
 
       <MobileNav
         currentView={currentView}
-        onNavigate={(view) => {
-          setCurrentView(view as any);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onNavigate={navigateToView}
         cartCount={totalCartCount}
-        onOpenCart={() => setCurrentView('cart')}
+        onOpenCart={() => navigateToView('cart')}
         onOpenSearch={() => setSearchOpen(true)}
         wishlistCount={wishlistIds.length}
-        onOpenWishlist={() => setCurrentView('wishlist')}
+        onOpenWishlist={() => navigateToView('wishlist')}
         onOpenAdmin={() => setAdminOpen(true)}
         isAdminLoggedIn={isAdminAuthenticated}
       />
@@ -535,7 +551,7 @@ export default function App() {
         isOpen={checkoutOpen}
         onClose={() => {
           setCheckoutOpen(false);
-          if (currentView === 'cart') setCurrentView('shop');
+          if (currentView === 'cart') navigateToView('shop');
         }}
         items={cart}
         onOrderPlaced={handleOrderPlaced}
