@@ -57,7 +57,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [promoApplied, setPromoApplied] = useState<{ code: string; discount: number } | null>(null);
 
   const subtotal = safeItems.reduce((acc, item) => acc + (item.unitPrice || 0) * (item.quantity || 1), 0);
-  const deliveryFee = subtotal >= (settings?.freeShippingThreshold || 60000) || deliveryMethod === 'Récupération en showroom / boutique' ? 0 : (settings?.defaultDeliveryFee || 2000);
+  const deliveryFee = subtotal >= (settings?.freeShippingThreshold || 60000) || deliveryMethod === 'Récupération en boutique' ? 0 : (settings?.defaultDeliveryFee || 2000);
   const total = Math.max(0, subtotal + deliveryFee - (promoApplied?.discount || 0));
 
   const handleNext = () => {
@@ -75,21 +75,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const handleBack = () => { if (step > 1) setStep((step - 1) as any); };
 
   const handleSubmit = async () => {
-    const orderNumber = `AZF-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const newOrder: Order = {
-      id: `ord-${Date.now()}`,
-      orderNumber,
-      customer: { ...customer, whatsapp: sameAsPhone ? customer.phone : customer.whatsapp || customer.phone },
-      items: safeItems,
-      subtotal, deliveryFee, discount: promoApplied?.discount || 0, total,
-      deliveryMethod, paymentMethod, status: 'Nouvelle',
-      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    };
+    try {
+      const orderNumber = `AZF-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newOrder: Order = {
+        id: `ord-${Date.now()}`,
+        orderNumber,
+        customer: { ...customer, whatsapp: sameAsPhone ? customer.phone : customer.whatsapp || customer.phone },
+        items: safeItems,
+        subtotal, deliveryFee, discount: promoApplied?.discount || 0, total,
+        deliveryMethod, paymentMethod, status: 'Nouvelle',
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      };
 
-    await onOrderPlaced(newOrder);
-    setPlacedOrder(newOrder);
-    setStep('success');
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#C5A059', '#0B1325'] });
+      await onOrderPlaced(newOrder);
+      setPlacedOrder(newOrder);
+      setStep('success');
+      setTimeout(() => {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#C5A059', '#0B1325'] });
+      }, 100);
+    } catch (err) {
+      // Error is already handled by toast in App.tsx
+      console.error("Submit error:", err);
+    }
   };
 
   const steps = [
@@ -154,8 +161,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <button onClick={() => setDeliveryMethod('Livraison à domicile')} className={`p-4 rounded-2xl border flex flex-col items-center gap-2 ${deliveryMethod.includes('domicile') ? 'bg-[#C5A059] text-[#0B1325] border-[#C5A059]' : 'bg-[#10192C] border-[#C5A059]/20 opacity-60'}`}>
                         <Truck className="w-6 h-6" /> <span className="text-[10px] font-black uppercase">À Domicile</span>
                     </button>
-                    <button onClick={() => setDeliveryMethod('Récupération en showroom / boutique')} className={`p-4 rounded-2xl border flex flex-col items-center gap-2 ${!deliveryMethod.includes('domicile') ? 'bg-[#C5A059] text-[#0B1325] border-[#C5A059]' : 'bg-[#10192C] border-[#C5A059]/20 opacity-60'}`}>
-                        <Building2 className="w-6 h-6" /> <span className="text-[10px] font-black uppercase">En Showroom</span>
+                    <button onClick={() => setDeliveryMethod('Récupération en boutique')} className={`p-4 rounded-2xl border flex flex-col items-center gap-2 ${!deliveryMethod.includes('domicile') ? 'bg-[#C5A059] text-[#0B1325] border-[#C5A059]' : 'bg-[#10192C] border-[#C5A059]/20 opacity-60'}`}>
+                        <Building2 className="w-6 h-6" /> <span className="text-[10px] font-black uppercase">En Boutique</span>
                     </button>
                 </div>
                 <div className="space-y-4">

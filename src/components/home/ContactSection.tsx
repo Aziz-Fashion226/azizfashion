@@ -26,7 +26,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
     e.preventDefault();
     if (!name || !message) return;
     const text = encodeURIComponent(
-      `*Message Showroom / Contact*\n• *Nom :* ${name}\n• *Téléphone :* ${phone || 'Non renseigné'}\n• *Message :* ${message}`
+      `*Message Boutique / Contact*\n• *Nom :* ${name}\n• *Téléphone :* ${phone || 'Non renseigné'}\n• *Message :* ${message}`
     );
     window.open(`https://wa.me/${settings.whatsappNumber}?text=${text}`, '_blank');
     setSubmitted(true);
@@ -42,10 +42,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10192C] text-[#C5A059] text-xs font-bold uppercase tracking-widest border border-[#C5A059]/30">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Showroom & Prise de Rendez-vous</span>
+            <span>Boutique & Prise de Rendez-vous</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#F5F5F0] tracking-tight">
-            Venez essayer nos créations au Showroom
+            Venez essayer nos créations à la Boutique
           </h2>
           <p className="text-sm text-[#F5F5F0]/70">
             Notre équipe vous accueille pour des essayages personnalisés, des commandes sur mesure et des conseils de style.
@@ -58,7 +58,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
             <div className="p-6 bg-[#0B1325] backdrop-blur-md rounded-2xl border border-[#C5A059]/30 space-y-4">
               <h3 className="text-lg font-bold font-serif text-[#C5A059] flex items-center gap-2">
                 <Building className="w-5 h-5" />
-                <span>Showroom Principal</span>
+                <span>Boutique Principale</span>
               </h3>
               <p className="text-xs text-[#F5F5F0]/80 leading-relaxed">
                 {settings.addressShowroom}
@@ -159,7 +159,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
                     required
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Précisez votre demande (sur-mesure, disponibilité d'un modèle, visite showroom...)"
+                    placeholder="Précisez votre demande (sur-mesure, disponibilité d'un modèle, visite boutique...)"
                     className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-xs sm:text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059]"
                   />
                 </div>

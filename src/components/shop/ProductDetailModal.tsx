@@ -536,7 +536,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               {activeTab === 'shipping' && (
                 <div className="space-y-3">
                   {[
-                    { loc: 'Ouagadougou', time: 'Livraison sous 24h ou retrait showroom' },
+                    { loc: 'Ouagadougou', time: 'Livraison sous 24h ou retrait boutique' },
                     { loc: 'Provinces du Burkina', time: 'Expédition express sécurisée (24h-48h)' },
                     { loc: 'International', time: 'Livraison DHL/FedEx sous 3-5 jours' }
                   ].map((item, i) => (

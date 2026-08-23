@@ -303,7 +303,7 @@ export const generateCartWhatsAppUrl = (
   const itemsList = items
     .map(
       (item, idx) =>
-        `${idx + 1}. *${item.product.name}* (Taille: ${item.size}, Couleur: ${item.color}) x${item.quantity} = ${formatFCFA(item.unitPrice * item.quantity)}`
+        `${idx + 1}. *${item.product?.name || item.productName || 'Chemise'}* (Taille: ${item.size}, Couleur: ${item.color}) x${item.quantity} = ${formatFCFA(item.unitPrice * item.quantity)}`
     )
     .join('\n');
 
@@ -329,7 +329,7 @@ export const generateOrderConfirmationWhatsAppUrl = (
 ): string => {
   const itemsText = order.items
     .map(
-      (item) => `• ${item.product.name} (${item.size}) x${item.quantity} - ${formatFCFA(item.unitPrice * item.quantity)}`
+      (item) => `• ${item.product?.name || item.productName || 'Chemise'} (${item.size}) x${item.quantity} - ${formatFCFA(item.unitPrice * item.quantity)}`
     )
     .join('\n');
 

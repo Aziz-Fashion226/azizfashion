@@ -210,7 +210,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-6 border-t border-[#C5A059]/20 text-center text-xs text-[#F5F5F0]/60 space-y-2">
-            <p className="text-[#F5F5F0]/80 font-medium">Showroom Ouagadougou • Livraison dans toute la sous-région</p>
+            <p className="text-[#F5F5F0]/80 font-medium">Boutique Ouagadougou • Livraison dans toute la sous-région</p>
             <p className="text-[#C5A059]">WhatsApp : {settings?.whatsappDisplay || '+226 70 00 00 00'}</p>
           </div>
         </div>

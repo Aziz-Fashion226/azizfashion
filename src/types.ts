@@ -53,7 +53,7 @@ export type OrderStatus = 'Nouvelle' | 'Confirmée' | 'En préparation' | 'Expé
 
 export type PaymentMethod = 'Paiement à la livraison' | 'Orange Money' | 'Moov Money' | 'Wave' | 'MTN Mobile Money' | 'Paiement par carte (CinetPay)';
 
-export type DeliveryMethod = 'Livraison à domicile' | 'Récupération en showroom / boutique';
+export type DeliveryMethod = 'Livraison à domicile' | 'Récupération en boutique';
 
 export interface CustomerInfo {
   fullName: string;

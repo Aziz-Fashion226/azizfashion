@@ -324,6 +324,7 @@ export default function App() {
     } catch (error: any) {
       console.error('Error placing order:', error);
       showToast('Erreur lors de la commande : ' + error.message, 'info');
+      throw error; // Re-throw to inform the UI
     }
   };
 
@@ -453,7 +454,7 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 4: CONTACT & SHOWROOM */}
+        {/* VIEW 4: CONTACT & BOUTIQUE */}
         {currentView === 'contact' && (
           <div className="py-8">
             <ContactSection settings={settings} />

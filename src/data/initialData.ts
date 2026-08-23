@@ -499,7 +499,7 @@ export const INITIAL_ORDERS: Order[] = [
       whatsapp: '+226 78 50 11 22',
       city: 'Ouagadougou',
       district: 'Gounghin',
-      landmark: 'Showroom Aziz Fashion',
+      landmark: 'Boutique Aziz Fashion',
     },
     items: [
       {
@@ -515,7 +515,7 @@ export const INITIAL_ORDERS: Order[] = [
     deliveryFee: 0,
     discount: 0,
     total: 32000,
-    deliveryMethod: 'Récupération en showroom / boutique',
+    deliveryMethod: 'Récupération en boutique',
     paymentMethod: 'Paiement à la livraison',
     status: 'Nouvelle',
     createdAt: '2026-08-22T14:10:00.000Z',
