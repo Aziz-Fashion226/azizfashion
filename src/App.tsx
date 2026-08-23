@@ -345,80 +345,23 @@ export default function App() {
               settings={settings}
             />
 
-            {/* Reassurance & Value Proposition Bar */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 sm:p-8 bg-[#0B1325] text-white rounded-3xl border border-[#D4AF37]/30 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center shrink-0">
-                    <Scissors className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                      100% Coton Peigné
-                    </h4>
-                    <p className="text-[11px] text-slate-300">Tissé main & finitions nobles</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                      Coupe Impeccable
-                    </h4>
-                    <p className="text-[11px] text-slate-300">Cols structurés & tenue parfaite</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center shrink-0">
-                    <Truck className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                      Livraison Express
-                    </h4>
-                    <p className="text-[11px] text-slate-300">24h à 48h à Ouaga et sous-région</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center shrink-0">
-                    <RotateCcw className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                      Échange Garanti
-                    </h4>
-                    <p className="text-[11px] text-slate-300">Sous 48h en cas de mauvaise taille</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Featured Creations Showcase */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            {/* Reassurance & Featured Creations */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#D4AF37]/20 pb-8">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF5E8] text-[#997A1E] text-xs font-bold uppercase tracking-widest border border-[#D4AF37]/30 mb-2">
-                    <Flame className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>Incontournables</span>
-                  </div>
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0B1325] font-serif tracking-tight">
-                    Nos Chemises Vedettes
+                  <h2 className="text-3xl sm:text-4xl font-black text-[#1A1510] font-serif tracking-tight">
+                    Nos Créations Vedettes
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                    Les pièces emblématiques plébiscitées pour leur allure et leur confort d'exception.
+                  <p className="text-sm text-slate-500 mt-2">
+                    L'excellence du savoir-faire textile burkinabè.
                   </p>
                 </div>
 
                 <button
                   onClick={() => navigateToShop('all')}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#0B1325] hover:text-[#997A1E] transition-colors group"
+                  className="inline-flex items-center gap-2 text-xs font-black tracking-widest text-[#D4AF37] hover:text-[#B88E2F] transition-colors group uppercase"
                 >
-                  <span>Explorer toute la collection</span>
+                  <span>Voir toute la collection</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
@@ -442,146 +385,13 @@ export default function App() {
               </div>
             </section>
 
-            {/* Visual Category Banner Grid */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-              <div className="text-center max-w-2xl mx-auto space-y-2">
-                <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-                  Univers & Confections
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0B1325] font-serif">
-                  Découvrez nos lignes de style
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Category 1: Faso Danfani */}
-                <div
-                  onClick={() => navigateToShop('Faso Danfani')}
-                  className="relative group h-96 rounded-3xl overflow-hidden cursor-pointer shadow-lg border border-[#E8E4DC]"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80"
-                    alt="Faso Danfani"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1325] via-[#0B1325]/40 to-transparent flex flex-col justify-end p-6 text-white space-y-2">
-                    <span className="text-[11px] font-bold uppercase text-[#D4AF37] tracking-widest">
-                      Héritage & Prestige
-                    </span>
-                    <h3 className="text-xl font-bold font-serif">Faso Danfani Tissé Main</h3>
-                    <p className="text-xs text-slate-300 line-clamp-2">
-                      L'authenticité du fil de coton burkinabè travaillé avec une coupe moderne et épurée.
-                    </p>
-                    <span className="text-xs font-bold text-[#D4AF37] inline-flex items-center gap-1 group-hover:underline pt-1">
-                      Découvrir la ligne <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-
-                {/* Category 2: Cérémonie & Prestige */}
-                <div
-                  onClick={() => navigateToShop('Cérémonie & Prestige')}
-                  className="relative group h-96 rounded-3xl overflow-hidden cursor-pointer shadow-lg border border-[#E8E4DC]"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
-                    alt="Cérémonie & Prestige"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1325] via-[#0B1325]/40 to-transparent flex flex-col justify-end p-6 text-white space-y-2">
-                    <span className="text-[11px] font-bold uppercase text-[#D4AF37] tracking-widest">
-                      Grands Événements
-                    </span>
-                    <h3 className="text-xl font-bold font-serif">Cérémonie & Réceptions</h3>
-                    <p className="text-xs text-slate-300 line-clamp-2">
-                      Des broderies dorées discrètes et des cols officier haute prestance pour marquer les esprits.
-                    </p>
-                    <span className="text-xs font-bold text-[#D4AF37] inline-flex items-center gap-1 group-hover:underline pt-1">
-                      Découvrir la ligne <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-
-                {/* Category 3: Signature Aziz */}
-                <div
-                  onClick={() => navigateToShop('Signature')}
-                  className="relative group h-96 rounded-3xl overflow-hidden cursor-pointer shadow-lg border border-[#E8E4DC]"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80"
-                    alt="Signature Aziz"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1325] via-[#0B1325]/40 to-transparent flex flex-col justify-end p-6 text-white space-y-2">
-                    <span className="text-[11px] font-bold uppercase text-[#D4AF37] tracking-widest">
-                      Éditions Limitées
-                    </span>
-                    <h3 className="text-xl font-bold font-serif">Ligne Signature Aziz</h3>
-                    <p className="text-xs text-slate-300 line-clamp-2">
-                      Le mariage du bleu nuit profond et des finitions dorées signatures de notre maison.
-                    </p>
-                    <span className="text-xs font-bold text-[#D4AF37] inline-flex items-center gap-1 group-hover:underline pt-1">
-                      Découvrir la ligne <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* New Arrivals Section */}
-            {newArrivals.length > 0 && (
-              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-                      Derniers Ateliers
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0B1325] font-serif">
-                      Nouveautés Récentes
-                    </h2>
-                  </div>
-                  <button
-                    onClick={() => navigateToShop('all')}
-                    className="text-xs sm:text-sm font-bold text-[#997A1E] hover:underline"
-                  >
-                    Voir toutes les nouveautés
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {newArrivals.slice(0, 4).map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      isWishlisted={wishlistIds.includes(product.id)}
-                      onToggleWishlist={handleToggleWishlist}
-                      onSelectProduct={(p) => setSelectedProduct(p)}
-                      onQuickAddToCart={(p, size) =>
-                        handleAddToCart(p, size, 1, p.colors[0]?.name || 'Standard')
-                      }
-                      settings={settings}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Brand Story & Tailoring Section */}
+            {/* Brand Story (Reduced) */}
             <BrandStory
               onDiscoverShowroom={() => {
                 setCurrentView('contact');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
-
-            {/* Customer Testimonials & Reviews */}
-            <CustomerReviews />
-
-            {/* Showroom & Contact interactive Section */}
-            <ContactSection settings={settings} />
           </div>
         )}
 
