@@ -535,9 +535,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Nom du Modèle *</label>
                       <input type="text" value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all" required placeholder="Ex: Faso Élégance Or" />
                     </div>
+                    <div className="col-span-1 sm:col-span-2">
+                      <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Accroche (Tagline)</label>
+                      <input type="text" value={editingProduct.tagline} onChange={e => setEditingProduct({...editingProduct, tagline: e.target.value})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all" placeholder="Ex: L'excellence du tissage artisanal" />
+                    </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Prix (FCFA) *</label>
+                      <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Prix de Vente (FCFA) *</label>
                       <input type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: Number(e.target.value)})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all font-black text-[#C5A059]" required />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Prix Original (Promo)</label>
+                      <input type="number" value={editingProduct.originalPrice || ''} onChange={e => setEditingProduct({...editingProduct, originalPrice: Number(e.target.value) || undefined})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all text-slate-400" placeholder="Ex: 35000" />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Badge</label>
+                      <select value={editingProduct.badge || ''} onChange={e => setEditingProduct({...editingProduct, badge: e.target.value as any || undefined})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all appearance-none">
+                        <option value="">Aucun</option>
+                        <option>Nouveau</option>
+                        <option>Promo</option>
+                        <option>Populaire</option>
+                        <option>Édition Limitée</option>
+                      </select>
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Catégorie</label>
@@ -670,6 +688,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </select>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <label className="text-[9px] font-bold text-slate-500 uppercase block">Points Clés (Features)</label>
+                      {(editingProduct.features || []).map((feat, i) => (
+                        <div key={i} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={feat}
+                            onChange={e => { const f = [...editingProduct.features]; f[i] = e.target.value; setEditingProduct({...editingProduct, features: f}); }}
+                            className="flex-1 p-4 bg-[#10192C] rounded-2xl border border-white/10 text-xs outline-none"
+                            placeholder="Ex: Finitions fil d'or..."
+                          />
+                          <button type="button" onClick={() => setEditingProduct({...editingProduct, features: editingProduct.features.filter((_, idx) => idx !== i)})} className="p-4 bg-rose-500/10 text-rose-500 rounded-2xl"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => setEditingProduct({...editingProduct, features: [...(editingProduct.features || []), '']})} className="w-full py-3 border border-dashed border-white/10 rounded-2xl text-[10px] font-black uppercase text-slate-500">+ Ajouter un point</button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className="text-[9px] font-bold text-slate-500 uppercase block">Variantes de Couleurs</label>
+                      {(editingProduct.colors || []).map((col, i) => (
+                        <div key={i} className="flex gap-2 items-center">
+                          <input type="color" value={col.hex} onChange={e => { const c = [...editingProduct.colors]; c[i] = {...c[i], hex: e.target.value}; setEditingProduct({...editingProduct, colors: c}); }} className="w-12 h-12 rounded-xl bg-transparent border-none cursor-pointer" />
+                          <input
+                            type="text"
+                            value={col.name}
+                            onChange={e => { const c = [...editingProduct.colors]; c[i] = {...c[i], name: e.target.value}; setEditingProduct({...editingProduct, colors: c}); }}
+                            className="flex-1 p-4 bg-[#10192C] rounded-2xl border border-white/10 text-xs outline-none"
+                            placeholder="Nom couleur (ex: Bleu Nuit)"
+                          />
+                          <button type="button" onClick={() => setEditingProduct({...editingProduct, colors: editingProduct.colors.filter((_, idx) => idx !== i)})} className="p-4 bg-rose-500/10 text-rose-500 rounded-2xl"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => setEditingProduct({...editingProduct, colors: [...(editingProduct.colors || []), { name: '', hex: '#000000' }]})} className="w-full py-3 border border-dashed border-white/10 rounded-2xl text-[10px] font-black uppercase text-slate-500">+ Ajouter une couleur</button>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="text-[9px] font-bold text-slate-500 uppercase mb-2 block">Description de la création</label>
                     <textarea
