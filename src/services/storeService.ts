@@ -28,7 +28,6 @@ const mapProductFromDb = (p: any): Product => ({
   isAvailable: p.is_available,
   reviewCount: p.review_count,
   createdAt: p.created_at,
-  updatedAt: p.updated_at,
 });
 
 const mapProductToDb = (p: Product) => ({
@@ -125,10 +124,7 @@ export const addProduct = async (product: Product) => {
 };
 
 export const updateProduct = async (product: Product) => {
-  const toUpdate = {
-    ...mapProductToDb(product),
-    updated_at: new Date().toISOString(),
-  };
+  const toUpdate = mapProductToDb(product);
   const { error } = await supabase.from('products').update(toUpdate).eq('id', product.id);
   if (error) throw error;
 };
@@ -400,7 +396,6 @@ export const updateProductStockInDb = async (
     .update({
       stock: newStock,
       is_available: totalStock > 0,
-      updated_at: new Date().toISOString()
     })
     .eq('id', productId);
 
