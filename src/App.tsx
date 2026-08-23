@@ -417,15 +417,6 @@ export default function App() {
                 Fondée avec la conviction profonde que le textile traditionnel africain mérite les finitions les plus nobles de la haute couture internationale.
               </p>
             </div>
-
-            <BrandStory
-              onDiscoverShowroom={() => {
-                setCurrentView('contact');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-
-            <CustomerReviews />
           </div>
         )}
 
