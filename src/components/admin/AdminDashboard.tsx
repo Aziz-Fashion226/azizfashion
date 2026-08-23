@@ -428,49 +428,65 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               {activeTab === 'dashboard' && (
                 <div className="space-y-8 animate-fadeIn">
                   {/* Quick Action Alerts */}
-                  {(orderStats.nouvelle > 0 || outOfStockCount > 0) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {orderStats.nouvelle > 0 && (
-                        <div
-                          onClick={() => setActiveTab('orders')}
-                          className="p-4 bg-amber-950/40 border border-amber-500/30 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-amber-950/60 transition-all"
-                        >
-                          <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
-                            <Clock className="w-6 h-6" />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="text-sm font-bold text-amber-200">
-                              {orderStats.nouvelle} nouvelles commandes
-                            </h4>
-                            <p className="text-[11px] text-amber-400/80">
-                              En attente de confirmation et de préparation.
-                            </p>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-amber-500" />
-                        </div>
-                      )}
-
-                      {outOfStockCount > 0 && (
-                        <div
-                          onClick={() => setActiveTab('products')}
-                          className="p-4 bg-rose-950/40 border border-rose-500/30 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-rose-950/60 transition-all"
-                        >
-                          <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
-                            <AlertTriangle className="w-6 h-6" />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="text-sm font-bold text-rose-200">
-                              {outOfStockCount} produits en rupture
-                            </h4>
-                            <p className="text-[11px] text-rose-400/80">
-                              Certains articles ne sont plus visibles en boutique.
-                            </p>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-rose-500" />
-                        </div>
-                      )}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div
+                      onClick={handleOpenNewProduct}
+                      className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/40 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-[#C5A059]/20 transition-all group"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-[#C5A059] flex items-center justify-center text-[#050B18] shrink-0 group-hover:scale-110 transition-transform shadow-lg">
+                        <Plus className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-black text-[#C5A059] uppercase tracking-tighter">
+                          Nouvelle Chemise
+                        </h4>
+                        <p className="text-[10px] text-slate-400 font-bold">
+                          Ajouter un article au catalogue
+                        </p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-[#C5A059]" />
                     </div>
-                  )}
+
+                    {orderStats.nouvelle > 0 && (
+                      <div
+                        onClick={() => setActiveTab('orders')}
+                        className="p-4 bg-amber-950/40 border border-amber-500/30 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-amber-950/60 transition-all"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                          <Clock className="w-6 h-6" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-bold text-amber-200">
+                            {orderStats.nouvelle} nouvelles commandes
+                          </h4>
+                          <p className="text-[11px] text-amber-400/80">
+                            En attente de confirmation.
+                          </p>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-amber-500" />
+                      </div>
+                    )}
+
+                    {outOfStockCount > 0 && (
+                      <div
+                        onClick={() => setActiveTab('products')}
+                        className="p-4 bg-rose-950/40 border border-rose-500/30 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-rose-950/60 transition-all"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+                          <AlertTriangle className="w-6 h-6" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-bold text-rose-200">
+                            {outOfStockCount} ruptures de stock
+                          </h4>
+                          <p className="text-[11px] text-rose-400/80">
+                            Articles à réapprovisionner.
+                          </p>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-rose-500" />
+                      </div>
+                    )}
+                  </div>
 
                   {/* KPI Cards Grid */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
