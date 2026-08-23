@@ -154,74 +154,78 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     (filters.maxPrice < 60000 ? 1 : 0);
 
   return (
-    <div className="py-8 sm:py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[#F5F5F0]">
-      {/* Page Header */}
-      <div className="mb-8 space-y-3">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10192C] text-[#C5A059] text-xs font-bold uppercase tracking-widest border border-[#C5A059]/30 mb-2">
+    <div className="py-8 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[#1A1510]">
+      {/* Page Header - Refined Luxury Style */}
+      <div className="mb-12 space-y-8 text-center md:text-left">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-[10px] font-black tracking-[0.2em] uppercase mx-auto md:mx-0">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Collection Exclusive</span>
             </div>
-            <h1
-              className="text-3xl sm:text-4xl font-extrabold text-[#F5F5F0] tracking-tight font-serif"
-            >
-              Découvrez nos chemises
+            <h1 className="text-4xl sm:text-5xl font-black text-[#1A1510] tracking-tighter font-serif leading-none">
+              LA <span className="text-[#D4AF37]">BOUTIQUE</span>
             </h1>
-            <p className="text-sm text-[#F5F5F0]/70 max-w-xl mt-1">
-              Des créations authentiques conçues pour sublimer votre prestance au quotidien comme lors des grandes cérémonies.
+            <p className="text-sm text-slate-500 max-w-xl leading-relaxed">
+              Explorez nos confections artisanales. Chaque pièce est un hommage à l'élégance africaine et au savoir-faire de nos maîtres tailleurs.
             </p>
           </div>
 
-          {/* Search bar top */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#C5A059]" />
+          {/* Search bar - More integrated */}
+          <div className="relative w-full md:w-96 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D4AF37] transition-transform group-focus-within:scale-110" />
             <input
               type="text"
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              placeholder="Rechercher par nom, tissu..."
-              className="w-full pl-10 pr-4 py-2.5 bg-[#0B1325] border border-[#C5A059]/30 rounded-xl text-xs sm:text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059] shadow-xs"
+              placeholder="Rechercher une création, un tissu..."
+              className="w-full pl-12 pr-10 py-4 bg-white border border-[#D4AF37]/20 rounded-2xl text-sm text-[#1A1510] placeholder-slate-400 focus:outline-none focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/5 shadow-sm transition-all"
             />
             {filters.search && (
               <button
                 onClick={() => setFilters({ ...filters, search: '' })}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white cursor-pointer"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#1A1510] cursor-pointer"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
         </div>
 
-        {/* Quick Category Chips bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-4 pb-2 no-scrollbar">
-          {(categories || []).map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setFilters({ ...filters, category: cat.id })}
-              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                filters.category === cat.id
-                  ? 'bg-[#C5A059] text-[#050B18] shadow-sm border border-[#C5A059]'
-                  : 'bg-[#0B1325] text-[#F5F5F0]/80 hover:bg-[#10192C] border border-[#C5A059]/30'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+        {/* Category Navigation - Elegant Tab Style */}
+        <div className="border-b border-[#D4AF37]/10">
+          <div className="flex items-center gap-8 overflow-x-auto no-scrollbar py-2">
+            {(categories || []).map((cat) => {
+              const isActive = filters.category === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setFilters({ ...filters, category: cat.id })}
+                  className={`relative pb-4 text-[11px] font-black uppercase tracking-[0.2em] whitespace-nowrap transition-all cursor-pointer ${
+                    isActive ? 'text-[#D4AF37]' : 'text-slate-400 hover:text-[#1A1510]'
+                  }`}
+                >
+                  {cat.label}
+                  {isActive && (
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-[#D4AF37] rounded-t-full animate-fadeIn" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Main Layout: Filters & Product Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Desktop Sidebar Filters (3 cols) */}
-        <div className="hidden lg:block lg:col-span-3 bg-[#0B1325] p-6 rounded-2xl border border-[#C5A059]/30 shadow-xs space-y-6 sticky top-28">
-          <div className="flex items-center justify-between pb-4 border-b border-[#C5A059]/20">
-            <div className="flex items-center gap-2 font-bold text-sm text-[#F5F5F0] uppercase tracking-wider">
-              <SlidersHorizontal className="w-4 h-4 text-[#C5A059]" />
-              <span>Filtres</span>
+        <div className="hidden lg:block lg:col-span-3 bg-white p-8 rounded-3xl border border-[#D4AF37]/15 shadow-sm space-y-8 sticky top-28">
+          <div className="flex items-center justify-between pb-6 border-b border-[#F7F3ED]">
+            <div className="flex items-center gap-3 font-black text-[11px] text-[#1A1510] uppercase tracking-[0.2em]">
+              <SlidersHorizontal className="w-4 h-4 text-[#D4AF37]" />
+              <span>Ajuster</span>
               {activeFilterCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-[#C5A059] text-[#050B18] text-xs flex items-center justify-center font-bold">
+                <span className="w-5 h-5 rounded-full bg-[#D4AF37] text-white text-[10px] flex items-center justify-center font-bold">
                   {activeFilterCount}
                 </span>
               )}
@@ -229,41 +233,44 @@ export const ShopPage: React.FC<ShopPageProps> = ({
             {activeFilterCount > 0 && (
               <button
                 onClick={resetFilters}
-                className="text-xs text-rose-400 hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                className="text-[10px] text-rose-500 hover:underline flex items-center gap-1 font-black uppercase tracking-widest cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" />
-                Réinitialiser
+                RAZ
               </button>
             )}
           </div>
 
           {/* Sizes Filter */}
-          <div className="space-y-2.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block">
-              Tailles disponibles
+          <div className="space-y-4">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] block">
+              Tailles
             </span>
-            <div className="grid grid-cols-5 gap-1.5">
-              {availableSizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => toggleSize(size)}
-                  className={`py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                    (filters.sizes || []).includes(size)
-                      ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059]'
-                      : 'bg-[#10192C] text-[#F5F5F0]/80 border-[#C5A059]/20 hover:border-[#C5A059]'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
+            <div className="grid grid-cols-5 gap-2">
+              {availableSizes.map((size) => {
+                 const isSelected = (filters.sizes || []).includes(size);
+                 return (
+                  <button
+                    key={size}
+                    onClick={() => toggleSize(size)}
+                    className={`py-3 text-[11px] font-black rounded-xl border transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#1A1510] text-white border-[#1A1510] shadow-md scale-105'
+                        : 'bg-[#F7F3ED]/50 text-[#1A1510]/70 border-[#D4AF37]/10 hover:border-[#D4AF37]/40'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Price Range Slider */}
-          <div className="space-y-2.5 pt-4 border-t border-[#C5A059]/20">
-            <div className="flex items-center justify-between text-xs font-bold text-[#F5F5F0]">
-              <span className="uppercase tracking-wider">Prix maximum</span>
-              <span className="text-[#C5A059]">{formatFCFA(filters.maxPrice)}</span>
+          <div className="space-y-4 pt-4 border-t border-[#F7F3ED]">
+            <div className="flex items-center justify-between text-[11px] font-black text-[#1A1510] uppercase tracking-widest">
+              <span>Budget Max</span>
+              <span className="text-[#D4AF37]">{formatFCFA(filters.maxPrice)}</span>
             </div>
             <input
               type="range"
@@ -272,56 +279,88 @@ export const ShopPage: React.FC<ShopPageProps> = ({
               step={1000}
               value={filters.maxPrice}
               onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
-              className="w-full accent-[#C5A059] cursor-pointer"
+              className="w-full accent-[#D4AF37] cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-slate-400 font-semibold">
-              <span>20 000 FCFA</span>
-              <span>60 000 FCFA</span>
-            </div>
           </div>
 
-          {/* Toggles: In Stock & Promotions */}
-          <div className="space-y-3 pt-4 border-t border-[#C5A059]/20">
-            <label className="flex items-center gap-3 cursor-pointer select-none">
+          {/* Toggles */}
+          <div className="space-y-4 pt-4 border-t border-[#F7F3ED]">
+            <label className="flex items-center justify-between group cursor-pointer">
+              <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-[#1A1510] transition-colors">En Stock</span>
               <input
                 type="checkbox"
                 checked={filters.inStockOnly}
                 onChange={(e) => setFilters({ ...filters, inStockOnly: e.target.checked })}
-                className="w-4 h-4 rounded text-[#0B1325] accent-[#C5A059]"
+                className="w-5 h-5 rounded-lg border-2 border-[#D4AF37]/20 accent-[#D4AF37]"
               />
-              <span className="text-xs font-medium text-[#F5F5F0]/90">En stock uniquement</span>
             </label>
 
-            <label className="flex items-center gap-3 cursor-pointer select-none">
+            <label className="flex items-center justify-between group cursor-pointer">
+              <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-[#1A1510] transition-colors">Promotions</span>
               <input
                 type="checkbox"
                 checked={filters.onSaleOnly}
                 onChange={(e) => setFilters({ ...filters, onSaleOnly: e.target.checked })}
-                className="w-4 h-4 rounded text-[#0B1325] accent-[#C5A059]"
+                className="w-5 h-5 rounded-lg border-2 border-[#D4AF37]/20 accent-[#D4AF37]"
               />
-              <span className="text-xs font-medium text-[#F5F5F0]/90">En promotion uniquement</span>
             </label>
           </div>
         </div>
 
         {/* Products Column (9 cols) */}
-        <div className="lg:col-span-9 space-y-6">
-          {/* Controls Bar */}
-          <div className="bg-[#0B1325] p-3.5 rounded-2xl border border-[#C5A059]/30 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-            <div className="flex items-center gap-2">
-              {/* Mobile Filter Drawer trigger */}
+        <div className="lg:col-span-9 space-y-8">
+          {/* Controls Bar - More subtle and integrated */}
+          <div className="flex items-center justify-between gap-4 py-2">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => setFilterDrawerOpen(true)}
-                className="lg:hidden flex items-center gap-2 px-3.5 py-2 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-xs font-bold text-[#F5F5F0] cursor-pointer"
+                className="lg:hidden flex items-center gap-2 px-5 py-3 bg-white border border-[#D4AF37]/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-[#1A1510] shadow-sm cursor-pointer"
               >
-                <Filter className="w-3.5 h-3.5 text-[#C5A059]" />
-                <span>Filtres ({activeFilterCount})</span>
+                <Filter className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Ajuster ({activeFilterCount})</span>
               </button>
 
-              <span className="text-xs text-[#F5F5F0]/70 font-medium">
-                <strong className="text-[#C5A059]">{filteredProducts.length}</strong> chemise{filteredProducts.length > 1 ? 's' : ''} trouvée{filteredProducts.length > 1 ? 's' : ''}
+              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                <span className="text-[#1A1510]">{filteredProducts.length}</span> chemises trouvées
               </span>
             </div>
+
+            {/* Sort Dropdown - Refined */}
+            <div className="flex items-center gap-3">
+              <div className="relative group">
+                <select
+                  value={filters.sortBy}
+                  onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as any })}
+                  className="appearance-none bg-white border border-[#D4AF37]/20 text-[#1A1510] text-[11px] font-black uppercase tracking-widest rounded-2xl pl-5 pr-10 py-3 focus:outline-none focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/5 shadow-sm cursor-pointer"
+                >
+                  <option value="featured">Populaires</option>
+                  <option value="newest">Nouveautés</option>
+                  <option value="price-asc">Prix : croissant</option>
+                  <option value="price-desc">Prix : décroissant</option>
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-[#D4AF37] pointer-events-none" />
+              </div>
+
+              <div className="hidden sm:flex items-center gap-2 bg-white/50 p-1 rounded-2xl border border-[#D4AF37]/10">
+                <button
+                  onClick={() => setGridCols(3)}
+                  className={`p-2 rounded-xl transition-all cursor-pointer ${
+                    gridCols === 3 ? 'bg-white text-[#D4AF37] shadow-sm' : 'text-slate-400 hover:text-[#1A1510]'
+                  }`}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setGridCols(4)}
+                  className={`p-2 rounded-xl transition-all cursor-pointer ${
+                    gridCols === 4 ? 'bg-white text-[#D4AF37] shadow-sm' : 'text-slate-400 hover:text-[#1A1510]'
+                  }`}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
 
             {/* Sort & Grid switcher */}
             <div className="flex items-center gap-3 ml-auto">
