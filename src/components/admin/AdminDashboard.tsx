@@ -240,16 +240,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-4 bg-[#10192C] border border-white/10 rounded-2xl outline-none focus:border-[#C5A059] transition-all" />
                       <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-4 bg-[#10192C] border border-white/10 rounded-2xl outline-none focus:border-[#C5A059] transition-all" />
                       <button type="submit" className="w-full py-4 bg-[#C5A059] text-[#0B1325] font-black uppercase rounded-2xl tracking-widest hover:bg-[#D4AF37] transition-all">Se connecter</button>
-
-                      <div className="relative py-4 flex items-center gap-4">
-                        <div className="flex-1 h-px bg-white/5"></div>
-                        <span className="text-[10px] font-bold text-slate-600 uppercase">Ou bien</span>
-                        <div className="flex-1 h-px bg-white/5"></div>
-                      </div>
-
-                      <button type="button" onClick={() => onLogin(true)} className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-                        <Sparkles className="w-4 h-4 text-[#C5A059]" /> Mode Aperçu Rapide
-                      </button>
                     </form>
                     {loginError && <p className="text-rose-500 text-center text-xs font-bold">{loginError}</p>}
                   </div>
