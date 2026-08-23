@@ -8,8 +8,8 @@
 
   body {
     font-family: var(--font-sans);
-    color: #0F172A;
-    background-color: #FDFBF7;
+    color: #1A1510;
+    background-color: #F7F3ED; /* Beige clair raffiné */
   }
 
   h1, h2, h3, .font-serif-brand {

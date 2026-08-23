@@ -307,12 +307,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#0B1325] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#0B1325]">
+    <div className="min-h-screen bg-[#F7F3ED] text-[#1A1510] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#1A1510]">
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="fixed inset-0 z-[100] bg-[#0B1325] flex flex-col items-center justify-center text-white space-y-4">
+        <div className="fixed inset-0 z-[100] bg-[#1A1510] flex flex-col items-center justify-center text-white space-y-4">
           <div className="w-16 h-16 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin"></div>
-          <div className="font-serif text-lg tracking-widest animate-pulse">AZIZ FASHION</div>
+          <div className="font-serif text-lg tracking-widest animate-pulse text-[#D4AF37]">AZIZ FASHION</div>
           <p className="text-xs text-slate-400 uppercase tracking-widest">Chargement de votre expérience...</p>
         </div>
       )}
