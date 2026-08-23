@@ -370,7 +370,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           </thead>
                           <tbody className="divide-y divide-white/5">
                             {(orderSearch ? safeOrders.filter(o => o.orderNumber.toLowerCase().includes(orderSearch.toLowerCase()) || o.customer.fullName.toLowerCase().includes(orderSearch.toLowerCase())) : safeOrders).map(o => (
-                              <tr key={o.id} className="hover:bg-white/5 transition-colors group">
+                              <tr
+                                key={o.id}
+                                onClick={() => setSelectedOrder(o)}
+                                className="hover:bg-white/5 transition-colors group cursor-pointer"
+                              >
                                 <td className="p-6 font-mono font-bold">{o.orderNumber}</td>
                                 <td className="p-6">
                                   <div className="font-bold text-sm">{o.customer.fullName}</div>
@@ -378,11 +382,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 </td>
                                 <td className="p-6 font-black text-[#C5A059] text-sm">{formatFCFA(o.total)}</td>
                                 <td className="p-6 text-slate-400">{new Date(o.createdAt).toLocaleDateString('fr-FR')}</td>
-                                <td className="p-6">
+                                <td className="p-6" onClick={(e) => e.stopPropagation()}>
                                   <select
                                     value={o.status}
                                     onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
-                                    className={`px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest outline-none bg-transparent ${
+                                    className={`px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest outline-none bg-transparent cursor-pointer ${
                                       o.status === 'Livrée' ? 'border-emerald-500/50 text-emerald-500' :
                                       o.status === 'Annulée' ? 'border-rose-500/50 text-rose-500' :
                                       o.status === 'Nouvelle' ? 'border-[#C5A059]/50 text-[#C5A059]' : 'border-white/20'
@@ -391,7 +395,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                     {orderStatuses.map(s => <option key={s} value={s} className="bg-[#0B1325]">{s}</option>)}
                                   </select>
                                 </td>
-                                <td className="p-6 text-right space-x-2">
+                                <td className="p-6 text-right space-x-2" onClick={(e) => e.stopPropagation()}>
                                   <button onClick={() => setSelectedOrder(o)} className="p-3 bg-white/5 rounded-xl hover:text-[#C5A059] transition-all"><Eye className="w-4 h-4" /></button>
                                   <a href={generateCustomerDirectWhatsAppUrl(o.customer.phone, o.orderNumber, o.customer.fullName, o.status)} target="_blank" className="p-3 bg-emerald-900/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-[#050B18] transition-all inline-block"><MessageCircle className="w-4 h-4" /></a>
                                 </td>
