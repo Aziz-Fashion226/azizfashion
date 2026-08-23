@@ -238,26 +238,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   <p className="text-sm text-[#F5F5F0]/60 mt-1">{product.tagline}</p>
                 </div>
 
-                {/* Rating & Reviews */}
-                <div className="flex items-center gap-3 text-xs">
-                  <div className="flex items-center gap-1 text-[#C5A059]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < Math.floor(product.rating)
-                            ? 'fill-[#C5A059]'
-                            : 'text-slate-600'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="font-bold text-[#C5A059]">{product.rating} / 5</span>
-                  <span className="text-[#F5F5F0]/40">•</span>
-                  <span className="text-[#F5F5F0]/70 font-medium">
-                    {product.reviewCount} avis certifiés
-                  </span>
-                </div>
 
                 {/* Price Display */}
                 <div className="p-4 bg-[#10192C] rounded-2xl border border-[#C5A059]/20 flex items-baseline justify-between">

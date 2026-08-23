@@ -25,7 +25,6 @@ import { WhatsAppFloat } from './components/layout/WhatsAppFloat';
 // Home Views
 import { HeroBanner } from './components/home/HeroBanner';
 import { BrandStory } from './components/home/BrandStory';
-import { CustomerReviews } from './components/home/CustomerReviews';
 import { ContactSection } from './components/home/ContactSection';
 
 // Shop & Product Views
