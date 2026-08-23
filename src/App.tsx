@@ -33,14 +33,14 @@ import { ProductDetailModal } from './components/shop/ProductDetailModal';
 import { ShopPage } from './components/shop/ShopPage';
 
 // Cart & Checkout
-import { CartDrawer } from './components/cart/CartDrawer';
+import { CartPage } from './components/cart/CartPage';
 import { CheckoutModal } from './components/checkout/CheckoutModal';
 
 // Modals & Common
 import { SizeGuideModal } from './components/common/SizeGuideModal';
 import { SearchModal } from './components/common/SearchModal';
 import { Toast } from './components/common/Toast';
-import { WishlistDrawer } from './components/wishlist/WishlistDrawer';
+import { WishlistPage } from './components/wishlist/WishlistPage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 
 // Icons
@@ -57,8 +57,8 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // Navigation View State: 'home' | 'shop' | 'about' | 'contact' | 'new'
-  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'new'>('home');
+  // Navigation View State: 'home' | 'shop' | 'about' | 'contact' | 'new' | 'cart' | 'wishlist'
+  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'new' | 'cart' | 'wishlist'>('home');
   const [shopCategoryFilter, setShopCategoryFilter] = useState<string>('all');
 
   // Core Data States
@@ -71,11 +71,9 @@ export default function App() {
 
   // Modal / Drawer States
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [wishlistOpen, setWishlistOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
@@ -358,11 +356,11 @@ export default function App() {
         wishlistCount={wishlistIds.length}
         currentView={currentView}
         onNavigate={(view) => {
-          setCurrentView(view);
+          setCurrentView(view as any);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        onOpenCart={() => setCartOpen(true)}
-        onOpenWishlist={() => setWishlistOpen(true)}
+        onOpenCart={() => setCurrentView('cart')}
+        onOpenWishlist={() => setCurrentView('wishlist')}
         onOpenSearch={() => setSearchOpen(true)}
         onOpenSizeGuide={() => setSizeGuideOpen(true)}
         onOpenAdmin={() => setAdminOpen(true)}
@@ -461,6 +459,31 @@ export default function App() {
             <ContactSection settings={settings} />
           </div>
         )}
+
+        {/* VIEW 5: CART PAGE */}
+        {currentView === 'cart' && (
+          <CartPage
+            items={cart}
+            onUpdateQuantity={handleUpdateCartQuantity}
+            onRemoveItem={handleRemoveCartItem}
+            onClearCart={handleClearCart}
+            onProceedToCheckout={() => setCheckoutOpen(true)}
+            onNavigate={setCurrentView}
+            settings={settings}
+          />
+        )}
+
+        {/* VIEW 6: WISHLIST PAGE */}
+        {currentView === 'wishlist' && (
+          <WishlistPage
+            wishlistIds={wishlistIds}
+            products={products}
+            onRemoveFromWishlist={handleToggleWishlist}
+            onSelectProduct={(p) => setSelectedProduct(p)}
+            onAddToCart={handleAddToCart}
+            onNavigate={setCurrentView}
+          />
+        )}
       </main>
 
       {/* Footer */}
@@ -479,14 +502,16 @@ export default function App() {
       <MobileNav
         currentView={currentView}
         onNavigate={(view) => {
-          setCurrentView(view);
+          setCurrentView(view as any);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         cartCount={totalCartCount}
-        onOpenCart={() => setCartOpen(true)}
+        onOpenCart={() => setCurrentView('cart')}
         onOpenSearch={() => setSearchOpen(true)}
         wishlistCount={wishlistIds.length}
-        onOpenWishlist={() => setWishlistOpen(true)}
+        onOpenWishlist={() => setCurrentView('wishlist')}
+        onOpenAdmin={() => setAdminOpen(true)}
+        isAdminLoggedIn={isAdminAuthenticated}
       />
 
       {/* Drawers & Modals */}
@@ -504,42 +529,13 @@ export default function App() {
         settings={settings}
       />
 
-      {/* 2. Cart Drawer */}
-      <CartDrawer
-        isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
-        items={cart}
-        onUpdateQuantity={handleUpdateCartQuantity}
-        onRemoveItem={handleRemoveCartItem}
-        onClearCart={handleClearCart}
-        onProceedToCheckout={() => {
-          setCartOpen(false);
-          setCheckoutOpen(true);
-        }}
-        settings={settings}
-      />
-
-      {/* 3. Checkout Modal */}
+      {/* 2. Checkout Modal */}
       <CheckoutModal
         isOpen={checkoutOpen}
         onClose={() => setCheckoutOpen(false)}
         items={cart}
         onOrderPlaced={handleOrderPlaced}
         settings={settings}
-      />
-
-      {/* 4. Wishlist Drawer */}
-      <WishlistDrawer
-        isOpen={wishlistOpen}
-        onClose={() => setWishlistOpen(false)}
-        wishlistIds={wishlistIds}
-        products={wishlistProducts}
-        onRemoveFromWishlist={handleToggleWishlist}
-        onMoveToCart={(product, size) => {
-          handleAddToCart(product, size, 1, product.colors[0]?.name || 'Standard');
-          handleToggleWishlist(product.id);
-        }}
-        onSelectProduct={(p) => setSelectedProduct(p)}
       />
 
       {/* 5. Search Modal */}
