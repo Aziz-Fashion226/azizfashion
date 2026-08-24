@@ -89,6 +89,13 @@ export const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ isOpen, onClose 
                   <td className="p-3.5">80 cm</td>
                   <td className="p-3.5">52 cm</td>
                 </tr>
+                <tr className="hover:bg-[#10192C]/70 transition-colors bg-[#10192C]/30">
+                  <td className="p-3.5 font-bold text-[#C5A059]">XXXL (48-49)</td>
+                  <td className="p-3.5">132 - 140 cm</td>
+                  <td className="p-3.5">48 - 49 cm</td>
+                  <td className="p-3.5">82 cm</td>
+                  <td className="p-3.5">54 cm</td>
+                </tr>
               </tbody>
             </table>
           </div>

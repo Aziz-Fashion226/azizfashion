@@ -20,7 +20,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'orders' | 'settings' | 'inventory'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'orders' | 'settings'>('dashboard');
   const [portalMode, setPortalView] = useState<'choice' | 'tracking' | 'login'>(isAuthenticated ? 'login' : 'choice');
   const [trackNumber, setTrackNumber] = useState('');
   const [trackedOrder, setTrackedOrder] = useState<Order | null>(null);
@@ -117,7 +117,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setEditingProduct({
       id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
       features: ['Tissage traditionnel de haute qualité'], fabric: 'Faso Danfani', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
-      price: 25000, stock: { S: 5, M: 5, L: 5, XL: 2, XXL: 0 }, category: 'Faso Danfani', images: [''],
+      price: 25000, stock: { S: 10, M: 10, L: 10, XL: 10, XXL: 10, XXXL: 10 }, category: 'Faso Danfani', images: [''],
       isAvailable: true, createdAt: new Date().toISOString(), rating: 5, reviewCount: 0
     });
     setIsNewProduct(true);
@@ -193,7 +193,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 { id: 'dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
                 { id: 'orders', icon: ShoppingBag, label: 'Commandes' },
                 { id: 'products', icon: Package, label: 'Catalogue' },
-                { id: 'inventory', icon: Box, label: 'Stocks' },
                 { id: 'settings', icon: Settings, label: 'Réglages' }
               ].map(item => (
                 <button
@@ -381,7 +380,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 {/* Dashboard View */}
                 {activeTab === 'dashboard' && (
                   <div className="space-y-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       <div className="bg-[#10192C] p-8 rounded-[2rem] border border-[#C5A059]/10 relative overflow-hidden group">
                         <TrendingUp className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-[#C5A059]/10 transition-all" />
                         <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest mb-2 block">Chiffre d'Affaires</span>
@@ -392,11 +391,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest mb-2 block">Commandes</span>
                         <div className="text-3xl font-black">{safeOrders.length}</div>
                       </div>
-                      <div className="bg-[#10192C] p-8 rounded-[2rem] border border-rose-500/10 relative overflow-hidden group">
-                        <AlertTriangle className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-rose-500/10 transition-all" />
-                        <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2 block">Ruptures</span>
-                        <div className="text-3xl font-black">{outOfStockCount}</div>
-                      </div>
                       <div className="bg-[#10192C] p-8 rounded-[2rem] border border-emerald-500/10 relative overflow-hidden group">
                         <Package className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-emerald-500/10 transition-all" />
                         <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 block">Produits</span>
@@ -404,7 +398,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 gap-8">
                       <div className="bg-[#10192C] p-8 rounded-[2rem] border border-white/5">
                         <h3 className="text-xl font-serif font-black mb-6 flex items-center gap-3">
                           <Clock className="w-5 h-5 text-[#C5A059]" /> Dernières Commandes
@@ -422,24 +416,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               </div>
                             </div>
                           ))}
-                        </div>
-                      </div>
-                      <div className="bg-[#10192C] p-8 rounded-[2rem] border border-white/5">
-                        <h3 className="text-xl font-serif font-black mb-6 flex items-center gap-3">
-                          <AlertTriangle className="w-5 h-5 text-rose-400" /> Stocks Alertes
-                        </h3>
-                        <div className="space-y-4">
-                          {lowStockItems.slice(0, 5).map(prod => (
-                            <div key={prod.id} className="flex items-center gap-4 p-4 bg-[#050B18] rounded-2xl border border-white/5">
-                              <img src={prod.images[0]} className="w-10 h-10 object-cover rounded-lg" alt="" />
-                              <div className="flex-1">
-                                <div className="text-xs font-black">{prod.name}</div>
-                                <div className="text-[9px] text-slate-500">Toutes tailles : {(Object.values(prod.stock) as number[]).reduce((a,b)=>a+b, 0)}</div>
-                              </div>
-                              <button onClick={() => setActiveTab('inventory')} className="text-[9px] font-black text-[#C5A059] uppercase hover:underline">Gérer</button>
-                            </div>
-                          ))}
-                          {lowStockItems.length === 0 && <p className="text-center text-xs text-slate-500 py-10 italic">Aucune alerte de stock.</p>}
                         </div>
                       </div>
                     </div>
@@ -545,9 +521,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             <h4 className="font-serif font-black text-lg mb-2">{p.name}</h4>
                             <div className="flex items-center justify-between">
                               <span className="text-[#C5A059] font-black text-sm">{formatFCFA(p.price)}</span>
-                              <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase">
-                                <Box className="w-3 h-3" />
-                                {(Object.values(p.stock) as number[]).reduce((a,b)=>a+b, 0)} pièces
+                              <div className="flex items-center gap-1.5 text-[9px] font-bold text-emerald-500 uppercase">
+                                <CheckCircle className="w-3 h-3" />
+                                Disponible
                               </div>
                             </div>
                           </div>
@@ -557,61 +533,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 )}
 
-                {/* Inventory View */}
-                {activeTab === 'inventory' && (
-                  <div className="space-y-6">
-                    <h3 className="text-2xl font-serif font-black uppercase tracking-tighter">Inventaire des Stocks</h3>
-                    <div className="bg-[#10192C] rounded-[2rem] border border-white/5 overflow-hidden">
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
-                          <thead className="bg-[#050B18] text-[#C5A059] uppercase tracking-tighter font-black">
-                            <tr>
-                              <th className="p-6">Création</th>
-                              <th className="p-6 text-center">Taille S</th>
-                              <th className="p-6 text-center">Taille M</th>
-                              <th className="p-6 text-center">Taille L</th>
-                              <th className="p-6 text-center">Taille XL</th>
-                              <th className="p-6 text-center">Taille XXL</th>
-                              <th className="p-6 text-center">Total</th>
-                              <th className="p-6 text-right">Statut</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-white/5">
-                            {safeProducts.map(p => {
-                              const total = (Object.values(p.stock) as number[]).reduce((a, b) => a + b, 0);
-                              return (
-                                <tr key={p.id} className="hover:bg-white/5 transition-colors">
-                                  <td className="p-6 flex items-center gap-4">
-                                    <img src={p.images[0]} className="w-10 h-10 object-cover rounded-xl" alt="" />
-                                    <div>
-                                      <div className="font-black">{p.name}</div>
-                                      <div className="text-[9px] text-slate-500 uppercase font-bold">{p.reference}</div>
-                                    </div>
-                                  </td>
-                                  {['S', 'M', 'L', 'XL', 'XXL'].map(s => (
-                                    <td key={s} className={`p-6 text-center font-bold ${p.stock[s as ShirtSize] === 0 ? 'text-rose-500 opacity-30' : p.stock[s as ShirtSize] <= lowStockThreshold ? 'text-amber-500' : 'text-slate-300'}`}>
-                                      {p.stock[s as ShirtSize]}
-                                    </td>
-                                  ))}
-                                  <td className="p-6 text-center font-black text-sm">{total}</td>
-                                  <td className="p-6 text-right">
-                                    {total === 0 ? (
-                                      <span className="px-3 py-1 bg-rose-500/10 text-rose-500 rounded-lg text-[9px] font-black uppercase">Épuisé</span>
-                                    ) : total <= 10 ? (
-                                      <span className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg text-[9px] font-black uppercase">Faible</span>
-                                    ) : (
-                                      <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-lg text-[9px] font-black uppercase">Correct</span>
-                                    )}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </main>
@@ -768,24 +689,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 </section>
 
-                {/* Section 3: Stocks & Tailles */}
+                {/* Section 3: Disponibilité & Tailles (Simplified) */}
                 <section className="space-y-6">
                   <h4 className="flex items-center gap-3 text-xs font-black uppercase text-[#C5A059] tracking-widest border-l-2 border-[#C5A059] pl-4">
-                    <Layers className="w-4 h-4" /> Gestion des Stocks par Taille
+                    <Layers className="w-4 h-4" /> Tailles & Disponibilité
                   </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-6 p-8 bg-[#050B18] rounded-[2rem] border border-white/5">
-                    {(['S', 'M', 'L', 'XL', 'XXL'] as ShirtSize[]).map(size => (
-                      <div key={size} className="text-center space-y-3">
-                        <div className="w-12 h-12 bg-[#C5A059]/10 text-[#C5A059] rounded-2xl flex items-center justify-center mx-auto text-sm font-black border border-[#C5A059]/20">{size}</div>
-                        <input
-                          type="number"
-                          value={editingProduct.stock[size]}
-                          onChange={e => setEditingProduct({...editingProduct, stock: {...editingProduct.stock, [size]: Math.max(0, Number(e.target.value))}})}
-                          className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 text-center font-black text-lg outline-none focus:border-[#C5A059]"
-                        />
-                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">En stock</p>
-                      </div>
-                    ))}
+                  <div className="p-8 bg-[#050B18] rounded-[2rem] border border-white/5 space-y-6">
+                    <div className="flex flex-wrap gap-3 justify-center">
+                      {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(size => (
+                        <div key={size} className="px-6 py-3 bg-[#C5A059]/10 text-[#C5A059] rounded-xl text-sm font-black border border-[#C5A059]/20">
+                          {size}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest italic">
+                      Note : Les chemises sont considérées comme disponibles en continu dans toutes les tailles.
+                    </p>
                   </div>
                 </section>
 

@@ -21,21 +21,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   settings,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<ShirtSize>(() => {
-    // Pick the first in-stock size
-    const available = (['M', 'L', 'XL', 'S', 'XXL'] as ShirtSize[]).find(
-      (s) => (product.stock?.[s] || 0) > 0
-    );
-    return available || 'M';
-  });
+  const [selectedSize, setSelectedSize] = useState<ShirtSize>('M');
   const [quickAdded, setQuickAdded] = useState(false);
 
-  const totalStock = (Object.values(product.stock || {}) as number[]).reduce((a, b) => a + b, 0);
-  const isOutOfStock = totalStock === 0 || !product.isAvailable;
+  const isOutOfStock = !product.isAvailable;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isOutOfStock || (product.stock?.[selectedSize] || 0) <= 0) return;
+    if (isOutOfStock) return;
     onQuickAddToCart(product, selectedSize);
     setQuickAdded(true);
     setTimeout(() => setQuickAdded(false), 1500);
@@ -173,27 +166,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Sizes Selector Pills */}
         <div className="space-y-1.5 pt-2 border-t border-[#C5A059]/15">
           <div className="flex items-center justify-between text-[11px]">
-            <span className="text-[#F5F5F0]/50 font-medium">Tailles :</span>
-            <span className="text-[#C5A059] font-semibold">
-              {(product.stock?.[selectedSize] || 0) > 0
-                ? `${product.stock[selectedSize]} en stock`
-                : 'Épuisé en ' + selectedSize}
-            </span>
+            <span className="text-[#F5F5F0]/50 font-medium italic">Disponible immédiatement</span>
           </div>
 
-          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-            {(['S', 'M', 'L', 'XL', 'XXL'] as ShirtSize[]).map((size) => {
-              const inStock = (product.stock?.[size] || 0) > 0;
+          <div className="flex flex-wrap items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+            {(['S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as ShirtSize[]).map((size) => {
               const isSelected = selectedSize === size;
               return (
                 <button
                   key={size}
-                  disabled={!inStock}
                   onClick={() => setSelectedSize(size)}
-                  className={`flex-1 py-1 text-[11px] font-bold rounded-md border transition-all cursor-pointer ${
-                    !inStock
-                      ? 'bg-[#10192C]/40 text-slate-600 border-slate-800 line-through cursor-not-allowed'
-                      : isSelected
+                  className={`flex-1 min-w-[32px] py-1 text-[10px] font-bold rounded-md border transition-all cursor-pointer ${
+                    isSelected
                       ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059] shadow-xs font-extrabold'
                       : 'bg-[#10192C] text-[#F5F5F0] border-[#C5A059]/20 hover:border-[#C5A059]'
                   }`}

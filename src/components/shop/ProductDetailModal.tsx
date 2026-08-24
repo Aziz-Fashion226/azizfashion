@@ -49,24 +49,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   if (!isOpen || !product) return null;
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [selectedSize, setSelectedSize] = useState<ShirtSize>(() => {
-    const available = (['M', 'L', 'XL', 'S', 'XXL'] as ShirtSize[]).find(
-      (s) => product.stock[s] > 0
-    );
-    return available || 'M';
-  });
+  const [selectedSize, setSelectedSize] = useState<ShirtSize>('M');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'details' | 'fabric' | 'shipping'>('details');
   const [isZoomed, setIsZoomed] = useState(false);
   const [addedToast, setAddedToast] = useState(false);
 
-  const totalStock = (Object.values(product.stock || {}) as number[]).reduce((a, b) => a + b, 0);
-  const currentSizeStock = product.stock?.[selectedSize] || 0;
-  const isOutOfStock = currentSizeStock <= 0;
+  const isOutOfStock = !product.isAvailable;
 
   const handleAddToCart = () => {
     if (isOutOfStock) return;
-    onAddToCart(product, selectedSize, quantity, 'Standard');
+    onAddToCart(product, selectedSize, quantity);
     setAddedToast(true);
     setTimeout(() => setAddedToast(false), 2000);
   };
@@ -256,28 +249,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
                   <div className="text-right">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                        isOutOfStock
-                          ? 'bg-rose-950/80 text-rose-300 border border-rose-800'
-                          : currentSizeStock <= 3
-                          ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
-                          : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
-                      }`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-800"
                     >
-                      <span
-                        className={`w-2 h-2 rounded-full ${
-                          isOutOfStock
-                            ? 'bg-rose-500'
-                            : currentSizeStock <= 3
-                            ? 'bg-amber-400 animate-ping'
-                            : 'bg-emerald-400'
-                        }`}
-                      />
-                      {isOutOfStock
-                        ? 'Rupture en ' + selectedSize
-                        : currentSizeStock <= 3
-                        ? `Plus que ${currentSizeStock} en stock !`
-                        : 'En stock'}
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      Disponible immédiatement
                     </span>
                   </div>
                 </div>
@@ -297,29 +272,21 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-5 gap-2">
-                    {(['S', 'M', 'L', 'XL', 'XXL'] as ShirtSize[]).map((size) => {
-                      const stockCount = product.stock?.[size] || 0;
-                      const inStock = stockCount > 0;
+                  <div className="grid grid-cols-6 gap-2">
+                    {(['S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as ShirtSize[]).map((size) => {
                       const isSelected = selectedSize === size;
 
                       return (
                         <button
                           key={size}
-                          disabled={!inStock}
                           onClick={() => setSelectedSize(size)}
-                          className={`py-4 px-2 sm:py-3 sm:px-2 rounded-2xl sm:rounded-xl text-sm sm:text-xs font-bold border transition-all flex flex-col items-center gap-0.5 cursor-pointer ${
-                            !inStock
-                              ? 'bg-[#10192C]/40 text-slate-600 border-slate-800 line-through cursor-not-allowed'
-                              : isSelected
+                          className={`py-4 px-2 sm:py-3 sm:px-2 rounded-2xl sm:rounded-xl text-sm sm:text-xs font-bold border transition-all flex flex-col items-center justify-center cursor-pointer ${
+                            isSelected
                               ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059] shadow-lg ring-2 ring-[#C5A059]/20 font-black scale-105'
                               : 'bg-[#10192C] text-[#F5F5F0] border-[#C5A059]/20 hover:border-[#C5A059]'
                           }`}
                         >
                           <span className="text-base sm:text-sm">{size}</span>
-                          <span className="text-[10px] sm:text-[9px] font-normal opacity-80">
-                            {inStock ? `${stockCount}` : '0'}
-                          </span>
                         </button>
                       );
                     })}
@@ -345,8 +312,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                         {quantity}
                       </span>
                       <button
-                        disabled={quantity >= currentSizeStock}
-                        onClick={() => setQuantity((q) => Math.min(currentSizeStock, q + 1))}
+                        disabled={quantity >= 10}
+                        onClick={() => setQuantity((q) => Math.min(10, q + 1))}
                         className="w-8 h-8 rounded-lg bg-[#050B18] text-[#F5F5F0] hover:bg-[#1A2644] disabled:opacity-40 font-bold text-base flex items-center justify-center transition-colors shadow-xs cursor-pointer"
                       >
                         +
@@ -506,9 +473,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               {activeTab === 'shipping' && (
                 <div className="space-y-3">
                   {[
-                    { loc: 'Ouagadougou', time: 'Livraison sous 24h ou retrait boutique' },
-                    { loc: 'Provinces du Burkina', time: 'Expédition express sécurisée (24h-48h)' },
-                    { loc: 'International', time: 'Livraison DHL/FedEx sous 3-5 jours' }
+                    { loc: 'Ouagadougou', time: 'Livraison dans l\'heure qui suit la commande' },
+                    { loc: 'Hors Ouagadougou', time: 'Expédition par compagnie de transport sous 24h maximum' },
+                    { loc: 'Boutique', time: 'Retrait immédiat disponible 7j/7' }
                   ].map((item, i) => (
                     <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-[#10192C] rounded-[1.5rem] border border-[#C5A059]/10 gap-2">
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C5A059]">{item.loc}</span>

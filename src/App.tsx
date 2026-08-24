@@ -12,7 +12,6 @@ import {
   getSettings,
   saveSettings,
   formatFCFA,
-  updateProductStockInDb,
 } from './services/storeService';
 import { INITIAL_SETTINGS } from './data/initialData';
 import { supabase } from './services/supabaseClient';
@@ -309,39 +308,10 @@ export default function App() {
       // 1. Save order to Supabase
       await saveOrder(order);
 
-      // 2. Decrement stock for each item in Supabase
-      const stockUpdates = order.items.map(item =>
-        updateProductStockInDb(item.productId, item.size, item.quantity)
-      );
-      await Promise.all(stockUpdates);
-
-      // 3. Update local state
+      // 2. Update local state
       setOrdersState([order, ...orders]);
 
-      // Update local products state for immediate feedback
-      const updatedProducts = products.map((prod) => {
-        const purchasedForThis = order.items.filter((it) => it.productId === prod.id);
-        if (purchasedForThis.length === 0) return prod;
-
-        const newStock = { ...prod.stock };
-        purchasedForThis.forEach((it) => {
-          if (newStock[it.size] !== undefined) {
-            newStock[it.size] = Math.max(0, newStock[it.size] - it.quantity);
-          }
-        });
-
-        // Check availability
-        const totalStock = (Object.values(newStock) as number[]).reduce((a, b) => a + b, 0);
-
-        return {
-          ...prod,
-          stock: newStock,
-          isAvailable: totalStock > 0,
-        };
-      });
-      setProductsState(updatedProducts);
-
-      // 4. Clear cart & Save locally
+      // 3. Clear cart & Save locally
       saveCustomerOrder(order);
       handleClearCart();
       showToast('Commande validée avec succès !', 'success');

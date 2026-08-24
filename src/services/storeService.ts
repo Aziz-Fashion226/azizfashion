@@ -425,40 +425,6 @@ Nous restons à votre entière disposition pour toute question.
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 };
 
-// Stock management helpers
-export const updateProductStockInDb = async (
-  productId: string,
-  size: ShirtSize,
-  quantityToSubtract: number
-) => {
-  const { data: prod, error: fetchError } = await supabase
-    .from('products')
-    .select('stock')
-    .eq('id', productId)
-    .single();
-
-  if (fetchError || !prod) throw fetchError || new Error('Product not found');
-
-  const newStock = { ...prod.stock };
-  const currentVal = newStock[size] || 0;
-
-  if (currentVal < quantityToSubtract) {
-    throw new Error(`Stock insuffisant pour la taille ${size}`);
-  }
-
-  newStock[size] = currentVal - quantityToSubtract;
-
-  const totalStock = (Object.values(newStock) as number[]).reduce((a, b) => a + b, 0);
-  const { error: updateError } = await supabase
-    .from('products')
-    .update({
-      stock: newStock,
-      is_available: totalStock > 0,
-    })
-    .eq('id', productId);
-
-  if (updateError) throw updateError;
-};
 
 // --- Storage / Image Upload ---
 export const uploadProductImage = async (file: File): Promise<string> => {

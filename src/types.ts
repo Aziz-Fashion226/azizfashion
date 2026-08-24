@@ -1,4 +1,4 @@
-export type ShirtSize = 'S' | 'M' | 'L' | 'XL' | 'XXL';
+export type ShirtSize = 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
 
 export interface SizeStock {
   S: number;
@@ -6,6 +6,7 @@ export interface SizeStock {
   L: number;
   XL: number;
   XXL: number;
+  XXXL: number;
 }
 
 export interface ColorVariant {
