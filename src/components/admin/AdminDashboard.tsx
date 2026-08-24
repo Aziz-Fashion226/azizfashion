@@ -797,12 +797,43 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Matière Utilisée *</label>
+                      <div className="relative group/fabric">
+                        <select
+                          value={['Faso Danfani', "Pathé'O", 'Lin', 'Lin cassé'].includes(editingProduct.fabric) ||
+                                 ['Faso Danfani', "Pathé'O", 'Lin', 'Lin cassé'].some(m => editingProduct.fabric.startsWith(m + ' + '))
+                                 ? editingProduct.fabric : 'custom'}
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val !== 'custom') {
+                              setEditingProduct({...editingProduct, fabric: val});
+                            }
+                          }}
+                          className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all appearance-none text-xs"
+                        >
+                          {/* Option pure */}
+                          <option value={editingProduct.category}>{editingProduct.category} (Pur)</option>
+
+                          {/* Mixes suggérés */}
+                          {['Faso Danfani', "Pathé'O", 'Lin', 'Lin cassé']
+                            .filter(m => m !== editingProduct.category)
+                            .map(m => (
+                              <option key={m} value={`${editingProduct.category} + ${m}`}>
+                                {editingProduct.category} + {m}
+                              </option>
+                            ))
+                          }
+                          <option value="custom">-- Autre (Saisie libre) --</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                      </div>
+
+                      {/* Champ de saisie libre si 'custom' ou pour affiner */}
                       <input
                         type="text"
                         value={editingProduct.fabric}
                         onChange={e => setEditingProduct({...editingProduct, fabric: e.target.value})}
-                        className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all"
-                        placeholder="Ex: Lin + Pathé'O"
+                        className="w-full mt-2 p-3 bg-[#050B18] rounded-xl border border-white/5 text-xs outline-none focus:border-[#C5A059] placeholder:italic"
+                        placeholder="Précisez la matière ou le mix..."
                         required
                       />
                     </div>
