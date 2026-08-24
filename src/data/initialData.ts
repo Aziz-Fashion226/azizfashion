@@ -82,7 +82,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       XL: 4,
       XXL: 2,
     },
-    category: 'Cérémonie & Prestige',
+    category: 'Lin',
     badge: 'Nouveau',
     images: [
       'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1000&q=80',
@@ -122,7 +122,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       XL: 1,
       XXL: 0,
     },
-    category: 'Signature',
+    category: 'Lin cassé',
     badge: 'Promo',
     images: [
       'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1000&q=80',
@@ -161,7 +161,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       XL: 5,
       XXL: 3,
     },
-    category: 'Koko Dunda Moderne',
+    category: 'Lin',
     badge: 'Nouveau',
     images: [
       'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80',
@@ -200,7 +200,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       XL: 2,
       XXL: 1,
     },
-    category: 'Cérémonie & Prestige',
+    category: 'Lin',
     badge: 'Édition Limitée',
     images: [
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=80',
@@ -239,7 +239,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       XL: 6,
       XXL: 3,
     },
-    category: 'Casual Chic',
+    category: 'Lin cassé',
     images: [
       'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1603252109303-2751441ec157?auto=format&fit=crop&w=1000&q=80',
@@ -278,7 +278,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       XL: 2,
       XXL: 1,
     },
-    category: 'Signature',
+    category: 'Lin cassé',
     badge: 'Populaire',
     images: [
       'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=1000&q=80',
@@ -317,7 +317,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       XL: 3,
       XXL: 0,
     },
-    category: 'Cérémonie & Prestige',
+    category: 'Lin',
     badge: 'Nouveau',
     images: [
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=80',
