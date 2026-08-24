@@ -85,9 +85,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           ) : null}
 
           {product.originalPrice && !isOutOfStock && (
-            <span className="px-2 py-0.5 bg-black/80 text-rose-300 text-[10px] font-bold rounded-md border border-rose-500/30">
+            <span className="px-2 py-0.5 bg-black/80 text-rose-300 text-[10px] font-bold rounded-md border border-rose-500/30 w-fit">
               -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
             </span>
+          )}
+
+          {!isOutOfStock && (
+            <div className="mt-1 px-2 py-1 bg-[#0B1325]/60 backdrop-blur-md text-[#C5A059] text-[9px] font-black uppercase tracking-widest rounded-md border border-[#C5A059]/20 w-fit shadow-lg">
+              {product.fabric}
+            </div>
           )}
         </div>
 
