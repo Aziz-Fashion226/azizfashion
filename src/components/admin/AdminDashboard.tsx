@@ -116,7 +116,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleOpenNewProduct = () => {
     setEditingProduct({
       id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
-      features: ['Tissage traditionnel de haute qualité'], fabric: 'Faso Danfani', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
+      features: ['Tissu de haute qualité'], fabric: 'Faso Danfani', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
       price: 25000, stock: { S: 10, M: 10, L: 10, XL: 10, XXL: 10, XXXL: 10 }, category: 'Faso Danfani', images: [''],
       isAvailable: true, createdAt: new Date().toISOString(), rating: 5, reviewCount: 0
     });
