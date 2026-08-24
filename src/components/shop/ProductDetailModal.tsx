@@ -91,7 +91,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <div className="sticky top-0 z-20 bg-[#0B1325]/95 backdrop-blur-md px-4 sm:px-6 py-3.5 border-b border-[#C5A059]/20 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059] px-2.5 py-1 bg-[#10192C] rounded-md border border-[#C5A059]/30">
-              {product.category}
+              {product.fabric}
             </span>
             <span className="text-xs text-[#F5F5F0]/50 font-mono hidden sm:inline">
               Réf: {product.reference}
