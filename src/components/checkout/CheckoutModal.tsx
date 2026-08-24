@@ -92,7 +92,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         customer: { ...customer, whatsapp: sameAsPhone ? customer.phone : customer.whatsapp || customer.phone },
         items: safeItems,
         subtotal, deliveryFee, discount: promoApplied?.discount || 0, total,
-        deliveryMethod, paymentMethod, status: 'Nouvelle',
+        deliveryMethod, paymentMethod, status: 'Commande reçue',
         createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
       };
 

@@ -85,6 +85,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  const handleCancelOrder = async (orderId: string) => {
+    if (!window.confirm("Voulez-vous vraiment annuler votre commande ? Cette action est irréversible.")) return;
+
+    try {
+      const orderToCancel = trackedOrder || localOrders.find(o => o.id === orderId);
+      if (!orderToCancel) return;
+
+      const updatedOrder = { ...orderToCancel, status: 'Annulée' as OrderStatus, updatedAt: new Date().toISOString() };
+      await saveOrder(updatedOrder);
+
+      // Update local tracking view
+      if (trackedOrder?.id === orderId) {
+        setTrackedOrder(updatedOrder);
+      }
+
+      // Update local storage history
+      const { getCustomerOrders, saveCustomerOrder } = await import('../../services/storeService');
+      const currentLocal = getCustomerOrders();
+      const updatedLocal = currentLocal.map(o => o.id === orderId ? updatedOrder : o);
+      localStorage.setItem('aziz_fashion_customer_orders_v1', JSON.stringify(updatedLocal));
+      setLocalOrders(updatedLocal);
+
+      alert("Votre commande a été annulée avec succès.");
+    } catch (err: any) {
+      alert("Erreur lors de l'annulation : " + err.message);
+    }
+  };
+
   const handleOpenNewProduct = () => {
     setEditingProduct({
       id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
@@ -147,7 +175,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     } catch (err: any) { alert("Erreur : " + err.message); }
   };
 
-  const orderStatuses: OrderStatus[] = ['Nouvelle', 'Confirmée', 'En préparation', 'Expédiée', 'Livrée', 'Annulée'];
+  const orderStatuses: OrderStatus[] = ['Commande reçue', 'Commande livrée', 'Annulée'];
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 backdrop-blur-xl flex items-center justify-center p-0 sm:p-4">
@@ -311,10 +339,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                           <div
                             className="bg-[#C5A059] h-full transition-all duration-1000"
-                            style={{ width: trackedOrder.status === 'Livrée' ? '100%' : (trackedOrder.status === 'Expédiée' || trackedOrder.status === 'En préparation') ? '75%' : '25%' }}
+                            style={{ width: trackedOrder.status === 'Commande livrée' ? '100%' : trackedOrder.status === 'Annulée' ? '0%' : '50%' }}
                           />
                         </div>
                         <p className="text-[10px] text-slate-500 font-bold italic">Numéro : {trackedOrder.orderNumber}</p>
+
+                        {trackedOrder.status === 'Commande reçue' && (
+                          <button
+                            onClick={() => handleCancelOrder(trackedOrder.id)}
+                            className="w-full py-3 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all mt-2"
+                          >
+                            Annuler ma commande
+                          </button>
+                        )}
                       </div>
                     )}
                     {trackError && <p className="text-rose-500 font-bold text-xs">{trackError}</p>}
@@ -458,9 +495,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                     value={o.status}
                                     onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
                                     className={`px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest outline-none bg-transparent cursor-pointer ${
-                                      o.status === 'Livrée' ? 'border-emerald-500/50 text-emerald-500' :
+                                      o.status === 'Commande livrée' ? 'border-emerald-500/50 text-emerald-500' :
                                       o.status === 'Annulée' ? 'border-rose-500/50 text-rose-500' :
-                                      o.status === 'Nouvelle' ? 'border-[#C5A059]/50 text-[#C5A059]' : 'border-white/20'
+                                      'border-[#C5A059]/50 text-[#C5A059]'
                                     }`}
                                   >
                                     {orderStatuses.map(s => <option key={s} value={s} className="bg-[#0B1325]">{s}</option>)}

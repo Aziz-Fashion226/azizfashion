@@ -49,7 +49,7 @@ export interface CartItem {
   unitPrice: number;
 }
 
-export type OrderStatus = 'Nouvelle' | 'Confirmée' | 'En préparation' | 'Expédiée' | 'Livrée' | 'Annulée';
+export type OrderStatus = 'Commande reçue' | 'Commande livrée' | 'Annulée';
 
 export type PaymentMethod = 'Paiement à la livraison' | 'Orange Money' | 'Moov Money' | 'Wave' | 'MTN Mobile Money' | 'Paiement par carte (CinetPay)';
 
