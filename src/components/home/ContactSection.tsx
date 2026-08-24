@@ -107,14 +107,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
                 </div>
                 <div className="space-y-2">
                   <a
-                    href={`tel:${settings.phoneDisplay.split('/')[0].trim()}`}
+                    href={`tel:${(settings?.phoneDisplay || '').split('/')[0].trim()}`}
                     className="flex items-center justify-between p-3 bg-[#10192C] hover:bg-[#1A2644] rounded-xl border border-white/5 transition-all group/call"
                   >
                     <span className="text-[11px] font-bold text-slate-300">Appeler</span>
-                    <span className="text-xs font-black text-[#C5A059]">{settings.phoneDisplay.split('/')[0].trim()}</span>
+                    <span className="text-xs font-black text-[#C5A059]">{ (settings?.phoneDisplay || '').split('/')[0].trim() || 'Contact' }</span>
                   </a>
                   <a
-                    href={`https://wa.me/${settings.whatsappNumber}`}
+                    href={`https://wa.me/${settings?.whatsappNumber || ''}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-3 bg-emerald-950/20 hover:bg-emerald-900/30 rounded-xl border border-emerald-500/20 transition-all"

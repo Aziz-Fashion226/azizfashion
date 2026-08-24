@@ -47,11 +47,43 @@ const mapProductToDb = (p: Product) => ({
   category: p.category,
   badge: p.badge,
   images: p.images,
-  colors: p.colors,
   is_available: p.isAvailable,
   featured: p.featured,
   rating: p.rating,
   review_count: p.reviewCount,
+});
+
+const mapSettingsFromDb = (s: any): StoreSettings => ({
+  storeName: s.store_name || INITIAL_SETTINGS.storeName,
+  brandSlogan: s.brand_slogan || INITIAL_SETTINGS.brandSlogan,
+  whatsappNumber: s.whatsapp_number || INITIAL_SETTINGS.whatsappNumber,
+  whatsappDisplay: s.whatsapp_display || INITIAL_SETTINGS.whatsappDisplay,
+  phoneDisplay: s.phone_display || INITIAL_SETTINGS.phoneDisplay,
+  emailContact: s.email_contact || INITIAL_SETTINGS.emailContact,
+  addressShowroom: s.address_showroom || INITIAL_SETTINGS.addressShowroom,
+  cityCountry: s.city_country || INITIAL_SETTINGS.cityCountry,
+  freeShippingThreshold: s.free_shipping_threshold || INITIAL_SETTINGS.freeShippingThreshold,
+  defaultDeliveryFee: s.default_delivery_fee || INITIAL_SETTINGS.defaultDeliveryFee,
+  bannerAnnouncement: s.banner_announcement || INITIAL_SETTINGS.bannerAnnouncement,
+  bannerEnabled: s.banner_enabled ?? INITIAL_SETTINGS.bannerEnabled,
+  currency: s.currency || INITIAL_SETTINGS.currency,
+});
+
+const mapSettingsToDb = (s: StoreSettings) => ({
+  id: 1,
+  store_name: s.storeName,
+  brand_slogan: s.brandSlogan,
+  whatsapp_number: s.whatsappNumber,
+  whatsapp_display: s.whatsappDisplay,
+  phone_display: s.phoneDisplay,
+  email_contact: s.emailContact,
+  address_showroom: s.addressShowroom,
+  city_country: s.cityCountry,
+  free_shipping_threshold: s.freeShippingThreshold,
+  default_delivery_fee: s.defaultDeliveryFee,
+  banner_announcement: s.bannerAnnouncement,
+  banner_enabled: s.bannerEnabled,
+  currency: s.currency,
 });
 
 const mapOrderFromDb = (o: any): Order => ({
@@ -187,7 +219,7 @@ export const getStoredSettings = async (): Promise<StoreSettings> => {
       return INITIAL_SETTINGS;
     }
 
-    return data[0];
+    return mapSettingsFromDb(data[0]);
   } catch (e) {
     console.error('Error fetching settings:', e);
     return INITIAL_SETTINGS;
@@ -196,7 +228,7 @@ export const getStoredSettings = async (): Promise<StoreSettings> => {
 
 export const saveStoredSettings = async (settings: StoreSettings) => {
   try {
-    const { error } = await supabase.from('store_settings').upsert({ id: 1, ...settings });
+    const { error } = await supabase.from('store_settings').upsert(mapSettingsToDb(settings));
     if (error) throw error;
   } catch (e) {
     console.error('Error saving settings:', e);
