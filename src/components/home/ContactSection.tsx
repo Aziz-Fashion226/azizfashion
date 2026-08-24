@@ -55,14 +55,37 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Info cards (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="p-6 bg-[#0B1325] backdrop-blur-md rounded-2xl border border-[#C5A059]/30 space-y-4">
+            <div className="p-6 bg-[#0B1325] backdrop-blur-md rounded-2xl border border-[#C5A059]/30 space-y-4 relative overflow-hidden group">
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#C5A059]/5 rounded-full blur-2xl group-hover:bg-[#C5A059]/10 transition-all" />
+
               <h3 className="text-lg font-bold font-serif text-[#C5A059] flex items-center gap-2">
                 <Building className="w-5 h-5" />
-                <span>Boutique Principale</span>
+                <span>Localisation Boutique</span>
               </h3>
-              <p className="text-xs text-[#F5F5F0]/80 leading-relaxed">
-                {settings.addressShowroom}
-              </p>
+
+              <div className="space-y-3">
+                <p className="text-xs text-[#F5F5F0] font-bold leading-relaxed">
+                  {settings.addressShowroom}
+                </p>
+                <div className="p-3 bg-[#10192C] rounded-xl border border-white/5 space-y-2">
+                  <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-widest flex items-center gap-2">
+                    <MapPin className="w-3 h-3" /> Itinéraire précis
+                  </p>
+                  <p className="text-[11px] text-[#F5F5F0]/70 leading-relaxed italic">
+                    "Située sur la route du SIAO. En quittant la pédiatrie Charles de Gaulle, tournez à droite à la station service Sogel B. La boutique se trouve au deuxième six-mètres."
+                  </p>
+                </div>
+
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=12.355130,-1.488179"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3 bg-[#C5A059]/10 border border-[#C5A059]/30 text-[#C5A059] rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#C5A059] hover:text-[#050B18] transition-all"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  Ouvrir dans Google Maps
+                </a>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

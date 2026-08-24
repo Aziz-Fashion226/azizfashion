@@ -7,7 +7,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   whatsappDisplay: '+226 70 84 41 50',
   phoneDisplay: '+226 70 84 41 50 / +226 76 38 25 32',
   emailContact: 'contact@azizfashion.com',
-  addressShowroom: 'Avenue Kwamé N\'Krumah, Immeuble Prestige, Ouagadougou',
+  addressShowroom: 'Route du SIAO, vers la station Sogel B (au 2ème six-mètres), Ouagadougou',
   cityCountry: 'Ouagadougou, Burkina Faso',
   freeShippingThreshold: 60000,
   defaultDeliveryFee: 2000,
