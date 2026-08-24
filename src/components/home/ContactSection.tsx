@@ -93,8 +93,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
                 <Clock className="w-4 h-4 text-[#C5A059]" />
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#F5F5F0]">Horaires d'Ouverture</h4>
                 <p className="text-xs text-[#F5F5F0]/70">
-                  Lun - Sam : 08h30 – 19h30<br />
-                  Dimanche : Sur rendez-vous
+                  Lundi - Dimanche<br />
+                  08h00 – 21h00
                 </p>
               </div>
 
