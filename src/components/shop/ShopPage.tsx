@@ -56,10 +56,9 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   const categories = [
     { id: 'all', label: 'Toutes les créations' },
     { id: 'Faso Danfani', label: 'Faso Danfani' },
-    { id: 'Cérémonie & Prestige', label: 'Cérémonie & Prestige' },
-    { id: 'Signature', label: 'Signature Aziz' },
-    { id: 'Koko Dunda Moderne', label: 'Koko Dunda Moderne' },
-    { id: 'Casual Chic', label: 'Casual Chic' },
+    { id: "Pathé'O", label: "Pathé'O" },
+    { id: 'Lin', label: 'Lin' },
+    { id: 'Lin cassé', label: 'Lin cassé' },
   ];
 
   const availableSizes: ShirtSize[] = ['S', 'M', 'L', 'XL', 'XXL'];

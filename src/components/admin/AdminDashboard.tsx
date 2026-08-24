@@ -671,8 +671,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Catégorie</label>
-                      <select value={editingProduct.category} onChange={e => setEditingProduct({...editingProduct, category: e.target.value as any})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all appearance-none">
-                        <option>Faso Danfani</option><option>Koko Dunda Moderne</option><option>Cérémonie & Prestige</option><option>Casual Chic</option><option>Signature</option>
+                      <select value={editingProduct.category} onChange={e => setEditingProduct({...editingProduct, category: e.target.value as any})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all appearance-none text-[#F5F5F0]">
+                        <option value="Faso Danfani">Faso Danfani</option>
+                        <option value="Pathé'O">Pathé'O</option>
+                        <option value="Lin">Lin</option>
+                        <option value="Lin cassé">Lin cassé</option>
                       </select>
                     </div>
                   </div>

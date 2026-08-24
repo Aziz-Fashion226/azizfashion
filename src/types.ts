@@ -27,7 +27,7 @@ export interface Product {
   price: number; // in FCFA
   originalPrice?: number; // for promo
   stock: SizeStock;
-  category: 'Cérémonie & Prestige' | 'Casual Chic' | 'Faso Danfani' | 'Koko Dunda Moderne' | 'Signature';
+  category: 'Faso Danfani' | 'Pathé\'O' | 'Lin' | 'Lin cassé';
   badge?: 'Nouveau' | 'Promo' | 'Populaire' | 'Édition Limitée';
   images: string[];
   colors: ColorVariant[];
