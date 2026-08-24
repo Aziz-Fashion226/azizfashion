@@ -8,6 +8,7 @@ import {
   saveCart,
   getWishlist,
   saveWishlist,
+  saveCustomerOrder,
   getSettings,
   saveSettings,
   formatFCFA,
@@ -344,7 +345,8 @@ export default function App() {
       });
       setProductsState(updatedProducts);
 
-      // 4. Clear cart
+      // 4. Clear cart & Save locally
+      saveCustomerOrder(order);
       handleClearCart();
       showToast('Commande validée avec succès !', 'success');
     } catch (error: any) {

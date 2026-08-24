@@ -11,6 +11,7 @@ const STORAGE_KEYS = {
   WISHLIST: 'aziz_fashion_wishlist_v1',
   CART: 'aziz_fashion_cart_v1',
   ADMIN_AUTH: 'aziz_fashion_admin_session_v1',
+  CUSTOMER_ORDERS: 'aziz_fashion_customer_orders_v1',
 };
 
 export const formatFCFA = (amount: number): string => {
@@ -264,6 +265,25 @@ export const saveStoredCart = (cart: CartItem[]) => {
   }
 };
 
+export const getStoredCustomerOrders = (): Order[] => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEYS.CUSTOMER_ORDERS);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveCustomerOrderLocally = (order: Order) => {
+  try {
+    const existing = getStoredCustomerOrders();
+    const updated = [order, ...existing].slice(0, 10); // Keep last 10 orders
+    localStorage.setItem(STORAGE_KEYS.CUSTOMER_ORDERS, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Error saving order locally:', e);
+  }
+};
+
 // WhatsApp Link Generators
 export const generateProductWhatsAppUrl = (
   product: Product,
@@ -453,3 +473,5 @@ export const getWishlist = getStoredWishlist;
 export const saveWishlist = saveStoredWishlist;
 export const getCart = getStoredCart;
 export const saveCart = saveStoredCart;
+export const getCustomerOrders = getStoredCustomerOrders;
+export const saveCustomerOrder = saveCustomerOrderLocally;

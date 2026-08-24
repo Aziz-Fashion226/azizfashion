@@ -3,7 +3,7 @@ import {
   User, LayoutDashboard, Package, ShoppingBag, Settings, LogOut, TrendingUp, Clock, CheckCircle, Truck, CheckCheck, XCircle, Plus, Edit2, Trash2, Eye, EyeOff, MessageCircle, Search, Printer, Save, RotateCcw, Sparkles, AlertTriangle, ChevronRight, Filter, MapPin, Calendar, Box, Camera, Info, Tag, Layers, ArrowLeft
 } from 'lucide-react';
 import { Order, OrderStatus, Product, ShirtSize, SizeStock, StoreSettings } from '../../types';
-import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder, uploadProductImage } from '../../services/storeService';
+import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder, uploadProductImage, getCustomerOrders } from '../../services/storeService';
 import { Logo } from '../common/Logo';
 import { supabase } from '../../services/supabaseClient';
 
@@ -35,6 +35,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [orderSearch, setOrderSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [localOrders, setLocalOrders] = useState<Order[]>([]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setLocalOrders(getCustomerOrders());
+    }
+  }, [isOpen]);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,9 +249,46 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <button onClick={() => setPortalView('choice')} className="inline-flex items-center gap-2 text-[10px] font-black uppercase text-[#C5A059] hover:text-white tracking-widest">
                       <ArrowLeft className="w-3 h-3" /> Retour
                     </button>
+
+                    {/* Local Orders History */}
+                    {localOrders.length > 0 && (
+                      <div className="space-y-4 text-left">
+                        <h4 className="text-xs font-black uppercase text-[#C5A059] tracking-widest border-b border-white/5 pb-2">Mes Commandes Récentes</h4>
+                        <div className="space-y-3">
+                          {localOrders.map(order => (
+                            <button
+                              key={order.id}
+                              onClick={async () => {
+                                setTrackNumber(order.orderNumber);
+                                setIsTrackLoading(true);
+                                const latest = await getOrderByNumber(order.orderNumber);
+                                setTrackedOrder(latest || order);
+                                setIsTrackLoading(false);
+                              }}
+                              className="w-full p-4 bg-[#10192C] border border-white/5 rounded-2xl flex items-center justify-between hover:border-[#C5A059]/30 transition-all text-left"
+                            >
+                              <div>
+                                <div className="text-xs font-black text-[#F5F5F0]">{order.orderNumber}</div>
+                                <div className="text-[10px] text-slate-500">{new Date(order.createdAt).toLocaleDateString('fr-FR')}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-[10px] font-black text-[#C5A059] uppercase">{order.status}</div>
+                                <div className="text-[9px] text-slate-600 font-bold">{formatFCFA(order.total)}</div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                        <div className="relative py-4 flex items-center gap-4">
+                          <div className="flex-1 h-px bg-white/5"></div>
+                          <span className="text-[9px] font-bold text-slate-600 uppercase">Ou rechercher</span>
+                          <div className="flex-1 h-px bg-white/5"></div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-4">
-                      <h3 className="text-3xl font-serif font-black">Suivre ma commande</h3>
-                      <p className="text-sm text-slate-400">Entrez votre numéro de commande pour connaître l'avancement de votre colis.</p>
+                      <h3 className="text-3xl font-serif font-black">Suivre une commande</h3>
+                      <p className="text-sm text-slate-400">Entrez le numéro reçu par WhatsApp ou sur votre reçu.</p>
                     </div>
                     <form onSubmit={handleTrackOrder} className="space-y-4">
                       <input
@@ -254,7 +298,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         onChange={(e) => setTrackNumber(e.target.value)}
                         className="w-full p-5 bg-[#10192C] border border-[#C5A059]/20 rounded-2xl text-center font-mono font-black text-xl text-[#C5A059] outline-none focus:border-[#C5A059] transition-all"
                       />
-                      <button type="submit" className="w-full py-5 bg-[#C5A059] text-[#0B1325] font-black uppercase rounded-2xl shadow-xl shadow-[#C5A059]/10 hover:scale-[1.02] active:scale-95 transition-all">Rechercher</button>
+                      <button type="submit" className="w-full py-5 bg-[#C5A059] text-[#0B1325] font-black uppercase rounded-2xl shadow-xl shadow-[#C5A059]/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+                        {isTrackLoading ? (
+                          <div className="w-5 h-5 border-2 border-[#0B1325]/20 border-t-[#0B1325] rounded-full animate-spin"></div>
+                        ) : 'Rechercher'}
+                      </button>
                     </form>
                     {trackedOrder && (
                       <div className="p-8 bg-[#10192C] rounded-[2rem] border border-[#C5A059]/30 space-y-4 animate-in fade-in slide-in-from-bottom-4">
@@ -263,9 +311,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                           <div
                             className="bg-[#C5A059] h-full transition-all duration-1000"
-                            style={{ width: trackedOrder.status === 'Livrée' ? '100%' : trackedOrder.status === 'Expédiée' ? '75%' : '25%' }}
+                            style={{ width: trackedOrder.status === 'Livrée' ? '100%' : (trackedOrder.status === 'Expédiée' || trackedOrder.status === 'En préparation') ? '75%' : '25%' }}
                           />
                         </div>
+                        <p className="text-[10px] text-slate-500 font-bold italic">Numéro : {trackedOrder.orderNumber}</p>
                       </div>
                     )}
                     {trackError && <p className="text-rose-500 font-bold text-xs">{trackError}</p>}
