@@ -30,7 +30,7 @@ export interface Product {
   category: 'Faso Danfani' | 'Pathé\'O' | 'Lin' | 'Lin cassé';
   badge?: 'Nouveau' | 'Promo' | 'Populaire' | 'Édition Limitée';
   images: string[];
-  colors: ColorVariant[];
+  colors?: ColorVariant[]; // Made optional
   isAvailable: boolean;
   featured?: boolean;
   createdAt: string;

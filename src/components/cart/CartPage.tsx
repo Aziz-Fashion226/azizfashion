@@ -13,8 +13,8 @@ import { formatFCFA, generateCartWhatsAppUrl } from '../../services/storeService
 
 interface CartPageProps {
   items: CartItem[];
-  onUpdateQuantity: (productId: string, size: string, color: string, delta: number) => void;
-  onRemoveItem: (productId: string, size: string, color: string) => void;
+  onUpdateQuantity: (productId: string, size: string, delta: number) => void;
+  onRemoveItem: (productId: string, size: string) => void;
   onClearCart: () => void;
   onProceedToCheckout: () => void;
   onNavigate: (view: any) => void;
@@ -80,7 +80,7 @@ export const CartPage: React.FC<CartPageProps> = ({
           ) : (
             <div className="space-y-4">
               {safeItems.map((item) => (
-                <div key={`${item.productId}-${item.size}-${item.color}`} className="bg-[#10192C] p-6 rounded-[2rem] border border-white/5 flex flex-col sm:flex-row gap-6 hover:border-[#C5A059]/30 transition-all group">
+                <div key={`${item.productId}-${item.size}`} className="bg-[#10192C] p-6 rounded-[2rem] border border-white/5 flex flex-col sm:flex-row gap-6 hover:border-[#C5A059]/30 transition-all group">
                   <div className="w-full sm:w-32 aspect-[3/4] rounded-2xl overflow-hidden bg-[#050B18] shrink-0 border border-white/5">
                     <img src={item.product?.images?.[0]} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" alt="" />
                   </div>
@@ -89,21 +89,20 @@ export const CartPage: React.FC<CartPageProps> = ({
                     <div className="space-y-1">
                       <div className="flex justify-between items-start">
                         <h3 className="text-lg font-serif font-black">{item.product?.name}</h3>
-                        <button onClick={() => onRemoveItem(item.productId, item.size, item.color)} className="p-2 text-slate-500 hover:text-rose-500 transition-colors">
+                        <button onClick={() => onRemoveItem(item.productId, item.size)} className="p-2 text-slate-500 hover:text-rose-500 transition-colors">
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-[10px] font-black uppercase text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-1 rounded-lg border border-[#C5A059]/20">Taille {item.size}</span>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.color}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between mt-6">
                       <div className="flex items-center bg-[#050B18] p-1.5 rounded-xl border border-white/10">
-                        <button onClick={() => onUpdateQuantity(item.productId, item.size, item.color, -1)} className="w-8 h-8 rounded-lg bg-[#10192C] text-[#C5A059] hover:bg-[#C5A059] hover:text-[#050B18] transition-all font-black">-</button>
+                        <button onClick={() => onUpdateQuantity(item.productId, item.size, -1)} className="w-8 h-8 rounded-lg bg-[#10192C] text-[#C5A059] hover:bg-[#C5A059] hover:text-[#050B18] transition-all font-black">-</button>
                         <span className="w-12 text-center text-sm font-black text-[#F5F5F0]">{item.quantity}</span>
-                        <button onClick={() => onUpdateQuantity(item.productId, item.size, item.color, 1)} className="w-8 h-8 rounded-lg bg-[#10192C] text-[#C5A059] hover:bg-[#C5A059] hover:text-[#050B18] transition-all font-black">+</button>
+                        <button onClick={() => onUpdateQuantity(item.productId, item.size, 1)} className="w-8 h-8 rounded-lg bg-[#10192C] text-[#C5A059] hover:bg-[#C5A059] hover:text-[#050B18] transition-all font-black">+</button>
                       </div>
                       <div className="text-right">
                         <div className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total Article</div>

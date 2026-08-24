@@ -49,10 +49,6 @@ export const INITIAL_PRODUCTS: Product[] = [
       'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1000&q=80',
     ],
-    colors: [
-      { name: 'Bleu Nuit & Or', hex: '#0B192C' },
-      { name: 'Blanc Ivoire', hex: '#FDFBF7' },
-    ],
     isAvailable: true,
     featured: true,
     createdAt: '2026-08-01',
@@ -87,10 +83,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     images: [
       'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1620012253295-c15c429fccf8?auto=format&fit=crop&w=1000&q=80',
-    ],
-    colors: [
-      { name: 'Bleu Royal Impérial', hex: '#1E3A8A' },
-      { name: 'Sable Doré', hex: '#D4AF37' },
     ],
     isAvailable: true,
     featured: true,
@@ -128,10 +120,6 @@ export const INITIAL_PRODUCTS: Product[] = [
       'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1563630423918-b58f07336ac9?auto=format&fit=crop&w=1000&q=80',
     ],
-    colors: [
-      { name: 'Blanc Majestueux', hex: '#FFFFFF' },
-      { name: 'Crème Vanille', hex: '#FDF6E2' },
-    ],
     isAvailable: true,
     featured: true,
     createdAt: '2026-07-15',
@@ -166,10 +154,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     images: [
       'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1589310243389-96a5483213a8?auto=format&fit=crop&w=1000&q=80',
-    ],
-    colors: [
-      { name: 'Terre Cuite & Ocre', hex: '#B45309' },
-      { name: 'Vert Émeraude Sombre', hex: '#064E3B' },
     ],
     isAvailable: true,
     featured: false,
@@ -206,10 +190,6 @@ export const INITIAL_PRODUCTS: Product[] = [
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1000&q=80',
     ],
-    colors: [
-      { name: 'Noir Ébène & Or', hex: '#111827' },
-      { name: 'Bordeaux Impérial', hex: '#4C0519' },
-    ],
     isAvailable: true,
     featured: true,
     createdAt: '2026-08-05',
@@ -243,10 +223,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     images: [
       'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1603252109303-2751441ec157?auto=format&fit=crop&w=1000&q=80',
-    ],
-    colors: [
-      { name: 'Bleu Ciel Pastel', hex: '#BAE6FD' },
-      { name: 'Kaki Saharien', hex: '#71717A' },
     ],
     isAvailable: true,
     featured: false,
@@ -284,10 +260,6 @@ export const INITIAL_PRODUCTS: Product[] = [
       'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1000&q=80',
     ],
-    colors: [
-      { name: 'Bleu Nuit Nuit Profond', hex: '#0B1325' },
-      { name: 'Gris Anthracite', hex: '#334155' },
-    ],
     isAvailable: true,
     featured: true,
     createdAt: '2026-08-12',
@@ -322,9 +294,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     images: [
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1000&q=80',
-    ],
-    colors: [
-      { name: 'Noir Mystique & Or', hex: '#0A0A0A' },
     ],
     isAvailable: true,
     featured: true,

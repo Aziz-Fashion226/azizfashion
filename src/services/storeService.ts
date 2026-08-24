@@ -320,7 +320,7 @@ export const generateCartWhatsAppUrl = (
   const itemsList = items
     .map(
       (item, idx) =>
-        `${idx + 1}. *${item.product?.name || item.productName || 'Chemise'}* (Taille: ${item.size}, Couleur: ${item.color}) x${item.quantity} = ${formatFCFA(item.unitPrice * item.quantity)}`
+        `${idx + 1}. *${item.product?.name || item.productName || 'Chemise'}* (Taille: ${item.size}) x${item.quantity} = ${formatFCFA(item.unitPrice * item.quantity)}`
     )
     .join('\n');
 

@@ -116,8 +116,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleOpenNewProduct = () => {
     setEditingProduct({
       id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
-      features: ['Tissage traditionnel de haute qualité'], fabric: 'Faso Danfani noble', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
-      price: 25000, stock: { S: 5, M: 5, L: 5, XL: 2, XXL: 0 }, category: 'Faso Danfani', images: [''], colors: [{ name: 'Bleu Nuit', hex: '#0B192C' }],
+      features: ['Tissage traditionnel de haute qualité'], fabric: 'Faso Danfani', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
+      price: 25000, stock: { S: 5, M: 5, L: 5, XL: 2, XXL: 0 }, category: 'Faso Danfani', images: [''],
       isAvailable: true, createdAt: new Date().toISOString(), rating: 5, reviewCount: 0
     });
     setIsNewProduct(true);
@@ -671,7 +671,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Catégorie</label>
-                      <select value={editingProduct.category} onChange={e => setEditingProduct({...editingProduct, category: e.target.value as any})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all appearance-none text-[#F5F5F0]">
+                      <select
+                        value={editingProduct.category}
+                        onChange={e => setEditingProduct({
+                          ...editingProduct,
+                          category: e.target.value as any
+                        })}
+                        className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all appearance-none text-[#F5F5F0]"
+                      >
                         <option value="Faso Danfani">Faso Danfani</option>
                         <option value="Pathé'O">Pathé'O</option>
                         <option value="Lin">Lin</option>
@@ -790,7 +797,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Matière Utilisée *</label>
-                      <input type="text" value={editingProduct.fabric} onChange={e => setEditingProduct({...editingProduct, fabric: e.target.value})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059]" required placeholder="Ex: Faso Danfani 100% Coton" />
+                      <input
+                        type="text"
+                        value={editingProduct.fabric}
+                        onChange={e => setEditingProduct({...editingProduct, fabric: e.target.value})}
+                        className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all"
+                        placeholder="Ex: Lin + Pathé'O"
+                        required
+                      />
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Origine du Textile</label>
@@ -822,50 +836,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <button type="button" onClick={() => setEditingProduct({...editingProduct, features: [...(editingProduct.features || []), '']})} className="w-full py-3 border border-dashed border-white/10 rounded-2xl text-[10px] font-black uppercase text-slate-500">+ Ajouter un point</button>
                     </div>
 
-                    <div className="space-y-4">
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block">Variantes de Couleurs</label>
-                      {(editingProduct.colors || []).map((col, i) => (
-                        <div key={i} className="bg-[#050B18] p-4 rounded-2xl border border-white/5 space-y-3">
-                          <div className="flex gap-2 items-center">
-                            <input type="color" value={col.hex} onChange={e => { const c = [...editingProduct.colors]; c[i] = {...c[i], hex: e.target.value}; setEditingProduct({...editingProduct, colors: c}); }} className="w-10 h-10 rounded-lg bg-transparent border-none cursor-pointer" />
-                            <input
-                              type="text"
-                              value={col.name}
-                              onChange={e => { const c = [...editingProduct.colors]; c[i] = {...c[i], name: e.target.value}; setEditingProduct({...editingProduct, colors: c}); }}
-                              className="flex-1 p-3 bg-[#10192C] rounded-xl border border-white/10 text-xs outline-none focus:border-[#C5A059]"
-                              placeholder="Nom (ex: Bleu Nuit)"
-                            />
-                            <button type="button" onClick={() => setEditingProduct({...editingProduct, colors: editingProduct.colors.filter((_, idx) => idx !== i)})} className="p-3 bg-rose-500/10 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><Trash2 className="w-4 h-4" /></button>
-                          </div>
-
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[8px] font-black text-slate-600 uppercase tracking-tighter">Photo liée à cette couleur (Optionnel)</label>
-                            <select
-                              value={col.image || ''}
-                              onChange={e => { const c = [...editingProduct.colors]; c[i] = {...c[i], image: e.target.value}; setEditingProduct({...editingProduct, colors: c}); }}
-                              className="w-full p-2 bg-[#10192C] rounded-lg border border-white/10 text-[10px] outline-none"
-                            >
-                              <option value="">Utiliser photo principale</option>
-                              {editingProduct.images.filter(img => img).map((img, idx) => (
-                                <option key={idx} value={img}>Photo n°{idx + 1}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                      ))}
-                      <button type="button" onClick={() => setEditingProduct({...editingProduct, colors: [...(editingProduct.colors || []), { name: '', hex: '#000000' }]})} className="w-full py-3 border border-dashed border-white/10 rounded-2xl text-[10px] font-black uppercase text-slate-500 hover:border-[#C5A059] transition-all">+ Ajouter une couleur</button>
+                    <div>
+                      <label className="text-[9px] font-bold text-slate-500 uppercase mb-2 block">Description de la création</label>
+                      <textarea
+                        value={editingProduct.description}
+                        onChange={e => setEditingProduct({...editingProduct, description: e.target.value})}
+                        rows={6}
+                        className="w-full p-5 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] text-sm leading-relaxed"
+                        placeholder="Décrivez l'histoire et le style de cette chemise..."
+                      />
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="text-[9px] font-bold text-slate-500 uppercase mb-2 block">Description de la création</label>
-                    <textarea
-                      value={editingProduct.description}
-                      onChange={e => setEditingProduct({...editingProduct, description: e.target.value})}
-                      rows={4}
-                      className="w-full p-5 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] text-sm leading-relaxed"
-                      placeholder="Décrivez l'histoire et le style de cette chemise..."
-                    />
                   </div>
                 </section>
               </form>

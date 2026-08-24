@@ -218,12 +218,11 @@ export default function App() {
   const handleAddToCart = (
     product: Product,
     size: ShirtSize,
-    quantity: number,
-    color: string
+    quantity: number
   ) => {
     const existingIndex = cart.findIndex(
       (item) =>
-        item.productId === product.id && item.size === size && item.color === color
+        item.productId === product.id && item.size === size
     );
 
     let updatedCart: CartItem[];
@@ -238,7 +237,7 @@ export default function App() {
           product,
           size,
           quantity,
-          color,
+          color: 'Standard',
           unitPrice: product.price,
         },
       ];
@@ -252,15 +251,13 @@ export default function App() {
   const handleUpdateCartQuantity = (
     productId: string,
     size: string,
-    color: string,
     delta: number
   ) => {
     const updated = cart
       .map((item) => {
         if (
           item.productId === productId &&
-          item.size === size &&
-          item.color === color
+          item.size === size
         ) {
           const newQty = item.quantity + delta;
           return newQty > 0 ? { ...item, quantity: newQty } : null;
@@ -273,13 +270,12 @@ export default function App() {
     saveCart(updated);
   };
 
-  const handleRemoveCartItem = (productId: string, size: string, color: string) => {
+  const handleRemoveCartItem = (productId: string, size: string) => {
     const updated = cart.filter(
       (item) =>
         !(
           item.productId === productId &&
-          item.size === size &&
-          item.color === color
+          item.size === size
         )
     );
     setCartState(updated);
@@ -435,7 +431,7 @@ export default function App() {
                       onToggleWishlist={handleToggleWishlist}
                       onSelectProduct={(p) => setSelectedProduct(p)}
                       onQuickAddToCart={(p, size) =>
-                        handleAddToCart(p, size, 1, p.colors[0]?.name || 'Standard')
+                        handleAddToCart(p, size, 1)
                       }
                       settings={settings}
                     />

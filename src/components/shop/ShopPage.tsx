@@ -18,7 +18,7 @@ import { formatFCFA } from '../../services/storeService';
 interface ShopPageProps {
   products: Product[];
   onSelectProduct: (product: Product) => void;
-  onAddToCart: (product: Product, size: ShirtSize, quantity: number, color: string) => void;
+  onAddToCart: (product: Product, size: ShirtSize, quantity: number) => void;
   wishlistIds: string[];
   onToggleWishlist: (productId: string) => void;
   settings: StoreSettings;
@@ -433,7 +433,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
                   onToggleWishlist={onToggleWishlist}
                   onSelectProduct={onSelectProduct}
                   onQuickAddToCart={(p, size) =>
-                    onAddToCart(p, size, 1, p.colors?.[0]?.name || 'Standard')
+                    onAddToCart(p, size, 1)
                   }
                   settings={settings}
                 />
