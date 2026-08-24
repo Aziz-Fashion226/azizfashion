@@ -98,13 +98,31 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
                 </p>
               </div>
 
-              <div className="p-5 bg-[#0B1325] backdrop-blur-md rounded-2xl border border-[#C5A059]/30 space-y-2">
-                <Phone className="w-4 h-4 text-[#C5A059]" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#F5F5F0]">Téléphone & WhatsApp</h4>
-                <p className="text-xs text-[#F5F5F0]/70">
-                  {settings.phoneDisplay}<br />
-                  {settings.whatsappDisplay}
-                </p>
+              <div className="p-5 bg-[#0B1325] backdrop-blur-md rounded-2xl border border-[#C5A059]/30 space-y-3 group/phone">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-[#C5A059]/10 rounded-lg text-[#C5A059]">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-[#F5F5F0]">Contact Direct</h4>
+                </div>
+                <div className="space-y-2">
+                  <a
+                    href={`tel:${settings.phoneDisplay.split('/')[0].trim()}`}
+                    className="flex items-center justify-between p-3 bg-[#10192C] hover:bg-[#1A2644] rounded-xl border border-white/5 transition-all group/call"
+                  >
+                    <span className="text-[11px] font-bold text-slate-300">Appeler</span>
+                    <span className="text-xs font-black text-[#C5A059]">{settings.phoneDisplay.split('/')[0].trim()}</span>
+                  </a>
+                  <a
+                    href={`https://wa.me/${settings.whatsappNumber}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 bg-emerald-950/20 hover:bg-emerald-900/30 rounded-xl border border-emerald-500/20 transition-all"
+                  >
+                    <span className="text-[11px] font-bold text-slate-300">WhatsApp</span>
+                    <MessageCircle className="w-4 h-4 text-emerald-500" />
+                  </a>
+                </div>
               </div>
             </div>
 
