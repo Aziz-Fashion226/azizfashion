@@ -358,7 +358,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
               <span className="text-xs text-[#F5F5F0]/60 font-medium">Filtres actifs :</span>
               {filters.category !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#10192C] text-[#C5A059] text-xs font-semibold rounded-full border border-[#C5A059]/30">
-                  Catégorie : {filters.category}
+                  {filters.category}
                   <button onClick={() => setFilters({ ...filters, category: 'all' })} className="cursor-pointer">
                     <X className="w-3 h-3" />
                   </button>

@@ -594,10 +594,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Catégorie</label>
                       <select
                         value={editingProduct.category}
-                        onChange={e => setEditingProduct({
-                          ...editingProduct,
-                          category: e.target.value as any
-                        })}
+                        onChange={e => {
+                          const newCat = e.target.value as any;
+                          setEditingProduct({
+                            ...editingProduct,
+                            category: newCat,
+                            fabric: newCat // Auto-sync fabric with category by default
+                          });
+                        }}
                         className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all appearance-none text-[#F5F5F0]"
                       >
                         <option value="Faso Danfani">Faso Danfani</option>

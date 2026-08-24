@@ -108,7 +108,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="text-[#C5A059]/60 uppercase font-black tracking-tighter mr-2">Savoir-faire :</span>
-            {['Faso Danfani', 'Koko Dunda', 'Col Officier', 'Cérémonie', 'Luxe'].map((term) => (
+            {['Faso Danfani', "Pathé'O", 'Lin', 'Lin cassé', 'Luxe'].map((term) => (
               <button
                 key={term}
                 onClick={() => { setQuery(term); saveSearch(term); }}
