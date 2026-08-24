@@ -329,30 +329,58 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   </div>
                 </div>
 
-                {/* Color Selector */}
+                {/* Color Selector - Dynamic Swatches */}
                 {product.colors && product.colors.length > 0 && (
-                  <div className="space-y-2 pt-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#F5F5F0]/80 block">
-                      Couleur / Teinte : <span className="font-semibold text-[#C5A059]">{selectedColor}</span>
-                    </span>
-                    <div className="flex items-center gap-3">
-                      {product.colors.map((c) => (
-                        <button
-                          key={c.name}
-                          onClick={() => setSelectedColor(c.name)}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                            selectedColor === c.name
-                              ? 'bg-[#C5A059] text-[#050B18] border-[#C5A059] shadow-xs'
-                              : 'bg-[#10192C] text-[#F5F5F0] border-[#C5A059]/20 hover:border-[#C5A059]/50'
-                          }`}
-                        >
-                          <span
-                            className="w-3.5 h-3.5 rounded-full border border-white/20"
-                            style={{ backgroundColor: c.hex }}
-                          />
-                          <span>{c.name}</span>
-                        </button>
-                      ))}
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#F5F5F0]/80">
+                        Teinte : <span className="text-[#C5A059]">{selectedColor}</span>
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4">
+                      {product.colors.map((c) => {
+                        const isSelected = selectedColor === c.name;
+                        return (
+                          <button
+                            key={c.name}
+                            onClick={() => {
+                              setSelectedColor(c.name);
+                              // If this color has a linked image, switch to it
+                              if (c.image) {
+                                const imgIndex = imagesList.indexOf(c.image);
+                                if (imgIndex !== -1) setActiveImageIndex(imgIndex);
+                              }
+                            }}
+                            className={`group relative flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                              isSelected ? 'scale-110' : 'hover:scale-105'
+                            }`}
+                            title={c.name}
+                          >
+                            {/* Outer ring */}
+                            <div className={`absolute -inset-1.5 rounded-full border-2 transition-all duration-500 ${
+                              isSelected ? 'border-[#C5A059] opacity-100 scale-100' : 'border-white/10 opacity-0 scale-50 group-hover:opacity-40 group-hover:scale-90'
+                            }`} />
+
+                            {/* Color Circle */}
+                            <div
+                              className="w-8 h-8 rounded-full border border-white/20 shadow-xl relative z-10 overflow-hidden"
+                              style={{ backgroundColor: c.hex }}
+                            >
+                              {/* Texture subtle overlay if needed, or checkmark */}
+                              {isSelected && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                                  <Check className="w-4 h-4 text-white drop-shadow-md" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Tooltip on hover (Desktop) */}
+                            <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-[#050B18] text-[#F5F5F0] text-[9px] font-black uppercase px-2 py-1 rounded border border-[#C5A059]/20 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20">
+                              {c.name}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
