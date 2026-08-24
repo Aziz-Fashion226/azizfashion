@@ -11,7 +11,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   cityCountry: 'Ouagadougou, Burkina Faso',
   freeShippingThreshold: 60000,
   defaultDeliveryFee: 2000,
-  bannerAnnouncement: '✨ Livraison offerte dès 60 000 FCFA | Confection 100% locale artisanale',
+  bannerAnnouncement: '✨ Livraison offerte dès 60 000 FCFA | Sélection 100% locale authentique',
   bannerEnabled: true,
   currency: 'FCFA',
 };
@@ -22,7 +22,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     name: 'Faso Élégance',
     reference: 'AZF-FE-001',
     tagline: 'L\'alliance subtile du Faso Danfani noble et de la coupe moderne',
-    description: 'Une chemise d\'exception confectionnée à partir d\'un tissage artisanal Faso Danfani aux motifs géométriques raffinés. Dotée d\'un col officier structuré et d\'un plastron épuré, elle sublime vos sorties professionnelles comme vos cérémonies.',
+    description: 'Une chemise d\'exception réalisée à partir d\'un tissage artisanal Faso Danfani aux motifs géométriques raffinés. Dotée d\'un col officier structuré et d\'un plastron épuré, elle sublime vos sorties professionnelles comme vos cérémonies.',
     features: [
       'Tissage Faso Danfani 100% coton biologique du terroir',
       'Col officier renforcé à boutons nacrés invisibles',
@@ -30,8 +30,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Finitions intérieures gansées au fil doré',
       'Teinture artisanale respectueuse de l\'environnement'
     ],
-    fabric: '100% Coton peigné tissé main (Faso Danfani noble)',
-    origin: 'Atelier Aziz Fashion - Ouagadougou / Koudougou',
+    fabric: '100% Coton peigné (Faso Danfani noble)',
+    origin: 'Boutique Aziz Fashion - Sélection Ouagadougou',
     fit: 'Ajustée (Slim)',
     price: 28500,
     originalPrice: 35000,
@@ -72,7 +72,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Fentes latérales d\'aisance pour un tombé parfait'
     ],
     fabric: 'Fil de coton local filé à la main & popeline de coton égyptien',
-    origin: 'Confection locale Burkinabè',
+    origin: 'Sélection locale Burkinabè',
     fit: 'Droite (Regular)',
     price: 32000,
     stock: {
@@ -111,7 +111,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Col chemise italien revisité'
     ],
     fabric: '100% Coton haute densité infroissable',
-    origin: 'Atelier de création Aziz Fashion',
+    origin: 'Collection Aziz Fashion',
     fit: 'Ajustée (Slim)',
     price: 24500,
     originalPrice: 29000,
@@ -187,10 +187,10 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Coupe bi-matière structurée à découpe géométrique contemporaine',
       'Col officier rehaussé d\'un liseré contrasté',
       'Tissu infroissable qui garde sa tenue toute la journée',
-      'Finition haute couture avec boutonnière sous-patte'
+      'Finition de luxe avec boutonnière sous-patte'
     ],
     fabric: 'Coton stretch grand luxe & Faso Danfani premium',
-    origin: 'Atelier Aziz Fashion Ouaga',
+    origin: 'Collection Aziz Fashion Ouaga',
     fit: 'Ajustée (Slim)',
     price: 35000,
     stock: {
@@ -229,7 +229,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Boutons aspect corne naturelle gravés'
     ],
     fabric: '100% Coton naturel local lavé pour un toucher doux',
-    origin: 'Confection locale certifiée',
+    origin: 'Sélection locale certifiée',
     fit: 'Droite (Regular)',
     price: 22000,
     stock: {
@@ -267,7 +267,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Livrée dans sa boîte prestige Aziz Fashion'
     ],
     fabric: 'Popeline de coton d\'exception et broderie haute précision',
-    origin: 'Atelier Principal Aziz Fashion',
+    origin: 'Collection Boutique Aziz Fashion',
     fit: 'Ajustée (Slim)',
     price: 38000,
     originalPrice: 42000,
@@ -301,13 +301,13 @@ export const INITIAL_PRODUCTS: Product[] = [
     tagline: 'L\'élégance ténébreuse sublimée par les reflets de l\'or africain',
     description: 'Une chemise pour les grandes occasions et les soirées d\'apparat. Sur un noir velouté et dense, les motifs brodés en fils d\'or captent la lumière avec une distinction incomparable.',
     features: [
-      'Broderie d\'art sur mesure le long de l\'encolure et du plastron',
+      'Broderie d\'art exclusive le long de l\'encolure et du plastron',
       'Tissu satiné de coton offrant un reflet luxueux',
       'Poignets mousquetaires compatibles boutons de manchette',
       'Coupe ajustée qui met en valeur la carrure'
     ],
     fabric: 'Satin de coton peigné supérieur 120 fils',
-    origin: 'Confection d\'art Ouagadougou',
+    origin: 'Sélection d\'art Ouagadougou',
     fit: 'Ajustée (Slim)',
     price: 36000,
     stock: {
@@ -366,7 +366,7 @@ export const INITIAL_REVIEWS: Review[] = [
     authorName: 'Mamadou Diallo',
     city: 'Abidjan (Cocody)',
     rating: 5,
-    comment: 'Excellente confection ! Le blanc est éclatant et la broderie dorée est d\'une grande finesse. C\'est agréable de porter du vêtement africain de ce niveau de standing.',
+    comment: 'Excellente qualité ! Le blanc est éclatant et la broderie dorée est d\'une grande finesse. C\'est agréable de porter du vêtement africain de ce niveau de standing.',
     date: '05 Août 2026',
     verifiedBuyer: true,
     userPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',

@@ -1,5 +1,8 @@
 - [x] Générer le schéma SQL Supabase
 - [x] Créer le script de migration (seed)
-- [ ] Demander à l'utilisateur d'exécuter le SQL sur Supabase
-- [ ] Lancer la synchronisation des données (Seed)
-- [ ] Vérifier la connexion en mode lecture dans l'App
+- [x] Demander à l'utilisateur d'exécuter le SQL sur Supabase
+- [x] Lancer la synchronisation des données (Seed via App trigger)
+- [x] Implémenter la gestion réelle des stocks (Supabase)
+- [x] Ajouter des animations "Luxury Feel" (ProductDetailModal)
+- [x] Optimiser le visuel du Panier (CartDrawer)
+- [x] Ajouter une vue "Alertes Stocks" dans l'Admin

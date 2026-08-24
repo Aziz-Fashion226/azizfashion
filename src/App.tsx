@@ -472,7 +472,7 @@ export default function App() {
                 L'Élégance Africaine Contemporaine
               </h1>
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                Fondée avec la conviction profonde que le textile traditionnel africain mérite les finitions les plus nobles de la haute couture internationale.
+                Fondée avec la conviction profonde que le textile traditionnel africain mérite de briller dans le prêt-à-porter haut de gamme.
               </p>
             </div>
           </div>

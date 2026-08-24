@@ -6,10 +6,10 @@ export const BrandStory: React.FC = () => {
   const pillars = [
     {
       icon: <Award className="w-8 h-8 text-[#C5A059]" />,
-      title: 'Fabrication Locale',
-      subtitle: 'Coton & Tissages Authentiques',
+      title: 'Sélection Authentique',
+      subtitle: 'Coton & Tissages du Terroir',
       description:
-        'Chaque chemise est confectionnée au Burkina Faso à partir de fils de coton locaux et de bandes de Faso Danfani ou Koko Dunda tissées par des maîtres artisans passionnés.',
+        'Chaque chemise est choisie avec soin au Burkina Faso pour la qualité de son coton local et de son tissage Faso Danfani ou Koko Dunda réalisé par des artisans maîtres.',
     },
     {
       icon: <Scissors className="w-8 h-8 text-[#C5A059]" />,
@@ -44,7 +44,7 @@ export const BrandStory: React.FC = () => {
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10192C] text-[#C5A059] text-xs font-bold uppercase tracking-widest border border-[#C5A059]/30">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Maison de Couture</span>
+            <span>Boutique de Mode</span>
           </div>
           <h2
             className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#F5F5F0] tracking-tight font-serif"
@@ -101,10 +101,10 @@ export const BrandStory: React.FC = () => {
               <h3
                 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#F5F5F0] leading-tight font-serif"
               >
-                Du fil de coton burkinabè à la chemise d'apparat
+                L'excellence du textile burkinabè en prêt-à-porter
               </h3>
               <p className="text-sm sm:text-base text-[#F5F5F0]/80 leading-relaxed">
-                Au cœur de nos ateliers, chaque pièce est le fruit de plusieurs heures de minutie : la sélection du fil, le tissage régulier sur métier traditionnel, la découpe géométrique et l'assemblage aux coutures anglaises.
+                Notre boutique sélectionne des pièces d'exception issues d'un travail minutieux : le choix des meilleurs fils, un tissage traditionnel régulier et une finition irréprochable.
               </p>
               <div className="flex flex-wrap gap-4 text-xs font-bold text-[#C5A059]">
                 <div className="flex items-center gap-2">

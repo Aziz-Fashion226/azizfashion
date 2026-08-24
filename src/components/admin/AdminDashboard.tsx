@@ -88,7 +88,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleOpenNewProduct = () => {
     setEditingProduct({
       id: `prod-${Date.now()}`, name: '', reference: `AZF-${Math.floor(100+Math.random()*900)}`, tagline: '', description: '',
-      features: ['100% Coton peigné tissé main'], fabric: 'Faso Danfani noble', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
+      features: ['Tissage traditionnel de haute qualité'], fabric: 'Faso Danfani noble', origin: 'Burkina Faso', fit: 'Ajustée (Slim)',
       price: 25000, stock: { S: 5, M: 5, L: 5, XL: 2, XXL: 0 }, category: 'Faso Danfani', images: [''], colors: [{ name: 'Bleu Nuit', hex: '#0B192C' }],
       isAvailable: true, createdAt: new Date().toISOString(), rating: 5, reviewCount: 0
     });
@@ -612,7 +612,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
                     <div className="col-span-1 sm:col-span-2">
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Accroche (Tagline)</label>
-                      <input type="text" value={editingProduct.tagline} onChange={e => setEditingProduct({...editingProduct, tagline: e.target.value})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all" placeholder="Ex: L'excellence du tissage artisanal" />
+                      <input type="text" value={editingProduct.tagline} onChange={e => setEditingProduct({...editingProduct, tagline: e.target.value})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all" placeholder="Ex: L'élégance du textile authentique" />
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Prix de Vente (FCFA) *</label>

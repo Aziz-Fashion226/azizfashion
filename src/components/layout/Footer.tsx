@@ -27,7 +27,7 @@ export const Footer: React.FC<FooterProps> = ({
           <div className="space-y-6">
             <Logo size="md" variant="light" showSubtitle={false} />
             <p className="text-xs text-[#F5F5F0]/60 leading-relaxed uppercase tracking-widest font-bold">
-              Maison de Haute Confection <br /> Ouagadougou
+              Boutique de Prêt-à-Porter <br /> Ouagadougou
             </p>
           </div>
 
@@ -120,7 +120,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-[9px] font-bold uppercase tracking-[0.2em] text-[#F5F5F0]/30">
-          <p>© {new Date().getFullYear()} Aziz Fashion — Haute Couture</p>
+          <p>© {new Date().getFullYear()} Aziz Fashion — Boutique de Mode</p>
           <button
             onClick={onOpenAdmin}
             className="hover:text-[#D4AF37] transition-colors cursor-pointer"

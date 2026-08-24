@@ -17,7 +17,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       <div className="absolute inset-0">
         <img
           src="/assets/creation.jpg"
-          alt="Aziz Fashion Haute Couture"
+          alt="Aziz Fashion Boutique de Luxe"
           className="w-full h-full object-cover object-top sm:object-center filter brightness-[0.75] contrast-[1.05]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1A1510] via-transparent to-black/20" />
@@ -32,7 +32,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-[10px] font-black tracking-[0.2em] uppercase">
               <Sparkles className="w-3 h-3" />
-              <span>Maison de Haute Confection</span>
+              <span>Boutique de Prêt-à-Porter de Luxe</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-none font-serif">

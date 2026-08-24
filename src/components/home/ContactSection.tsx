@@ -48,7 +48,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
             Venez essayer nos créations à la Boutique
           </h2>
           <p className="text-sm text-[#F5F5F0]/70">
-            Notre équipe vous accueille pour des essayages personnalisés, des commandes sur mesure et des conseils de style.
+            Notre équipe vous accueille pour des essayages personnalisés, des conseils de style et la découverte de nos nouvelles collections.
           </p>
         </div>
 
@@ -159,7 +159,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
                     required
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Précisez votre demande (sur-mesure, disponibilité d'un modèle, visite boutique...)"
+                    placeholder="Précisez votre demande (disponibilité d'un modèle, visite boutique...)"
                     className="w-full p-3 bg-[#10192C] border border-[#C5A059]/30 rounded-xl text-xs sm:text-sm text-[#F5F5F0] placeholder-slate-500 focus:outline-none focus:border-[#C5A059]"
                   />
                 </div>

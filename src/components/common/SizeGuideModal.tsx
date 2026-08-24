@@ -23,7 +23,7 @@ export const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ isOpen, onClose 
             </div>
             <div>
               <h3 className="text-xl font-bold font-serif text-[#F5F5F0]">Guide des Tailles — AZIZ FASHION</h3>
-              <p className="text-xs text-[#C5A059] tracking-wider uppercase font-semibold">Coupes confectionnées pour une allure parfaite</p>
+              <p className="text-xs text-[#C5A059] tracking-wider uppercase font-semibold">Une sélection de coupes pour une allure parfaite</p>
             </div>
           </div>
           <button
@@ -104,7 +104,7 @@ export const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ isOpen, onClose 
             <div className="flex items-start gap-2 p-3 bg-[#10192C] border border-[#C5A059]/20 rounded-xl">
               <CheckCircle2 className="w-4 h-4 text-[#C5A059] shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-[#F5F5F0]">Sur-mesure disponible :</span> Vous avez une morphologie particulière ? Contactez notre atelier directement sur WhatsApp !
+                <span className="font-semibold text-[#F5F5F0]">Conseil Taille :</span> Vous hésitez entre deux tailles ? Contactez nos conseillers boutique sur WhatsApp !
               </div>
             </div>
           </div>

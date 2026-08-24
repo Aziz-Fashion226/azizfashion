@@ -61,23 +61,23 @@ export const WhatsAppFloat: React.FC<WhatsAppFloatProps> = ({ settings }) => {
           <div className="p-4 bg-[#0B1325] space-y-3">
             <div className="bg-[#10192C] p-3.5 rounded-xl rounded-tl-none border border-[#C5A059]/20 text-xs text-[#F5F5F0]/90 shadow-sm leading-relaxed">
               <p className="font-bold text-[#C5A059] mb-1">Bonjour et bienvenue chez Aziz Fashion ! 👔</p>
-              <p>Besoin d'un conseil taille, d'une confection spéciale ou d'une livraison express ? Nous sommes à votre écoute directe sur WhatsApp.</p>
+              <p>Besoin d'un conseil taille, d'un modèle spécifique ou d'une livraison express ? Nous sommes à votre écoute directe sur WhatsApp.</p>
             </div>
 
             {/* Quick Prompts */}
             <div className="space-y-1.5 pt-1">
               <p className="text-[10px] uppercase font-bold text-[#C5A059] tracking-wider">Questions fréquentes :</p>
               <button
-                onClick={() => handleQuickQuestion("Quels sont les délais de livraison à Ouagadougou et en province ?")}
+                onClick={() => handleQuickQuestion("Comment se passent les livraisons à Ouagadougou et en province ?")}
                 className="w-full text-left text-xs p-2.5 bg-[#10192C] hover:bg-[#1A2644] text-[#F5F5F0] hover:text-[#C5A059] rounded-xl border border-[#C5A059]/20 transition-colors cursor-pointer"
               >
                 🚚 Délais et frais de livraison ?
               </button>
               <button
-                onClick={() => handleQuickQuestion("Proposez-vous la confection sur-mesure pour cérémonies ou mariages ?")}
+                onClick={() => handleQuickQuestion("Avez-vous des modèles adaptés pour des cérémonies ou mariages ?")}
                 className="w-full text-left text-xs p-2.5 bg-[#10192C] hover:bg-[#1A2644] text-[#F5F5F0] hover:text-[#C5A059] rounded-xl border border-[#C5A059]/20 transition-colors cursor-pointer"
               >
-                ✂️ Confection sur-mesure & cérémonies ?
+                ✨ Tenues de cérémonies & mariages ?
               </button>
             </div>
 

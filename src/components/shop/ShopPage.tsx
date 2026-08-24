@@ -167,7 +167,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
               LA <span className="text-[#C5A059]">BOUTIQUE</span>
             </h1>
             <p className="hidden sm:block text-[11px] sm:text-sm text-[#1A1510]/60 max-w-xl leading-relaxed">
-              Explorez nos confections artisanales. Chaque pièce est un hommage à l'élégance africaine.
+              Explorez notre sélection de chemises exclusives. Chaque pièce est un hommage à l'élégance africaine.
             </p>
           </div>
 
