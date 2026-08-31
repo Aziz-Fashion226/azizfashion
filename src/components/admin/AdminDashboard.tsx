@@ -3,7 +3,7 @@ import {
   User, LayoutDashboard, Package, ShoppingBag, Settings, LogOut, TrendingUp, Clock, CheckCircle, Truck, CheckCheck, XCircle, Plus, Edit2, Trash2, Eye, EyeOff, MessageCircle, Search, Printer, Save, RotateCcw, Sparkles, AlertTriangle, ChevronRight, Filter, MapPin, Calendar, Box, Camera, Info, Tag, Layers, ArrowLeft, ChevronDown
 } from 'lucide-react';
 import { Order, OrderStatus, Product, ShirtSize, SizeStock, StoreSettings } from '../../types';
-import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder, uploadProductImage, getCustomerOrders, getVisitCount } from '../../services/storeService';
+import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder, uploadProductImage, getCustomerOrders, getVisitCount, getDetailedVisitStats, VisitStats } from '../../services/storeService';
 import { Logo } from '../common/Logo';
 import { supabase } from '../../services/supabaseClient';
 
@@ -36,13 +36,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [localOrders, setLocalOrders] = useState<Order[]>([]);
-  const [visitCount, setVisitCount] = useState<number>(0);
+  const [visitStats, setVisitStats] = useState<VisitStats>({ today: 0, thisWeek: 0, thisMonth: 0, thisYear: 0, total: 0 });
 
   React.useEffect(() => {
     if (isOpen) {
       setLocalOrders(getCustomerOrders());
       if (isAuthenticated) {
-        getVisitCount().then(setVisitCount);
+        getDetailedVisitStats().then(setVisitStats);
       }
     }
   }, [isOpen, isAuthenticated]);
@@ -415,8 +415,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </div>
                       <div className="bg-[#10192C] p-8 rounded-[2rem] border border-blue-500/10 relative overflow-hidden group">
                         <User className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-blue-500/10 transition-all" />
-                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2 block">Visites Site</span>
-                        <div className="text-3xl font-black">{visitCount.toLocaleString()}</div>
+                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2 block">Analyses Visites</span>
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-baseline">
+                            <span className="text-[10px] text-slate-500 font-bold uppercase">Aujourd'hui</span>
+                            <span className="text-xl font-black">{visitStats.today}</span>
+                          </div>
+                          <div className="flex justify-between items-baseline border-t border-white/5 pt-1">
+                            <span className="text-[9px] text-slate-500 font-bold uppercase">Cette Semaine</span>
+                            <span className="text-sm font-black">{visitStats.thisWeek}</span>
+                          </div>
+                          <div className="flex justify-between items-baseline">
+                            <span className="text-[9px] text-slate-500 font-bold uppercase">Ce Mois</span>
+                            <span className="text-sm font-black">{visitStats.thisMonth}</span>
+                          </div>
+                          <div className="flex justify-between items-baseline">
+                            <span className="text-[9px] text-slate-500 font-bold uppercase">Année {new Date().getFullYear()}</span>
+                            <span className="text-sm font-black">{visitStats.thisYear}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 

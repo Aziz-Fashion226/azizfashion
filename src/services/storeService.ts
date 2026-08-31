@@ -493,6 +493,27 @@ export const getVisitCount = async (): Promise<number> => {
   }
 };
 
+export interface VisitStats {
+  today: number;
+  thisWeek: number;
+  thisMonth: number;
+  thisYear: number;
+  total: number;
+}
+
+export const getDetailedVisitStats = async (): Promise<VisitStats> => {
+  try {
+    const { data, error } = await supabase.rpc('get_detailed_stats');
+    if (error) throw error;
+    return data as VisitStats;
+  } catch (e) {
+    console.error('Error fetching detailed stats:', e);
+    // Fallback simple si l'internaute n'a pas encore créé la fonction RPC
+    const total = await getVisitCount();
+    return { today: 0, thisWeek: 0, thisMonth: 0, thisYear: 0, total };
+  }
+};
+
 // Aliases for cleaner imports
 export const getProducts = getStoredProducts;
 export const getOrders = getStoredOrders;
