@@ -3,7 +3,7 @@ import {
   User, LayoutDashboard, Package, ShoppingBag, Settings, LogOut, TrendingUp, Clock, CheckCircle, Truck, CheckCheck, XCircle, Plus, Edit2, Trash2, Eye, EyeOff, MessageCircle, Search, Printer, Save, RotateCcw, Sparkles, AlertTriangle, ChevronRight, Filter, MapPin, Calendar, Box, Camera, Info, Tag, Layers, ArrowLeft, ChevronDown
 } from 'lucide-react';
 import { Order, OrderStatus, Product, ShirtSize, SizeStock, StoreSettings } from '../../types';
-import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder, uploadProductImage, getCustomerOrders } from '../../services/storeService';
+import { formatFCFA, generateCustomerDirectWhatsAppUrl, addProduct, updateProduct, deleteProduct, getOrderByNumber, saveOrder, uploadProductImage, getCustomerOrders, getVisitCount } from '../../services/storeService';
 import { Logo } from '../common/Logo';
 import { supabase } from '../../services/supabaseClient';
 
@@ -36,12 +36,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [localOrders, setLocalOrders] = useState<Order[]>([]);
+  const [visitCount, setVisitCount] = useState<number>(0);
 
   React.useEffect(() => {
     if (isOpen) {
       setLocalOrders(getCustomerOrders());
+      if (isAuthenticated) {
+        getVisitCount().then(setVisitCount);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, isAuthenticated]);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -393,7 +397,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 {/* Dashboard View */}
                 {activeTab === 'dashboard' && (
                   <div className="space-y-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       <div className="bg-[#10192C] p-8 rounded-[2rem] border border-[#C5A059]/10 relative overflow-hidden group">
                         <TrendingUp className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-[#C5A059]/10 transition-all" />
                         <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest mb-2 block">Chiffre d'Affaires</span>
@@ -408,6 +412,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <Package className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-emerald-500/10 transition-all" />
                         <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 block">Produits</span>
                         <div className="text-3xl font-black">{safeProducts.length}</div>
+                      </div>
+                      <div className="bg-[#10192C] p-8 rounded-[2rem] border border-blue-500/10 relative overflow-hidden group">
+                        <User className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 group-hover:text-blue-500/10 transition-all" />
+                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2 block">Visites Site</span>
+                        <div className="text-3xl font-black">{visitCount.toLocaleString()}</div>
                       </div>
                     </div>
 

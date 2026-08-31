@@ -12,6 +12,7 @@ import {
   getSettings,
   saveSettings,
   formatFCFA,
+  incrementVisitCount,
 } from './services/storeService';
 import { INITIAL_SETTINGS } from './data/initialData';
 import { supabase } from './services/supabaseClient';
@@ -137,6 +138,9 @@ export default function App() {
         // 3. Cart and Wishlist remain local
         setCartState(getCart());
         setWishlistState(getWishlist());
+
+        // 4. Increment visits
+        incrementVisitCount();
       } catch (error) {
         console.error('Error initializing app:', error);
         showToast('Erreur de connexion à la base de données', 'info');

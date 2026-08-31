@@ -462,6 +462,37 @@ export const getOrderByNumber = async (orderNumber: string): Promise<Order | nul
   }
 };
 
+// --- Statistics ---
+export const incrementVisitCount = async () => {
+  try {
+    const { error } = await supabase.rpc('increment_visit_count');
+    if (error) {
+      // Fallback if RPC is not created yet
+      const { data } = await supabase.from('site_stats').select('visit_count').eq('id', 'total_visits').single();
+      const current = data?.visit_count || 0;
+      await supabase.from('site_stats').update({ visit_count: Number(current) + 1 }).eq('id', 'total_visits');
+    }
+  } catch (e) {
+    console.error('Error incrementing visits:', e);
+  }
+};
+
+export const getVisitCount = async (): Promise<number> => {
+  try {
+    const { data, error } = await supabase
+      .from('site_stats')
+      .select('visit_count')
+      .eq('id', 'total_visits')
+      .single();
+
+    if (error) throw error;
+    return Number(data?.visit_count || 0);
+  } catch (e) {
+    console.error('Error fetching visit count:', e);
+    return 0;
+  }
+};
+
 // Aliases for cleaner imports
 export const getProducts = getStoredProducts;
 export const getOrders = getStoredOrders;
