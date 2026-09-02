@@ -159,7 +159,7 @@ export const addProduct = async (product: Product) => {
 
 export const updateProduct = async (product: Product) => {
   const toUpdate = mapProductToDb(product);
-  const { error } = await supabase.from('products').update(toUpdate).eq('id', product.id);
+  const { error } = await supabase.from('products').upsert(toUpdate);
   if (error) throw error;
 };
 

@@ -134,8 +134,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     try {
       const cleanImgs = editingProduct.images.filter(img => img.trim() !== '');
       const toSave = { ...editingProduct, images: cleanImgs.length > 0 ? cleanImgs : ['https://via.placeholder.com/400'] };
-      if (isNewProduct) { await addProduct(toSave); await onSaveProducts([toSave, ...products]); }
-      else { await updateProduct(toSave); await onSaveProducts(products.map(p => p.id === toSave.id ? toSave : p)); }
+      if (isNewProduct) {
+        await addProduct(toSave);
+        await onSaveProducts([toSave, ...products]);
+        alert("🎉 Nouvelle création ajoutée avec succès !");
+      }
+      else {
+        await updateProduct(toSave);
+        await onSaveProducts(products.map(p => p.id === toSave.id ? toSave : p));
+        alert("✅ Création mise à jour avec succès !");
+      }
       setProductModalOpen(false);
     } catch (err: any) { alert("Erreur : " + err.message); }
   };
@@ -613,11 +621,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Prix de Vente (FCFA) *</label>
-                      <input type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: Number(e.target.value)})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all font-black text-[#C5A059]" required />
+                      <input
+                        type="number"
+                        value={editingProduct.price || ''}
+                        onChange={e => setEditingProduct({...editingProduct, price: e.target.value === '' ? 0 : Number(e.target.value)})}
+                        className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all font-black text-[#C5A059]"
+                        required
+                        onFocus={(e) => e.target.value === '0' && (e.target.value = '')}
+                      />
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Prix Original (Promo)</label>
-                      <input type="number" value={editingProduct.originalPrice || ''} onChange={e => setEditingProduct({...editingProduct, originalPrice: Number(e.target.value) || undefined})} className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all text-slate-400" placeholder="Ex: 35000" />
+                      <input
+                        type="number"
+                        value={editingProduct.originalPrice || ''}
+                        onChange={e => setEditingProduct({...editingProduct, originalPrice: e.target.value === '' ? undefined : Number(e.target.value)})}
+                        className="w-full p-4 bg-[#10192C] rounded-2xl border border-white/10 outline-none focus:border-[#C5A059] transition-all text-slate-400"
+                        placeholder="Ex: 35000"
+                        onFocus={(e) => e.target.value === '0' && (e.target.value = '')}
+                      />
                     </div>
                     <div>
                       <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Badge</label>
