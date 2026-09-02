@@ -248,7 +248,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <header className="px-6 py-4 bg-[#0B1325]/80 backdrop-blur-md border-b border-[#C5A059]/10 flex items-center justify-between no-print shrink-0">
             <div>
               <h2 className="text-lg font-serif font-black text-[#F5F5F0]">
-                {!isAuthenticated ? 'Espace Personnel' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                {!isAuthenticated ? 'Espace Personnel' : activeTab === 'products' ? 'Catalogue Articles' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
               </h2>
               {isAuthenticated && <p className="text-[10px] text-[#C5A059] font-bold uppercase tracking-[0.2em]">Boutique Aziz Fashion</p>}
             </div>
@@ -557,9 +557,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div key={p.id} className="group bg-[#10192C] rounded-[2rem] border border-white/5 overflow-hidden hover:border-[#C5A059]/40 transition-all">
                           <div className="aspect-[4/5] relative overflow-hidden">
                             <img src={p.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" alt="" />
-                            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button onClick={() => { setEditingProduct(p); setIsNewProduct(false); setProductModalOpen(true); }} className="p-3 bg-white/90 text-[#0B1325] rounded-xl hover:bg-[#C5A059] transition-all"><Edit2 className="w-4 h-4" /></button>
-                              <button onClick={() => handleDelete(p.id)} className="p-3 bg-rose-500 text-white rounded-xl hover:bg-rose-600 transition-all"><Trash2 className="w-4 h-4" /></button>
+                            {/* Boutons d'action : Toujours visibles sur mobile, au survol sur desktop */}
+                            <div className="absolute top-4 right-4 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => { setEditingProduct(p); setIsNewProduct(false); setProductModalOpen(true); }}
+                                className="p-3 bg-[#C5A059] sm:bg-white/90 text-[#0B1325] rounded-xl shadow-lg transition-all"
+                                title="Modifier"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(p.id)}
+                                className="p-3 bg-rose-500 text-white rounded-xl shadow-lg hover:bg-rose-600 transition-all"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                             {p.badge && <div className="absolute top-4 left-4 px-3 py-1.5 bg-[#C5A059] text-[#050B18] text-[9px] font-black uppercase rounded-lg tracking-widest">{p.badge}</div>}
                           </div>
